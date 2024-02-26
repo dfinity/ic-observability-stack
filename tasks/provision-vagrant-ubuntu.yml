@@ -1,0 +1,28 @@
+# FIXME:
+# Consider https://github.com/robparrott/ansible-vagrant/blob/master/library/vagrant
+# instead of shell commands.
+- name: Bring up the machine
+  ansible.builtin.shell:
+    cmd: |
+      if ! vagrant status observability | grep -q running
+      then
+        vagrant up --no-provision observability
+        >&2 echo Machine now up
+      fi
+    chdir: ../files/local-ubuntu
+  register: vagrant_up
+  changed_when: >-
+    "Machine now up" in vagrant_up.stderr
+- name: Provision software on the machine
+  ansible.builtin.shell:
+    cmd: |
+      vagrant provision observability
+    chdir: ../files/local-ubuntu
+  when: vagrant_up.changed
+- name: Test machine operates correctly
+  ansible.builtin.shell:
+    cmd: |
+      vagrant ssh observability -c 'echo success'
+    chdir: ../files/local-ubuntu
+  when: vagrant_up.changed
+  changed_when: no

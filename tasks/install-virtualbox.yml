@@ -1,0 +1,83 @@
+- name: Install VirtualBox on Debian-based systems
+  when: ansible_facts["os_family"] == "Debian"
+  block:
+    - name: Install VirtualBox
+      ansible.builtin.package:
+        name: virtualbox
+        state: present
+      become: true
+      become_user: root
+    - name: Install VirtualBox DKMS
+      ansible.builtin.package:
+        name: virtualbox-dkms
+        state: present
+      become: true
+      become_user: root
+    - name: Enable VirtualBox DKMS
+      shell: |
+        if modprobe vboxdrv && modprobe vboxnetadp && modprobe vboxnetflt
+        then
+          >&2 echo VirtualBox is now activated properly
+          exit
+        else:
+          output=$(dkms autoinstall 2>&1)
+          if echo "$output" | grep -q "Please.install.the"
+          then
+            kernel=$(echo "$output" | grep "Please.install.the" | awk ' { print $4 } ')
+            apt-get install -y "$kernel"
+            dkms autoinstall
+          fi
+          modprobe vboxdrv && modprobe vboxnetadp && modprobe vboxnetflt || {
+            exit 16
+          }
+          >&2 echo VirtualBox is now activated properly
+          exit
+        fi
+      become: true
+      become_user: root
+
+- name: Install VirtualBox on Fedora systems
+  when: ansible_facts["distribution"] == "Fedora"
+  block:
+    - name: Import VirtualBox RPM key
+      ansible.builtin.rpm_key:
+        key: https://www.virtualbox.org/download/oracle_vbox.asc
+        state: present
+      become: true
+      become_user: root
+    - name: Create VirtualBox repository
+      ansible.builtin.copy:
+        content: |
+          [VirtualBox]
+          name=Fedora $releasever - $basearch - VirtualBox
+          baseurl=http://download.virtualbox.org/virtualbox/rpm/fedora/$releasever/$basearch
+          enabled=1
+          gpgcheck=1
+          repo_gpgcheck=1
+          gpgkey=https://www.virtualbox.org/download/oracle_vbox.asc
+        dest: /etc/yum.repos.d/virtualbox.repo
+      become: true
+      become_user: root
+    - name: Install VirtualBox
+      ansible.builtin.package:
+        name: virtualbox
+        state: present
+      become: true
+      become_user: root
+    - name: Enable VirtualBox DKMS
+      shell: |
+        if modprobe vboxdrv && modprobe vboxnetadp && modprobe vboxnetflt
+        then
+          >&2 echo VirtualBox is now activated properly
+          exit
+        else
+          >&2 echo Currently this playbook does not know how to compile the VirtualBox kernel modules for {{ ansible_facts["distribution"] }}.
+          >&2 echo Please use DKMS to install the kernel modules, then load modules using modprobe vboxdrv vboxnetadp vboxnetflt
+          exit 32
+        fi
+      become: true
+      become_user: root
+
+- name: Fail on unsupported distribution
+  when: not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora")
+  shell: "Your operating system is not supported.  Please install Vagrant on your system using the method documented by the Vagrant project."

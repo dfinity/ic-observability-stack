@@ -1,0 +1,32 @@
+- name: Install Vagrant
+  ansible.builtin.package:
+    name: vagrant
+    state: present
+  when: ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora"
+  become: true
+  become_user: root
+
+- name: Install Vagrant libvirt provider
+  ansible.builtin.package:
+    name: vagrant-libvirt
+    state: present
+  when: ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora"
+  become: true
+  become_user: root
+
+- name: Install Vagrant disk size plugin
+  ansible.builtin.shell:
+    cmd: |
+      vagrant plugin list | grep disksize || {
+        vagrant plugin install vagrant-disksize
+        >&2 echo Plugin installed
+      }
+  when: ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora"
+  register: vagrant_disksize
+  changed_when: >-
+    "Plugin installed" in vagrant_disksize.stderr
+  become: false
+
+- name: Fail on unsupported distribution
+  shell: "Your operating system is not supported.  Please install Vagrant on your system using the method documented by the Vagrant project."
+  when: not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora")

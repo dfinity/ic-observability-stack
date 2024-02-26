@@ -1,0 +1,23 @@
+- name: Update the system
+  hosts: observability
+  become: true
+  tasks:
+    - name: Update all packages to their latest version
+      ansible.builtin.apt:
+        name: "*"
+        state: latest
+        update_cache: yes
+      register: upgrade
+    - name: Reboot after upgrades
+      ansible.builtin.raw: systemd-run --on-active=1 systemctl reboot
+      when: upgrade.changed
+      register: reboot
+    - name: Wait for machine to return
+      ansible.builtin.wait_for_connection:
+        delay: 15
+        sleep: 3
+        timeout: 600
+      when: reboot.changed
+    - name: Keystone check
+      shell: whoami
+      changed_when: false

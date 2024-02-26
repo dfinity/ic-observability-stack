@@ -1,0 +1,67 @@
+- name: Create directory for armored keyrings
+  ansible.builtin.file:
+    state: directory
+    name: /etc/apt/armored-keyrings
+- name: Install GPG2
+  ansible.builtin.apt:
+    pkg: gnupg2
+    state: present
+- name: Obtain Docker keyring
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/armored-keyrings/docker.gpg
+    checksum: sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570
+  register: docker_keyring
+- name: Dearmor Docker keyring
+  shell: gpg2 --dearmor < /etc/apt/armored-keyrings/docker.gpg > /etc/apt/keyrings/docker.gpg
+  when: docker_keyring.changed
+- name: Obtain k8s keyring
+  ansible.builtin.get_url:
+    url: https://pkgs.k8s.io/core:/stable:/{{ software.k8s.version }}/deb/Release.key
+    dest: /etc/apt/armored-keyrings/kubernetes-apt-keyring.gpg
+  register: k8s_keyring
+- name: Dearmor k8s keyring
+  shell: gpg2 --dearmor < /etc/apt/armored-keyrings/kubernetes-apt-keyring.gpg > /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  when: k8s_keyring.changed
+- name: Obtain version code name
+  shell: . /etc/os-release && echo "$VERSION_CODENAME"
+  register: version_codename
+  changed_when: no
+  check_mode: false
+- name: Obtain architecture
+  shell: dpkg --print-architecture
+  register: architecture
+  changed_when: no
+  check_mode: false
+- name: Deploy Docker APT source
+  copy:
+    content: >-
+      deb [arch="{{ architecture.stdout.strip() }}" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ version_codename.stdout.strip() }} stable
+    dest: /etc/apt/sources.list.d/docker.list
+- name: Deploy k8s APT source
+  copy:
+    content: >-
+      deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ software.k8s.version }}/deb/ /
+    dest: /etc/apt/sources.list.d/kubernetes.list
+- name: Install Docker and Kubernetes packages
+  ansible.builtin.apt:
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+      - kubectl
+    state: present
+    update_cache: yes
+- name: Is Minikube present?
+  shell: dpkg -l minikube | grep ^ii
+  register: minikube_present
+  check_mode: false
+  changed_when: false
+- name: Install Minikube
+  ansible.builtin.apt:
+    deb: https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+    state: present
+  when: >-
+    "ii  minikube" not in minikube_present.stdout
