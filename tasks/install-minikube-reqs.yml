@@ -55,7 +55,7 @@
     state: present
     update_cache: yes
 - name: Is Minikube present?
-  shell: dpkg -l minikube | grep ^ii
+  shell: dpkg -l minikube | grep ^ii || true
   register: minikube_present
   check_mode: false
   changed_when: false
