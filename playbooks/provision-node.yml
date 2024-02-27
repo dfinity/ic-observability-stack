@@ -2,8 +2,6 @@
   hosts: localhost
   connection: local
   tasks:
-      - debug:
-            var: hostvars["observability"]
       - block:
             - include_tasks: ../tasks/provision-vagrant-ubuntu.yml
             - shell:
