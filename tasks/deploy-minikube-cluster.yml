@@ -28,7 +28,7 @@
   check_mode: false
   register: minikube_status
   changed_when: false
-- name: Start Minikube cluster
+- name: Start Minikube
   shell:
     cmd: sudo -i -u minikube minikube start
     warn: false
