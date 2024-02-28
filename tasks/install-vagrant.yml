@@ -6,14 +6,6 @@
   become: true
   become_user: root
 
-- name: Install Vagrant libvirt provider
-  ansible.builtin.package:
-    name: vagrant-libvirt
-    state: present
-  when: ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora"
-  become: true
-  become_user: root
-
 - name: Install Vagrant disk size plugin
   ansible.builtin.shell:
     cmd: |
