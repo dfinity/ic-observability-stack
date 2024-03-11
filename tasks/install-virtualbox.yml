@@ -90,4 +90,3 @@
     - community.general.homebrew_cask:
         name: virtualbox
         state: present
-        sudo_password: "{{ ansible_become_pass }}"
