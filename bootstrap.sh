@@ -42,5 +42,5 @@ case "$u" in
     };;
 esac
 
->&2 echo "Ansible is going to run on your machine, and you will now be prompted for your user account password (what Ansible calls 'BECOME password').  This will be used to become administrator and deploy various packages needed locally."
-ansible-playbook -K playbooks/prepare-local-system.yml
+>&2 echo "Ansible is going to run on your machine, and you will now be prompted for your user account password (what Ansible calls 'BECOME password').  This will be used to become administrator and deploy various packages needed locally.  Follow onscreen instructions as the playbook runs."
+ansible-playbook -v -K playbooks/prepare-local-system.yml

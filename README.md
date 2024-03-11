@@ -14,7 +14,8 @@ Change into the directory of the cloned repository.
 
 Run `./bootstrap.sh`.  The program will require your administrative password
 (usually your local user's password) to set up the software necessary to
-manage your observability stack.
+manage your observability stack.  **Follow the onscreen instructions as
+the playbook executes.**
 
 ## Setup
 
