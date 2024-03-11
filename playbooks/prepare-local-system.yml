@@ -3,5 +3,4 @@
   connection: local
   tasks:
     - include_tasks: ../tasks/install-vagrant.yml
-    - include_tasks: ../tasks/install-virt-manager.yml
     - include_tasks: ../tasks/install-virtualbox.yml
