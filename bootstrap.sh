@@ -23,7 +23,13 @@ case "$u" in
         which brew >/dev/null || {
             >&2 echo "Homebrew is not installed, but it is necessary.  Please install Homebrew by running:"
             >&2 echo '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
-            exit 4
+            >&2 read -p 'Do you want to run that command right now [y/n]?' install_brew
+            if [ "$install_brew" == "y" ]
+            then
+                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || exit $?
+            else
+                exit 4
+            fi
         }
         which ansible >/dev/null || {
             brew install ansible
