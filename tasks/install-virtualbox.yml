@@ -25,7 +25,7 @@
         then
           >&2 echo VirtualBox is now activated properly
           exit
-        else:
+        else
           output=$(dkms autoinstall 2>&1)
           if echo "$output" | grep -q "Please.install.the"
           then
