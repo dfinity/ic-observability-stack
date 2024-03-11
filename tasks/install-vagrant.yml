@@ -1,3 +1,9 @@
+- name: Fail on unsupported distribution
+  ansible.builtin.fail:
+    msg: "Your operating system is not supported.  Please install Vagrant on your system using the method documented by the Vagrant project."
+  when: >-
+    not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin")
+
 - name: Install Vagrant
   ansible.builtin.package:
     name: vagrant
@@ -29,9 +35,3 @@
   changed_when: >-
     "Plugin installed" in vagrant_disksize.stderr
   become: false
-
-- name: Fail on unsupported distribution
-  ansible.builtin.fail:
-    msg: "Your operating system is not supported.  Please install Vagrant on your system using the method documented by the Vagrant project."
-  when: >-
-    not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin")

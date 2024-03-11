@@ -1,3 +1,9 @@
+- name: Fail on unsupported distribution
+  ansible.builtin.fail:
+    msg: "Your operating system is not supported.  Please install Vagrant on your system using the method documented by the Vagrant project."
+  when: >-
+    not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin")
+
 - name: Install VirtualBox on Debian-based systems
   when: ansible_facts["os_family"] == "Debian"
   block:
@@ -85,9 +91,3 @@
         name: virtualbox
         state: present
         sudo_password: "{{ ansible_become_pass }}"
-
-- name: Fail on unsupported distribution
-  ansible.builtin.fail:
-    msg: "Your operating system is not supported.  Please install Vagrant on your system using the method documented by the Vagrant project."
-  when: >-
-    not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin")
