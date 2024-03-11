@@ -2,7 +2,8 @@
   ansible.builtin.package:
     name: vagrant
     state: present
-  when: ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora"
+  when: >-
+    ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora"
   become: true
   become_user: root
 
@@ -11,7 +12,8 @@
     name: vagrant
     state: present
     sudo_password: "{{ ansible_become_pass }}"
-  when: ansible_facts["os_family"] == "Darwin"
+  when: >-
+    ansible_facts["os_family"] == "Darwin"
   become: false
 
 - name: Install Vagrant disk size plugin
@@ -21,7 +23,8 @@
         vagrant plugin install vagrant-disksize
         >&2 echo Plugin installed
       }
-  when: ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora"
+  when: >-
+    ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin"
   register: vagrant_disksize
   changed_when: >-
     "Plugin installed" in vagrant_disksize.stderr
@@ -29,4 +32,5 @@
 
 - name: Fail on unsupported distribution
   shell: "Your operating system is not supported.  Please install Vagrant on your system using the method documented by the Vagrant project."
-  when: not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin")
+  when: >-
+    not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin")
