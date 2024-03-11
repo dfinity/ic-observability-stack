@@ -11,7 +11,7 @@
   community.general.homebrew_cask:
     name: vagrant
     state: present
-    sudo_password: "{{ ansible_become_pass }}"
+    sudo_password: "{{ ansible_become_password }}"
   when: >-
     ansible_facts["os_family"] == "Darwin"
   become: false
