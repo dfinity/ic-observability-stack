@@ -10,7 +10,7 @@
   ansible.builtin.shell:
     cmd: |
       which vagrant || {
-        brew install vagrant
+        brew install vagrant || exit $?
         echo CHANGED
       }
   register: install_vagrant_mac
