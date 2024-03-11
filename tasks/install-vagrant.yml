@@ -7,16 +7,11 @@
   become_user: root
 
 - name: Install Vagrant on Mac OS X
-  ansible.builtin.shell:
-    cmd: |
-      which vagrant || {
-        brew install vagrant || exit $?
-        echo CHANGED
-      }
-  register: install_vagrant_mac
-  changed_when: >-
-    "CHANGED" in install_vagrant_mac.stdout
-  when: ansible_facts["distribution"] == "MacOSX"
+  community.general.homebrew_cask:
+    name: vagrant
+    state: present
+    sudo_password: "{{ ansible_become_pass }}"
+  when: ansible_facts["os_family"] == "Darwin"
   become: false
 
 - name: Install Vagrant disk size plugin
@@ -34,4 +29,4 @@
 
 - name: Fail on unsupported distribution
   shell: "Your operating system is not supported.  Please install Vagrant on your system using the method documented by the Vagrant project."
-  when: not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["distribution"] == "MacOSX")
+  when: not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin")
