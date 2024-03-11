@@ -97,7 +97,7 @@
             >&2 echo VirtualBox for Apple Silicon Mac OS X must be installed manually.
             >&2 echo Please download the macOS/ARM64 BETA release from
             >&2 echo https://www.virtualbox.org/wiki/Testbuilds
-            >&2 echo then, after installation, re-run this formula.
+            >&2 echo "then install it; after installation, re-run this formula."
             exit 4
           }
       when: ansible_facts["architecture"] == "arm64"
