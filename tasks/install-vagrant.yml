@@ -31,6 +31,7 @@
   become: false
 
 - name: Fail on unsupported distribution
-  shell: "Your operating system is not supported.  Please install Vagrant on your system using the method documented by the Vagrant project."
+  ansible.builtin.fail:
+    msg: "Your operating system is not supported.  Please install Vagrant on your system using the method documented by the Vagrant project."
   when: >-
     not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin")
