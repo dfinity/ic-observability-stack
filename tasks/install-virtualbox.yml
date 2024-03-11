@@ -100,4 +100,5 @@
             >&2 echo "then install it; after installation, re-run this formula."
             exit 4
           }
+      changed_when: false
       when: ansible_facts["architecture"] == "arm64"
