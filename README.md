@@ -6,6 +6,20 @@ health and operation of the Internet Computer, or parts thereof.
 This stack can run either locally in a VirtualBox virtual machine, or in
 a remote machine designated by you.
 
+## Prerequisites
+
+* IPv6 connectivity.
+  * If you plan to run the stack as a local VirtualBox VM, your local
+    network and machine must have working IPv6 networking.
+  * If you plan to run the stack in a remote machine (which will be
+    configured via SSH), the remote machine must have working IPv6
+    networking.
+* Root-equivalent access on your workstation, to deploy the software
+  this stack needs to be set up.
+* If you plan to run this stack in a remote machine, the user account
+  you log onto this machine with must have root-equivalent access via
+  `sudoers``.
+
 ## Preparation
 
 Clone this repository on your workstation.
