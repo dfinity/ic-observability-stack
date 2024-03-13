@@ -18,11 +18,9 @@
   register: vagrant_up
   changed_when: >-
     "Machine now up" in vagrant_up.stderr
-- name: Provision software on the machine
-  ansible.builtin.shell:
-    cmd: |
-      vagrant provision observability
-    chdir: ../../files/local-ubuntu
+- shell:
+    cmd: rm -rf ~/.cache/ansible-vagrant-ssh
+    warn: false
   when: vagrant_up.changed
 - name: Test machine operates correctly
   ansible.builtin.shell:
@@ -30,8 +28,14 @@
       set -e
       >&2 echo Testing SSH
       vagrant ssh observability -c 'echo success'
-      >&2 echo Testing ping to Google IPv6 address
-      vagrant ssh observability -c 'ping -c2 2a00:1450:400e:800::200e'
     chdir: ../../files/local-ubuntu
-  when: vagrant_up.changed
-  changed_when: no
+  check_mode: false
+  changed_when: false
+- name: Provision software on the machine
+  ansible.builtin.shell:
+    cmd: |
+      vagrant provision observability
+    chdir: ../../files/local-ubuntu
+  register: vagrant_provision
+  changed_when: >-
+    "changed=0" not in vagrant_provision.stdout

@@ -14,6 +14,8 @@ a remote machine designated by you.
   * If you plan to run the stack in a remote machine (which will be
     configured via SSH), the remote machine must have working IPv6
     networking.
+  * In both cases, tests for IPv6 connectivity will be conducted at
+    the end of the provisioning step.
 * Root-equivalent access on your workstation, to deploy the software
   this stack needs to be set up.
 * If you plan to run this stack in a remote machine, the user account

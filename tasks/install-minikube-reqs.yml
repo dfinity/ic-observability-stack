@@ -26,12 +26,12 @@
 - name: Obtain version code name
   shell: . /etc/os-release && echo "$VERSION_CODENAME"
   register: version_codename
-  changed_when: no
+  changed_when: false
   check_mode: false
 - name: Obtain architecture
   shell: dpkg --print-architecture
   register: architecture
-  changed_when: no
+  changed_when: false
   check_mode: false
 - name: Deploy Docker APT source
   copy:
