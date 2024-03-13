@@ -1,17 +1,10 @@
 - name: Provision the system
   hosts: localhost
+  gather_facts: false
   connection: local
   tasks:
         - block:
-                - shell:
-                        cmd: |
-                              vboxmanage natnetwork list | grep -q IPv6 || {
-                                    vboxmanage natnetwork add --netname IPv6 --ipv6-enable on --ipv6-default on --network 192.168.55.0/24 || exit $?
-                                    echo CHANGED
-                              }
-                  register: ipv6_natnetwork
-                  changed_when: >-
-                        "CHANGED" in ipv6_natnetwork.stdout
+                - include_tasks: ../../tasks/setup-virtualbox-natnetwork-ipv6.yml
                 - include_tasks: ../../tasks/provision-vagrant-ubuntu.yml
           when: hostvars["observability"]["ansible_connection"] == "vagrant"
 
