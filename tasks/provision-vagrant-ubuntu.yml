@@ -6,10 +6,15 @@
     cmd: |
       if ! vagrant status observability | grep -q running
       then
-        vagrant up --no-provision observability
+        vagrant up --no-provision observability || {
+          ret=$?
+          >&2 echo An error occurred while bringing up the machine.
+          >&@ echo Run vagrant global-status to diagnose the issue.
+          exit $ret
+        }
         >&2 echo Machine now up
       fi
-    chdir: ../files/local-ubuntu
+    chdir: ../../files/local-ubuntu
   register: vagrant_up
   changed_when: >-
     "Machine now up" in vagrant_up.stderr
@@ -17,12 +22,16 @@
   ansible.builtin.shell:
     cmd: |
       vagrant provision observability
-    chdir: ../files/local-ubuntu
+    chdir: ../../files/local-ubuntu
   when: vagrant_up.changed
 - name: Test machine operates correctly
   ansible.builtin.shell:
     cmd: |
+      set -e
+      >&2 echo Testing SSH
       vagrant ssh observability -c 'echo success'
-    chdir: ../files/local-ubuntu
+      >&2 echo Testing ping to Google IPv6 address
+      vagrant ssh observability -c 'ping -c2 2a00:1450:400e:800::200e'
+    chdir: ../../files/local-ubuntu
   when: vagrant_up.changed
   changed_when: no
