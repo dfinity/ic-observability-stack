@@ -5,13 +5,19 @@ case "$u" in
     Linux*) {
         which apt-get >/dev/null && {
             which ansible >/dev/null || {
-                sudo apt-get install -y ansible
-                exit 0
+                sudo apt-get install -y ansible || {
+                    ret=$?
+                    >&2 echo Ansible installation failed.
+                    exit $ret
+                }
             }
         } || which dnf >/dev/null && {
             which ansible >/dev/null || {
-                sudo dnf install -y ansible
-                exit 0
+                sudo dnf install -y ansible || {
+                    ret=$?
+                    >&2 echo Ansible installation failed.
+                    exit $ret
+                }
             }
         } ||
         {
@@ -42,5 +48,5 @@ case "$u" in
     };;
 esac
 
->&2 echo "Ansible is going to run on your machine, and you will now be prompted for your user account password (what Ansible calls 'BECOME password').  This will be used to become administrator and deploy various packages needed locally.  Follow onscreen instructions as the playbook runs."
+>&2 echo "Ansible is going to run on your machine, and you will now be prompted for your user account password (what Ansible calls 'BECOME password').  This will be used to become administrator and deploy various packages needed locally; if 'sudo' does not require a password on this machine, simply hit ENTER.  Follow onscreen instructions as the playbook runs."
 ansible-playbook -v -K playbooks/prepare-local-system.yml
