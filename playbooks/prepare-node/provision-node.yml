@@ -17,6 +17,7 @@
 
 - name: Test the provisioned system
   hosts: observability
+  gather_facts: false
   tasks:
         - name: Test IPv6 connectivity on machine
           ansible.builtin.shell:
