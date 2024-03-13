@@ -14,7 +14,7 @@
       register: reboot
     - name: Wait for machine to return
       ansible.builtin.wait_for_connection:
-        delay: 15
+        delay: 30
         sleep: 3
         timeout: 600
       when: reboot.changed

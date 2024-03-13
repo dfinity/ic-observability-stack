@@ -45,27 +45,17 @@ python3 configure.py
 Once the provisioning configuration step is done, run:
 
 ```sh
-ansible-playbook -v playbooks/provision-node.yml
+ansible-playbook -v playbooks/prepare-node.yml
 ```
 
 * If you selected Vagrant provisioning in the previous step:
   * This will provision a 2.5 GB RAM, 50 GB storage virtual Ubuntu instance on
     your machine, where the observability stack will be set up.
+  * The machine will be rebooted after updates.
+  * Minikube will be provisioned.
 * In any other case:
-  * This step will currently do nothing.
-
-Then, run the following to upgrade the system (it will reboot once if any
-updates took place):
-
-```sh
-ansible-playbook -v playbooks/update-node.yml
-```
-
-Then, run the following to deploy the stack:
-
-```sh
-ansible-playbook -v playbooks/deploy-minikube-onto-node.yml
-```
+  * The machine will update and reboot.
+  * Minikube will be deployed after that.
 
 ## Troubleshooting
 

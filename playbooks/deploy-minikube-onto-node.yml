@@ -1,8 +1,0 @@
-- name: Deploy the observability stack onto the node
-  hosts: observability
-  become: true
-  vars_files:
-    - ../vars/software.yml
-  tasks:
-    - import_tasks: ../tasks/install-minikube-reqs.yml
-    - import_tasks: ../tasks/deploy-minikube-cluster.yml
