@@ -1,0 +1,18 @@
+- hosts: all
+  tasks:
+    - name: Ensure systemd-resolved dropin directory exists
+      ansible.builtin.file:
+        path: /etc/systemd/resolved.conf.d
+        state: directory
+    - name: Allow resolver to listen on IPv6
+      ansible.builtin.copy:
+        content: |
+          [Resolve]
+          DNSStubListenerExtra=[::1]:53
+        dest: /etc/systemd/resolved.conf.d/stub-ip6.conf
+      notify: Restart systemd-resolved
+  handlers:
+    - name: Restart systemd-resolved
+      service:
+        name: systemd-resolved
+        state: restarted

@@ -21,12 +21,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define :observability do |observability|
   end
 
-  # Ansible provisioner not currently used.
-  # config.vm.provision "ansible" do |ansible|
-  #   ansible.compatibility_mode = "2.0"
-  #   ansible.playbook = "provisioning/playbook.yml"
-  #   ansible.inventory_path = "provisioning/inventory"
-  #   ansible.become = true
-  # end
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.playbook = "provisioning.yml"
+    ansible.become = true
+  end
 
 end
