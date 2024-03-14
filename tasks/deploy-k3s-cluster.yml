@@ -25,14 +25,17 @@
     warn: false
   check_mode: false
   changed_when: false
+  register: k3s_check
 - name: Wait until K3s is ready
   ansible.builtin.shell:
     cmd: |
       set -e
       r=0
-      for _ in `seq 15`
+      for _ in `seq 10`
       do
-        kubectl get pods || r=$?
+        kubectl run liveness-check --rm -i --image ubuntu -- bash -c '
+          sleep 5 ; echo I am working correctly ; /bin/true
+        ' || r=$?
         if [ "$r" = "0" ]
         then
           break
@@ -46,7 +49,7 @@
 - name: Test IPv6 connectivity from within a K3s pod
   ansible.builtin.shell:
     cmd: |
-      kubectl run ipv6-test --rm -i --image ubuntu -- bash -c '
+      kubectl run ipv6-check --rm -i --image ubuntu -- bash -c '
         apt-get update && apt-get install -y net-tools iputils-ping && ifconfig && ping -c2 -6 google.com && false
       '
   changed_when: false
