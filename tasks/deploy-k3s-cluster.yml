@@ -28,12 +28,12 @@
 - name: Wait until K3s is ready
   ansible.builtin.shell:
     cmd: |
+      set -e
       r=0
       for _ in `seq 15`
       do
-        kubectl get pods
-        r=$?
-        if [ "$r" == "0" ]
+        kubectl get pods || r=$?
+        if [ "$r" = "0" ]
         then
           break
         fi
