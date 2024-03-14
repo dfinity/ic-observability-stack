@@ -8,7 +8,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.name = "observability"
     v.memory = 2536
     v.cpus = 2
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
+    v.customize ["modifyvm", :id, "--natdnsproxy1", "off"]
     v.customize ["modifyvm", :id, "--ioapic", "on"]
     v.customize ["modifyvm", :id, "--nic2", "natnetwork"]
     v.customize ["modifyvm", :id, "--nat-network2", "IPv6"]

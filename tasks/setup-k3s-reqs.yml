@@ -1,0 +1,28 @@
+# https://docs.k3s.io/installation/requirements?os=debian
+- block:
+    - name: Instruct ufw to allow connections to kube apiserver
+      community.general.ufw:
+        rule: allow
+        port: "6443"
+        proto: tcp
+    - name: Instruct ufw to allow connections to Flannel
+      community.general.ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: udp
+      loop:
+        - "8472" # Flannel VXLAN
+        - "51820" # Flannel WireGuard IPv4
+        - "51821" # Flannel WireGuard IPv6
+    - name: Instruct ufw to allow connections from pods and services
+      community.general.ufw:
+        rule: allow
+        src: "{{ item }}"
+      loop:
+        - 10.42.0.0/16 # pods
+        - 10.43.0.0/16 # services
+  when: ansible_facts["os_family"] == "Debian"
+- block:
+    - fail:
+        msg: This distribution ({{ ansible_facts["os_family"] }}) is not supported.
+  when: ansible_facts["os_family"] != "Debian"

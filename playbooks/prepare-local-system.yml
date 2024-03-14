@@ -2,5 +2,6 @@
   hosts: localhost
   connection: local
   tasks:
+    - include_tasks: ../tasks/test-ipv6-connectivity.yml
     - include_tasks: ../tasks/install-vagrant.yml
     - include_tasks: ../tasks/install-virtualbox.yml

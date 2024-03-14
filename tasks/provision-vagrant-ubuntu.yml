@@ -22,7 +22,7 @@
     cmd: rm -rf ~/.cache/ansible-vagrant-ssh
     warn: false
   when: vagrant_up.changed
-- name: Test machine operates correctly
+- name: Test that the machine is responsive
   ansible.builtin.shell:
     cmd: |
       set -e

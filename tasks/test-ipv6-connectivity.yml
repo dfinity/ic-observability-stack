@@ -1,0 +1,42 @@
+- block:
+    - name: Install host tool
+      ansible.builtin.package:
+        name: bind9-host
+        state: present
+      become: true
+    - name: Install ping tool
+      ansible.builtin.package:
+        name: iputils-ping
+      become: true
+  when: >-
+    ansible_facts["os_family"] == "Debian"
+- block:
+    - name: Install host tool
+      ansible.builtin.package:
+        name: bind-utils
+        state: present
+      become: true
+    - name: Install ping tool
+      ansible.builtin.package:
+        name: iputils
+      become: true
+  when: >-
+    ansible_facts["distribution"] == "Fedora"
+# No need to set the above utilities up on Mac OS X.
+# They ship with the OS, we believe.
+
+- name: Test IPv6 name resolution
+  shell:
+    cmd: host -t AAAA google.com
+  changed_when: false
+  check_mode: false
+  register: host_aaaa
+  failed_when: >-
+    "has IPv6 address" not in host_aaaa.stdout
+
+- name: Test IPv6 ping
+  shell:
+    cmd: >-
+      {% if ansible_facts["os_family"] == "Darwin" %}ping6{% else %}ping -6{% endif %} -c2 google.com
+  changed_when: false
+  check_mode: false

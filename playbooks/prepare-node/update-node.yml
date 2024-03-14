@@ -1,3 +1,8 @@
+- name: Test the provisioned system before update
+  hosts: observability
+  tasks:
+    - include_tasks: ../../tasks/test-ipv6-connectivity.yml
+
 - name: Update the system
   hosts: observability
   become: true
@@ -21,3 +26,8 @@
     - name: Keystone check
       shell: whoami
       changed_when: false
+
+- name: Test the provisioned system after update
+  hosts: observability
+  tasks:
+    - include_tasks: ../../tasks/test-ipv6-connectivity.yml

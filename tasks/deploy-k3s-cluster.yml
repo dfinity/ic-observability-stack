@@ -1,0 +1,42 @@
+- name: Gather status of K3s
+  shell:
+    cmd: systemctl --no-pager status k3s
+    warn: false
+  check_mode: false
+  failed_when: false
+  register: k3s_status
+  changed_when: false
+- name: Retrieve K3s installer
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /usr/local/bin/get-k3s-io.sh
+  register: k3s_installer
+- name: Run K3s installer
+  ansible.builtin.shell:
+    cmd: |
+      export INSTALL_K3S_EXEC={{ software.k3s.INSTALL_K3S_EXEC | quote }}
+      sh /usr/local/bin/get-k3s-io.sh
+  register: k3s_installation
+  changed_when: >-
+    "No change detected so skipping service start" not in k3s_installation.stdout
+- name: Check K3s is operating correctly
+  shell:
+    cmd: systemctl --no-pager status k3s
+    warn: false
+  check_mode: false
+  changed_when: false
+#  when: >-
+#    "Nonexistent" in minikube_status.stdout
+#    or "not found" in minikube_status.stdout
+#- name: Test Minikube
+#  shell:
+#    cmd: sudo -i -u minikube minikube status
+#    warn: false
+#  changed_when: false
+#  register: minikube_status
+#- name: Update Minikube kubectl context
+#  shell:
+#    cmd: sudo -i -u minikube minikube update-context
+#    warn: false
+#  when: >-
+#    "stale minikube-vm" in (minikube_status.stdout + minikube_status.stderr)

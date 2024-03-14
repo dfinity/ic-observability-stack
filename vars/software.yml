@@ -1,3 +1,5 @@
 software:
   k8s:
     version: v1.29
+  k3s:
+    INSTALL_K3S_EXEC: "--flannel-ipv6-masq"

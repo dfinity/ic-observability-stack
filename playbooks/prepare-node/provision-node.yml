@@ -7,18 +7,3 @@
                 - include_tasks: ../../tasks/setup-virtualbox-natnetwork-ipv6.yml
                 - include_tasks: ../../tasks/provision-vagrant-ubuntu.yml
           when: hostvars["observability"]["ansible_connection"] == "vagrant"
-
-- name: Test the provisioned system
-  hosts: observability
-  gather_facts: false
-  tasks:
-        - name: Test IPv6 connectivity on machine
-          ansible.builtin.shell:
-                cmd: |
-                      set -e
-                      >&2 echo Testing dig of ic0.app
-                      dig -6 ic0.app AAAA
-                      >&2 echo Testing ping of ic0.app
-                      ping -c2 -6 ic0.app
-          changed_when: false
-          check_mode: false

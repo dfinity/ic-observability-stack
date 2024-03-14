@@ -2,5 +2,5 @@
   ansible.builtin.import_playbook: prepare-node/provision-node.yml
 - name: Update node
   ansible.builtin.import_playbook: prepare-node/update-node.yml
-- name: Deploy Minikube onto node
-  ansible.builtin.import_playbook: prepare-node/deploy-minikube-onto-node.yml
+- name: Deploy K8s onto node
+  ansible.builtin.import_playbook: prepare-node/deploy-k3s-onto-node.yml
