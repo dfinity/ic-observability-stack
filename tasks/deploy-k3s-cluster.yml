@@ -35,8 +35,7 @@
       do
         kubectl run liveness-check --rm -i --image ubuntu -- bash -c '
           sleep 5 ; echo I am working correctly ; /bin/true
-        '
-        r=$?
+        ' && r=0 || r=$?
         if [ "$r" = "0" ]
         then
           break
