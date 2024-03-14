@@ -14,7 +14,7 @@
 - name: Run K3s installer
   ansible.builtin.shell:
     cmd: |
-      export INSTALL_K3S_EXEC={{ software.k3s.INSTALL_K3S_EXEC | quote }}
+      export INSTALL_K3S_EXEC={{ software_k3s_INSTALL_K3S_EXEC | quote }}
       sh /usr/local/bin/get-k3s-io.sh
   register: k3s_installation
   changed_when: >-
@@ -25,18 +25,29 @@
     warn: false
   check_mode: false
   changed_when: false
-#  when: >-
-#    "Nonexistent" in minikube_status.stdout
-#    or "not found" in minikube_status.stdout
-#- name: Test Minikube
-#  shell:
-#    cmd: sudo -i -u minikube minikube status
-#    warn: false
-#  changed_when: false
-#  register: minikube_status
-#- name: Update Minikube kubectl context
-#  shell:
-#    cmd: sudo -i -u minikube minikube update-context
-#    warn: false
-#  when: >-
-#    "stale minikube-vm" in (minikube_status.stdout + minikube_status.stderr)
+- name: Wait until K3s is ready
+  ansible.builtin.shell:
+    cmd: |
+      r=0
+      for _ in `seq 15`
+      do
+        kubectl get pods
+        r=$?
+        if [ "$r" == "0" ]
+        then
+          break
+        fi
+        echo "Kubernetes is not ready yet (return code $r)" >&2
+        sleep 1
+      done
+      exit $r
+  check_mode: false
+  changed_when: false
+- name: Test IPv6 connectivity from within a K3s pod
+  ansible.builtin.shell:
+    cmd: |
+      kubectl run ipv6-test --rm -i --image ubuntu -- bash -c '
+        apt-get update && apt-get install -y net-tools iputils-ping && ifconfig && ping -c2 -6 google.com && false
+      '
+  changed_when: false
+  check_mode: false
