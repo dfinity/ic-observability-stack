@@ -7,6 +7,9 @@
         proto: tcp
   when: ansible_facts["os_family"] == "Debian"
 - block:
-    - fail:
-        msg: This distribution ({{ ansible_facts["os_family"] }}) is not supported.
-  when: ansible_facts["os_family"] != "Debian"
+    - name: Instruct firewalld to allow connections to Prometheus
+      ansible.posix.firewalld:
+        permanent: true
+        state: enabled
+        port: "32090/tcp"
+  when: ansible_facts["distribution"] == "Fedora"

@@ -2,6 +2,7 @@
   hosts: localhost
   connection: local
   tasks:
+    - include_tasks: ../tasks/test-root.yml
     - include_tasks: ../tasks/test-ipv6-connectivity.yml
     - include_tasks: ../tasks/install-ansible-collections.yml
     - include_tasks: ../tasks/install-vagrant.yml

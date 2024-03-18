@@ -3,17 +3,16 @@
 u=$(uname -s)
 case "$u" in
     Linux*) {
-        which apt-get >/dev/null && {
-            which ansible >/dev/null || {
-                sudo apt-get install -y ansible || {
-                    ret=$?
-                    >&2 echo Ansible installation failed.
-                    exit $ret
+        which pip3 >/dev/null && {
+            which ansible >/dev/null && {
+                ansible --version | head -1 | grep -q '[[]core' || {
+                    >&2 echo "Your system's Ansible version is too old"
+                    >&2 ansible --version
+                    >&@ echo "Please uninstall the existing Ansible and retry."
+                    exit 18
                 }
-            }
-        } || which dnf >/dev/null && {
-            which ansible >/dev/null || {
-                sudo dnf install -y ansible || {
+            } || {
+                pip3 install --user ansible || {
                     ret=$?
                     >&2 echo Ansible installation failed.
                     exit $ret
@@ -21,7 +20,7 @@ case "$u" in
             }
         } ||
         {
-            >&2 echo "Your Linux distribution is not currently supported by this script.  Please install the Ansible package using your operating system's package manager or the documented method for your operating system."
+            >&2 echo "Your operating system is not currently supported by this script.  Please install the Ansible package using the instructions provided by Ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html ."
             exit 32
         }
     };;
@@ -48,5 +47,5 @@ case "$u" in
     };;
 esac
 
->&2 echo "Ansible is going to run on your machine, and you will now be prompted for your user account password (what Ansible calls 'BECOME password').  This will be used to become administrator and deploy various packages needed locally; if 'sudo' does not require a password on this machine, simply hit ENTER.  Follow onscreen instructions as the playbook runs."
+>&2 echo "Ansible is going to run on your machine, and you will now be prompted for your user account password (what Ansible calls 'BECOME password').  This will be used to become administrator and deploy various packages needed locally; if 'sudo' does not require a password on this machine, simply hit ENTER.  Follow onscreen instructions as the playbook runs.  If the next step just hangs for a long period of time, interrupt it and check that you typed your root password correctly."
 ansible-playbook -v -K playbooks/prepare-local-system.yml

@@ -1,5 +1,17 @@
 # https://docs.k3s.io/installation/requirements?os=debian
 - block:
+    - name: Install ufw
+      ansible.builtin.package:
+        name: ufw
+        state: present
+    - name: Instruct ufw to allow SSH connections
+      community.general.ufw:
+        rule: allow
+        port: "22"
+        proto: tcp
+    - name: Enable firewall
+      community.general.ufw:
+        state: enabled
     - name: Instruct ufw to allow connections to kube apiserver
       community.general.ufw:
         rule: allow
@@ -21,6 +33,37 @@
       loop: "{{ k3s_cluster_cidrs + k3s_service_cidrs }}"
   when: ansible_facts["os_family"] == "Debian"
 - block:
-    - fail:
-        msg: This distribution ({{ ansible_facts["os_family"] }}) is not supported.
-  when: ansible_facts["os_family"] != "Debian"
+    - name: Install firewalld
+      ansible.builtin.package:
+        name: firewalld
+        state: present
+    - name: Install firewalld Python bindings
+      ansible.builtin.package:
+        name: python3-firewall
+        state: present
+    - name: Enable firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+    - name: Instruct firewalld to allow connections to kube apiserver
+      ansible.posix.firewalld:
+        permanent: true
+        state: enabled
+        port: "6443/tcp"
+    - name: Instruct firewalld to allow connections to Flannel
+      ansible.posix.firewalld:
+        permanent: true
+        state: enabled
+        port: "{{ item }}/udp"
+      loop:
+        - "8472" # Flannel VXLAN
+        - "51820" # Flannel WireGuard IPv4
+        - "51821" # Flannel WireGuard IPv6
+    - name: Instruct firewalld to allow connections from pods and services
+      ansible.posix.firewalld:
+        permanent: true
+        state: enabled
+        source: "{{ item }}"
+      loop: "{{ k3s_cluster_cidrs + k3s_service_cidrs }}"
+  when: ansible_facts["distribution"] == "Fedora"

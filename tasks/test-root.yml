@@ -1,0 +1,8 @@
+- shell:
+    cmd: whoami
+  become: true
+  changed_when: false
+  register: root_status
+  failed_when: >-
+    "root" not in root_status.stdout
+  check_mode: false

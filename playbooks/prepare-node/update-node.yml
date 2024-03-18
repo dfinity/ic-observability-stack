@@ -1,14 +1,17 @@
-- name: Test the provisioned system before update
+- name: Test the system is compatible
   hosts: observability
-  tasks:
-    - include_tasks: ../../tasks/test-ipv6-connectivity.yml
-
-- name: Update the system
-  hosts: observability
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   become: true
   tasks:
+    - block:
+        - fail:
+            msg: Distribution {{ ansible_facts["distribution"] }} is not supported
+      when: >-
+        ansible_facts["os_family"] != "Debian" and ansible_facts["distribution"] != "Fedora"
+    - include_tasks: ../../tasks/test-ipv6-connectivity.yml
     - name: Update all packages to their latest version
-      ansible.builtin.apt:
+      ansible.builtin.package:
         name: "*"
         state: latest
         update_cache: yes
@@ -26,8 +29,4 @@
     - name: Keystone check
       shell: whoami
       changed_when: false
-
-- name: Test the provisioned system after update
-  hosts: observability
-  tasks:
     - include_tasks: ../../tasks/test-ipv6-connectivity.yml

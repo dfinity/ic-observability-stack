@@ -15,18 +15,6 @@
       ansible.builtin.package:
         name: net-tools
         state: present
-    - name: Install ufw
-      ansible.builtin.package:
-        name: ufw
-        state: present
-    - name: Instruct ufw to allow SSH connections
-      community.general.ufw:
-        rule: allow
-        port: "22"
-        proto: tcp
-    - name: Enable firewall
-      community.general.ufw:
-        state: enabled
   handlers:
     - name: Restart systemd-resolved
       service:

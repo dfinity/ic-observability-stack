@@ -22,6 +22,7 @@
       become: true
   when: >-
     ansible_facts["distribution"] == "Fedora"
+
 # No need to set the above utilities up on Mac OS X.
 # They ship with the OS, we believe.
 
