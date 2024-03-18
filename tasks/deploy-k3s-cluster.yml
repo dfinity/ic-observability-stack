@@ -1,7 +1,6 @@
 - name: Gather status of K3s
-  shell:
+  ansible.builtin.shell:
     cmd: systemctl --no-pager status k3s
-    warn: false
   check_mode: false
   failed_when: false
   register: k3s_status
@@ -20,9 +19,8 @@
   changed_when: >-
     "No change detected so skipping service start" not in k3s_installation.stdout
 - name: Check K3s is operating correctly
-  shell:
+  ansible.builtin.shell:
     cmd: systemctl --no-pager status k3s
-    warn: false
   check_mode: false
   changed_when: false
   register: k3s_check

@@ -18,9 +18,8 @@
   register: vagrant_up
   changed_when: >-
     "Machine now up" in vagrant_up.stderr
-- shell:
+- ansible.builtin.shell:
     cmd: rm -rf ~/.cache/ansible-vagrant-ssh
-    warn: false
   when: vagrant_up.changed
 - name: Test that the machine is responsive
   ansible.builtin.shell:
