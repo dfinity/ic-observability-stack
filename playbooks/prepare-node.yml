@@ -4,3 +4,5 @@
   ansible.builtin.import_playbook: prepare-node/update-node.yml
 - name: Deploy K8s onto node
   ansible.builtin.import_playbook: prepare-node/deploy-k3s-onto-node.yml
+- name: Deploy observability stack onto kubernetes in node
+  ansible.builtin.import_playbook: prepare-node/deploy-observability-stack-onto-kubernetes.yml

@@ -18,7 +18,7 @@
       community.general.ufw:
         rule: allow
         src: "{{ item }}"
-      loop: "{{ software_k3s_cluster_cidrs + software_k3s_service_cidrs }}"
+      loop: "{{ k3s_cluster_cidrs + k3s_service_cidrs }}"
   when: ansible_facts["os_family"] == "Debian"
 - block:
     - fail:

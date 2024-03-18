@@ -14,7 +14,7 @@
 - name: Run K3s installer
   ansible.builtin.shell:
     cmd: |
-      export INSTALL_K3S_EXEC={{ software_k3s_INSTALL_K3S_EXEC | quote }}
+      export INSTALL_K3S_EXEC={{ k3s_INSTALL_K3S_EXEC | quote }}
       sh /usr/local/bin/get-k3s-io.sh
   register: k3s_installation
   changed_when: >-

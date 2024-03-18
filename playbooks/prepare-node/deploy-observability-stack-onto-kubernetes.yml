@@ -1,0 +1,11 @@
+- name: Deploy the observability stack onto Kubernetes
+  hosts: observability
+  collections:
+    - kubernetes.core
+  vars_files:
+    - ../../vars/k3s.yml
+  become: true
+  tasks:
+    - import_tasks: ../../tasks/setup-observability-stack-host-reqs.yml
+    - import_tasks: ../../tasks/setup-observability-stack-access.yml
+    - import_tasks: ../../tasks/deploy-prometheus.yml

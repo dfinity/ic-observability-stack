@@ -1,0 +1,22 @@
+# https://docs.k3s.io/installation/requirements?os=debian
+- name: Deploy the Grafana Prometheus Operator
+  k8s:
+    kubeconfig: "{{ k3s_config_file }}"
+    context: default
+    state: present
+    definition: >-
+      {{ lookup('file', '../definitions/prometheus-operator.yml') | from_yaml_all }}
+- name: Deploy the observability stack objects
+  k8s:
+    kubeconfig: "{{ k3s_config_file }}"
+    context: default
+    state: present
+    definition: >-
+      {{ lookup('file', '../definitions/prometheus-crd.yml') | from_yaml_all }}
+- name: Test that Prometheus is up
+  uri:
+    url: http://localhost:32090/graph
+  register: prometheus_up
+  until: "prometheus_up.status == 200"
+  retries: 24
+  delay: 5

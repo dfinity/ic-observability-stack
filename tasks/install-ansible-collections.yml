@@ -1,0 +1,7 @@
+- name: Install required Ansible collections
+  shell:
+    cmd: >-
+      ansible-galaxy install -r ../requirements.yaml
+  register: ansible_collections
+  changed_when: >-
+    "was installed" in ansible_collections.stdout

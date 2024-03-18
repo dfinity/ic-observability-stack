@@ -1,0 +1,13 @@
+# https://docs.k3s.io/installation/requirements?os=debian
+- name: Install pip
+  ansible.builtin.package:
+    pkg: python3-pip
+    state: present
+- name: Install OpenShift pip module
+  ansible.builtin.pip:
+    name: openshift
+    state: present
+- name: Install Kubernetes pip module
+  ansible.builtin.pip:
+    name: kubernetes
+    state: present

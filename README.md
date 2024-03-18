@@ -6,6 +6,31 @@ health and operation of the Internet Computer, or parts thereof.
 This stack can run either locally in a VirtualBox virtual machine, or in
 a remote machine designated by you.
 
+## Usage
+
+Once the stack is set up, you will be able to access Prometheus on HTTP
+port 32090 of the target machine:
+
+* If deploying via VirtualBox, the host name will be localhost, as the
+  service TCP ports will be locally forwarded.
+  * The URL to access will be `http://localhost:32090/`.
+* If deploying on a remote machine via SSH, Prometheus will be listening
+  on TCP 32090 on that machine.
+  * Note that the service will be running unsecured by TLS and,
+    generally, firewall rules will not permit access to this port
+    remotely.
+  * Therefore, you should deploy a proxy service with support for an
+    HTTPS provider such as Let's Encrypt, then use the proxy service
+    to reverse-proxy TCP port 32090 onto the standard HTTPS 443 port
+    to the public.  Make sure to also instruct the proxy service to
+    add some form of authentication.
+  * You can also use SSH port forwarding to forward local connections
+    to port 32090 in order to access the URL (which should be in that
+    case `http://localhost:32090/` from the machine you initiated the
+    forwarding).
+  * In the future, we plan to offer automated SSL support for stacks
+    deployed in this way.
+
 ## Prerequisites
 
 * IPv6 connectivity.
@@ -54,10 +79,10 @@ ansible-playbook -v playbooks/prepare-node.yml
   * This will provision a 2.5 GB RAM, 50 GB storage virtual Ubuntu instance on
     your machine, where the observability stack will be set up.
   * The machine will be rebooted after updates.
-  * Minikube will be provisioned.
+  * K3s will be provisioned.
 * In any other case:
   * The machine will update and reboot.
-  * Minikube will be deployed after that.
+  * K3s will be deployed after that.
 
 ## Troubleshooting
 

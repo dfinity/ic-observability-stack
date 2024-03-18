@@ -1,8 +1,0 @@
-software_k8s_version: "v1.29"
-software_k3s_cluster_cidrs:
-  - 10.42.0.0/16
-  - 2001:cafe:42::/56
-software_k3s_service_cidrs:
-  - 10.43.0.0/16 # services
-  - 2001:cafe:43::/112
-software_k3s_INSTALL_K3S_EXEC: "--flannel-ipv6-masq --cluster-cidr={{ software_k3s_cluster_cidrs | join(',') }} --service-cidr={{ software_k3s_service_cidrs | join(',') }}"
