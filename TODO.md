@@ -8,6 +8,7 @@
 
 ## Testing
 
-* Automated test of Vagrant provisioning
-  * With Fedora
-  * With Ubuntu
+* Test of successful Vagrant provisioning:
+  * With Fedora VM.
+  * With Ubuntu VM.
+* Test that scrape configs work and return expected data.
