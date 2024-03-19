@@ -97,8 +97,8 @@ port 32090 of the target machine:
     to port 32090 in order to access the URL (which should be in that
     case `http://localhost:32090/` from the machine you initiated the
     forwarding).
-  * In the future, we plan to offer automated SSL support for stacks
-    deployed in this way.
+  * In the future, we plan to offer automated, authenticated SSL
+    support for stacks deployed in this way.
 
 ### Querying data
 
