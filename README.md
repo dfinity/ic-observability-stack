@@ -47,7 +47,13 @@ virtual machine using Vagrant and VirtualBox.  Run:
 python3 configure.py
 ```
 
-Once the provisioning configuration step is done, run:
+Once the provisioning configuration step is done, create your scrape
+configuration variable `scrape_configs`.  This configuration will be used
+to let the observability stack know which targets to obtain telemetry from.
+See the documentation [on scrape configuration](doc/scrape-configs.md) for
+more information on how to describe these targets.
+
+With the scrape configuration in place, run:
 
 ```sh
 ansible-playbook -v playbooks/prepare-node.yml
@@ -63,7 +69,9 @@ ansible-playbook -v playbooks/prepare-node.yml
   * K3s will be deployed on the remote machine after that.
 
 Once K3s is deployed, an instance of Prometheus will be deployed onto
-the observability stack node.
+the observability stack node, and all the telemetry targets will be
+configured.  Roughly 2 minutes after this process is done, Prometheus
+should be successfully obtaining telemetry data from the targets.
 
 ## Usage
 
@@ -92,7 +100,7 @@ port 32090 of the target machine:
 
 ## Troubleshooting
 
-### For users of Vagrant-provisioned VMs
+### Debugging Vagrant-provisioned VMs
 
 You can SSH into the Vagrant-provisioned VM by running the following
 commands in the repository folder:
@@ -124,3 +132,11 @@ command. Run `vagrant init` to create a new Vagrant environment.
 
 then follow the *Setup* instructions above (ensuring that you
 have selected Vagrant as the provisioning mechanism).
+
+### Telemetry targets
+
+Inspect which telemetry targets have been set up by browsing to the
+Prometheus instance (example address: `http://localhost:32090/`), then
+click on *Status* on the top bar, then click on *Targets*.  A list
+should appear onscreen with the list of targets being monitored by
+your observability stack, with their up/down status.

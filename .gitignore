@@ -2,3 +2,4 @@ hosts
 .vagrant
 __pycache__
 .mypy_cache
+scrape_configs.yml

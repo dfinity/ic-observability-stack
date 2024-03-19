@@ -1,0 +1,80 @@
+# API documentation at https://prometheus-operator.dev/docs/operator/api/#monitoring.coreos.com/v1.Probe
+{% macro hostport(host, port, replace_octet) -%}
+{% if ":" in host and replace_octet -%}
+{%   set segments = host.split(":") -%}
+{%   if segments[4] == "6800" -%}
+{%     set segments = segments[:4] + ["6801"] + segments[5:] %}{% set host = segments | join(":") -%}
+{%   endif -%}
+{% endif -%}
+{% if ":" in host %}[{% endif %}{{ host }}{% if ":" in host %}]{% endif %}:{{ port -}}
+{% endmacro -%}
+{% for mode, suffix in [
+  ["proxied", "metrics-proxy"],
+  ["direct", "direct"],
+] %}
+---
+{% if mode == "proxied" %}
+{%   set hostos_metrics_path = "/metrics/hostos_node_exporter" %}
+{%   set guestos_metrics_path = "/metrics/guestos_node_exporter" %}
+{%   set port = 42372 %}
+{%   set replace_octet = False %}
+{% else %}
+{%   set hostos_metrics_path = "/metrics" %}
+{%   set guestos_metrics_path = "/metrics" %}
+{%   set port = 9090 %}
+{%   set replace_octet = True %}
+{% endif %}
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  namespace: observability-stack
+  name: hostos-node-exporter-{{ suffix }}
+  labels:
+    app: prometheus
+spec:
+  metricsPath: {{ hostos_metrics_path }}
+  scheme: HTTPS
+  tlsConfig:
+    insecureSkipVerify: true
+  staticConfigs:
+{%   if "ic_nodes" in vars.scrape_configs and vars.scrape_configs.ic_nodes.get("mode", "proxied") == mode %}
+{%     for target in vars.scrape_configs.ic_nodes.nodes %}{% if target is string %}{% set target= {"address": target} %}{% endif %}
+    - labels:
+        job: host_node_exporter
+{%       if "ic_node" in target %}
+        ic_node: {{ target.ic_node | to_json }}
+{%       endif %}
+      targets:
+        - {{ hostport(target["address"], port, False) | to_json }}
+{%     endfor %}
+{%   else %}
+        []
+{%   endif %}
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  namespace: observability-stack
+  name: guestos-node-exporter-{{ suffix }}
+  labels:
+    app: prometheus
+spec:
+  metricsPath: {{ guestos_metrics_path }}
+  scheme: HTTPS
+  tlsConfig:
+    insecureSkipVerify: true
+  staticConfigs:
+{%   if "ic_nodes" in vars.scrape_configs and vars.scrape_configs.ic_nodes.get("mode", "proxied") == mode %}
+{%     for target in vars.scrape_configs.ic_nodes.nodes %}{% if target is string %}{% set target= {"address": target} %}{% endif %}
+    - labels:
+        job: node_exporter
+{%       if "ic_node" in target %}
+        ic_node: {{ target.ic_node | to_json }}
+{%       endif %}
+      targets:
+        - {{ hostport(target["address"], port, replace_octet) | to_json }}
+{%     endfor %}
+{%   else %}
+        []
+{%   endif %}
+{% endfor %}

@@ -1,0 +1,10 @@
+- name: Configure scrape targets onto the observability stack
+  hosts: observability
+  collections:
+    - kubernetes.core
+  vars_files:
+    - ../../vars/k3s.yml
+    - ../../scrape_configs.yml
+  become: true
+  tasks:
+    - import_tasks: ../../tasks/configure-scrape-targets.yml
