@@ -70,8 +70,10 @@ ansible-playbook -v playbooks/prepare-node.yml
 
 Once K3s is deployed, an instance of Prometheus will be deployed onto
 the observability stack node, and all the telemetry targets will be
-configured.  Roughly 2 minutes after this process is done, Prometheus
-should be successfully obtaining telemetry data from the targets.
+configured.
+
+Roughly 4 minutes after this process is done, Prometheus should be
+successfully obtaining telemetry data from the targets.
 
 ## Usage
 
@@ -133,10 +135,14 @@ command. Run `vagrant init` to create a new Vagrant environment.
 then follow the *Setup* instructions above (ensuring that you
 have selected Vagrant as the provisioning mechanism).
 
-### Telemetry targets
+### Telemetry targets and Prometheus configuration
 
 Inspect which telemetry targets have been set up by browsing to the
 Prometheus instance (example address: `http://localhost:32090/`), then
 click on *Status* on the top bar, then click on *Targets*.  A list
 should appear onscreen with the list of targets being monitored by
 your observability stack, with their up/down status.
+
+Just like the active targets appear under URL path `/targets`, the
+active prometheus configuration should be accessible at URL path
+`/config` of the same URL.
