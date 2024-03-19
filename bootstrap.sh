@@ -3,25 +3,35 @@
 u=$(uname -s)
 case "$u" in
     Linux*) {
-        which pip3 >/dev/null && {
-            which ansible >/dev/null && {
-                ansible --version | head -1 | grep -q '[[]core' || {
-                    >&2 echo "Your system's Ansible version is too old"
-                    >&2 ansible --version
-                    >&@ echo "Please uninstall the existing Ansible and retry."
-                    exit 18
+        which pip3 >/dev/null || {
+            which apt-get && {
+                sudo apt-get install -y python3-pip || {
+                    >&2 echo pip installation failed.
+                    exit 32
+                }
+            } || which dnf && {
+                sudo dnf install -y python3-pip || {
+                    >&2 echo pip installation failed.
+                    exit 32
                 }
             } || {
-                pip3 install --user ansible || {
-                    ret=$?
-                    >&2 echo Ansible installation failed.
-                    exit $ret
-                }
+                >&2 echo "Your operating system is not currently supported by this script."
+                exit 32
             }
-        } ||
-        {
-            >&2 echo "Your operating system is not currently supported by this script.  Please install the Ansible package using the instructions provided by Ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html ."
-            exit 32
+        }
+        which ansible >/dev/null && {
+            ansible --version | head -1 | grep -q '[[]core' || {
+                >&2 echo "Your system's Ansible version is too old"
+                >&2 ansible --version
+                >&@ echo "Please uninstall the existing Ansible and retry running this script.  See installation instructions provided by Ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html "
+                exit 18
+            }
+        } || {
+            pip3 install --user ansible || {
+                ret=$?
+                >&2 echo Ansible installation failed.
+                exit $ret
+            }
         }
     };;
     Darwin*) {
