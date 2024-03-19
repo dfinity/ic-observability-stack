@@ -4,6 +4,7 @@
     - kubernetes.core
   vars_files:
     - ../../vars/k3s.yml
+    - ../../vars/scrape_profiles.yml
     - ../../scrape_configs.yml
   become: true
   tasks:

@@ -1,0 +1,52 @@
+scrape_profiles:
+  proxied:
+    [
+      {
+        "name": "hostos-node-exporter",
+        "port": 42372,
+        "endpoint": "/metrics/hostos_node_exporter",
+        "scheme": "HTTPS",
+        "labels": { "job": "host_node_exporter" },
+      },
+      {
+        "name": "guestos-node-exporter",
+        "port": 42372,
+        "endpoint": "/metrics/guestos_node_exporter",
+        "scheme": "HTTPS",
+        "labels": { "job": "node_exporter" },
+      },
+    ]
+  direct:
+    [
+      {
+        "name": "hostos-node-exporter",
+        "port": 9100,
+        "endpoint": "/metrics",
+        "scheme": "HTTPS",
+        "labels": { "job": "host_node_exporter" },
+      },
+      {
+        "name": "guestos-node-exporter",
+        "port": 9100,
+        "endpoint": "/metrics",
+        "scheme": "HTTPS",
+        "transform_address_to_guest": true,
+        "labels": { "job": "node_exporter" },
+      },
+      {
+        "name": "guestos-replica",
+        "port": 9090,
+        "endpoint": "/",
+        "scheme": "HTTP",
+        "transform_address_to_guest": true,
+        "labels": { "job": "replica" },
+      },
+      {
+        "name": "guestos-orchestrator",
+        "port": 9091,
+        "endpoint": "/",
+        "scheme": "HTTP",
+        "transform_address_to_guest": true,
+        "labels": { "job": "orchestrator" },
+      },
+    ]
