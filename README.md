@@ -100,6 +100,18 @@ port 32090 of the target machine:
   * In the future, we plan to offer automated SSL support for stacks
     deployed in this way.
 
+### Querying data
+
+The stack can be queried using the standard URL `http://localhost:32090/graph`
+— a screen that lets you enter
+[PromQL queries](https://prometheus.io/docs/prometheus/latest/querying/basics/)
+at will.
+
+Try these sample queries:
+
+* `up`
+* `power_average_watts`
+
 ### Updating the scrape configuration
 
 Whenever you want to update the scrape configuration, you can change
