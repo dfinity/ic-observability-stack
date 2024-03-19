@@ -10,7 +10,7 @@ scrape_configs:
   ic_nodes:
     mode: proxied
     nodes:
-      - 2001:920:401a:1706:6800:17ff:fecb:6834
+      - 2001:920:401a:1710:6800:f1ff:fe8c:31c2
 ```
 
 To make your scrape configuration, create a file named `scrape_configs.yml`
