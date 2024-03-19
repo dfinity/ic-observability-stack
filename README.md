@@ -100,6 +100,20 @@ port 32090 of the target machine:
   * In the future, we plan to offer automated SSL support for stacks
     deployed in this way.
 
+### Updating the scrape configuration
+
+Whenever you want to update the scrape configuration, you can change
+the appropriate `scrape_configs.yml` file and then run this command:
+
+```sh
+ansible-playbook -v playbooks/prepare-node.yml -t scrape_configs
+```
+
+This will run only the parts of the playbook that configure the
+scraping on Prometheus, and nothing more.  It will certainly be much
+faster, and it will skip rebooting the target machine when updates
+are applied.
+
 ## Troubleshooting
 
 ### Debugging Vagrant-provisioned VMs
