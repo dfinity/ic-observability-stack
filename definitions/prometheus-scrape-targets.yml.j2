@@ -8,40 +8,42 @@
 {% endif -%}
 {% if ":" in host %}[{% endif %}{{ host }}{% if ":" in host %}]{% endif %}:{{ port -}}
 {% endmacro -%}
-{% for mode, exporters in vars.scrape_profiles.items() %}
-{%   for exporter_data in exporters %}
+{% for exporter_data in vars.scrape_profiles.ic_nodes %}
+{%   set mode = exporter_data.mode %}
 ---
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
   namespace: observability-stack
-  name: {{ mode }}-{{ exporter_data.name }}
+  name: ic-nodes-{{ mode }}-{{ exporter_data.name }}
   labels:
     app: prometheus
+    scrape_profile: ic-nodes
+    scrape_mode: {{ mode }}
+    scrape_exporter: {{ exporter_data.name }}
 spec:
   metricsPath: {{ exporter_data.endpoint }}
   scheme: {{ exporter_data.scheme }}
-{%     if exporter_data.scheme == "HTTPS" %}
+{%   if exporter_data.scheme == "HTTPS" %}
   tlsConfig:
     insecureSkipVerify: true
-{%     endif %}
+{%   endif %}
   staticConfigs:
-{%     if "ic_nodes" in vars.scrape_configs and vars.scrape_configs.ic_nodes.get("mode", "proxied") == mode %}
+{%   if "ic_nodes" in vars.scrape_configs and vars.scrape_configs.ic_nodes.get("mode", "proxied") == mode %}
 {%       for target in vars.scrape_configs.ic_nodes.nodes %}{% if target is string %}{% set target= {"address": target} %}{% endif %}
     - labels:
-{%         if "ic_node" in target %}
-{%           set ic_node_dict = {"ic_node": target.ic_node} %}
-{%         else %}
-{%           set ic_node_dict = {} %}
-{%         endif %}
-{%         for k, v in (exporter_data.labels | combine(target.get("labels", {})) | combine(ic_node_dict)).items() %}
+{%       if "ic_node" in target %}
+{%         set ic_node_dict = {"ic_node": target.ic_node} %}
+{%       else %}
+{%         set ic_node_dict = {} %}
+{%       endif %}
+{%       for k, v in (exporter_data.labels | combine(target.get("labels", {})) | combine(ic_node_dict)).items() %}
         {{ k | to_json  }}: {{ v | to_json }}
-{%         endfor %}
+{%       endfor %}
       targets:
         - {{ hostport(target["address"], exporter_data.port, exporter_data.get("transform_address_to_guest", False)) | to_json }}
-{%       endfor %}
-{%     else %}
+{%     endfor %}
+{%   else %}
         []
-{%     endif %}
-{%   endfor %}
+{%   endif %}
 {% endfor %}

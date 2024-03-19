@@ -1,7 +1,7 @@
 scrape_profiles:
-  proxied:
-    [
+  ic_nodes: [
       {
+        "mode": "proxied",
         "name": "hostos-node-exporter",
         "port": 42372,
         "endpoint": "/metrics/hostos_node_exporter",
@@ -9,16 +9,16 @@ scrape_profiles:
         "labels": { "job": "host_node_exporter" },
       },
       {
+        "mode": "proxied",
         "name": "guestos-node-exporter",
         "port": 42372,
         "endpoint": "/metrics/guestos_node_exporter",
         "scheme": "HTTPS",
         "labels": { "job": "node_exporter" },
       },
-    ]
-  direct:
-    [
+      # https://github.com/dfinity/dre/blob/main/rs/ic-observability/service-discovery/src/job_types.rs#L37
       {
+        "mode": "direct",
         "name": "hostos-node-exporter",
         "port": 9100,
         "endpoint": "/metrics",
@@ -26,6 +26,7 @@ scrape_profiles:
         "labels": { "job": "host_node_exporter" },
       },
       {
+        "mode": "direct",
         "name": "guestos-node-exporter",
         "port": 9100,
         "endpoint": "/metrics",
@@ -34,6 +35,7 @@ scrape_profiles:
         "labels": { "job": "node_exporter" },
       },
       {
+        "mode": "direct",
         "name": "guestos-replica",
         "port": 9090,
         "endpoint": "/",
@@ -42,6 +44,7 @@ scrape_profiles:
         "labels": { "job": "replica" },
       },
       {
+        "mode": "direct",
         "name": "guestos-orchestrator",
         "port": 9091,
         "endpoint": "/",
