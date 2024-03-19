@@ -114,6 +114,9 @@ scraping on Prometheus, and nothing more.  It will certainly be much
 faster, and it will skip rebooting the target machine when updates
 are applied.
 
+Be patient and pemember to wait a couple of minutes for Prometheus
+to reload its scrape configuration from disk.
+
 ## Troubleshooting
 
 ### Debugging Vagrant-provisioned VMs
