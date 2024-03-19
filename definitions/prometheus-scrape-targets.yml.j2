@@ -29,15 +29,14 @@ spec:
 {%     if "ic_nodes" in vars.scrape_configs and vars.scrape_configs.ic_nodes.get("mode", "proxied") == mode %}
 {%       for target in vars.scrape_configs.ic_nodes.nodes %}{% if target is string %}{% set target= {"address": target} %}{% endif %}
     - labels:
-{%         for k, v in exporter_data.labels.items() %}
-        {{ k | to_json  }}: {{ v | to_json }}
-{%         endfor %}
-{%         for k, v in target.get("labels", {}).items() %}
-        {{ k | to_json  }}: {{ v | to_json }}
-{%         endfor %}
 {%         if "ic_node" in target %}
-        ic_node: {{ target.ic_node | to_json }}
+{%           set ic_node_dict = {"ic_node": target.ic_node} %}
+{%         else %}
+{%           set ic_node_dict = {} %}
 {%         endif %}
+{%         for k, v in (exporter_data.labels | combine(target.get("labels", {})) | combine(ic_node_dict)).items() %}
+        {{ k | to_json  }}: {{ v | to_json }}
+{%         endfor %}
       targets:
         - {{ hostport(target["address"], exporter_data.port, exporter_data.get("transform_address_to_guest", False)) | to_json }}
 {%       endfor %}

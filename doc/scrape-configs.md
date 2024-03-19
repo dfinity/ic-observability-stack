@@ -43,7 +43,9 @@ A dictionary with the following values:
 
 A dictionary with the following values:
 
-* `address`: an IPv6 address of an IC node to monitor.  This list refers
+* `address`: (mandatory) an IPv6 address of an IC node to monitor.  This list refers
   specifically to the *host* IP address of the IC node.
-* `ic_node`: the IC node name corresponding to the IC node, in the standard
+* `ic_node`: (optional) the IC node name corresponding to the IC node, in the standard
   `wo2z6-ksxrk-kujkh-yqiov-cajqj-2mbuj-6sbln-qwp3x-yzvss-rul7r-uqe` format.
+* `labels`: (optional) a dictionary of custom string key and value pairs to use as labels
+  for this node.
