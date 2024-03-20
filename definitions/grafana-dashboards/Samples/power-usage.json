@@ -129,7 +129,11 @@
     "refresh": "30s",
     "schemaVersion": 37,
     "style": "dark",
-    "tags": [],
+    "tags": [
+        "linux",
+        "physical",
+        "power"
+    ],
     "templating": {
         "list": [
             {
