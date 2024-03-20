@@ -1,7 +1,9 @@
 # IC observability stack
 
 This collection of software lets you use your own equipment to observe the
-health and operation of the Internet Computer, or parts thereof.
+health and operation of the Internet Computer, or parts thereof.  It is
+a code-first, fully automated, DevOps-oriented stack that lets you create
+and manage your own personal view into the workings of the Internet Computer.
 
 This stack can run either locally in a VirtualBox virtual machine, or in
 a remote machine designated by you.
