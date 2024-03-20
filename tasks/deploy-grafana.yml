@@ -12,8 +12,7 @@
         kubeconfig: "{{ k3s_config_file }}"
         context: default
         state: present
-        definition: >-
-          {{ lookup('file', '../definitions/grafana-crds.yml') | from_yaml_all }}
+        template: ../definitions/grafana-crds.yml.j2
     - name: Deploy self-monitoring for the Grafana operator
       k8s:
         kubeconfig: "{{ k3s_config_file }}"
@@ -21,14 +20,14 @@
         state: present
         definition: >-
           {{ lookup('file', '../definitions/grafana-servicemonitors.yml') | from_yaml_all }}
-  #    - name: Test that Prometheus is up
-  #      uri:
-  #        url: http://localhost:32090/graph
-  #      register: prometheus_up_check
-  #      until: "'status' in prometheus_up_check and prometheus_up_check.status == 200"
-  #      # Checks fail in check mode.
-  #      when: not ansible_check_mode
-  #      retries: 24
-  #      delay: 5
+    - name: Test that Grafana is up
+      uri:
+        url: http://localhost:32091/login
+      register: grafana_up_check
+      until: "'status' in grafana_up_check and grafana_up_check.status == 200"
+      # Checks fail in check mode.
+      when: not ansible_check_mode
+      retries: 24
+      delay: 5
   tags:
     - grafana

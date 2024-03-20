@@ -6,6 +6,17 @@ kind: Namespace
 metadata:
   name: observability-stack
 ---
+# Grafana credentials.
+kind: Secret
+apiVersion: v1
+metadata:
+  name: grafana-credentials
+  namespace: observability-stack
+stringData:
+  GF_SECURITY_ADMIN_PASSWORD: {{ grafana_admin_password | to_json }}
+  GF_SECURITY_ADMIN_USER: {{ grafana_admin_user | to_json }}
+type: Opaque
+---
 # Grafana application.
 apiVersion: grafana.integreatly.org/v1beta1
 kind: Grafana
@@ -25,13 +36,23 @@ spec:
           labels:
             app.kubernetes.io/name: grafana
             app.kubernetes.io/instance: grafana
+        spec:
+          containers:
+            - name: grafana
+              env:
+                - name: GF_SECURITY_ADMIN_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: GF_SECURITY_ADMIN_USER
+                      name: grafana-credentials
+                - name: GF_SECURITY_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: GF_SECURITY_ADMIN_PASSWORD
+                      name: grafana-credentials
   config:
     log:
       mode: "console"
-    security:
-      # FIXME.
-      admin_user: root
-      admin_password: password
 ---
 # Grafana service exposed to public.
 apiVersion: v1

@@ -4,6 +4,7 @@
     - kubernetes.core
   vars_files:
     - ../../vars/k3s.yml
+    - ../../vars/grafana.yml
   become: true
   tasks:
     - import_tasks: ../../tasks/setup-observability-stack-host-reqs.yml
