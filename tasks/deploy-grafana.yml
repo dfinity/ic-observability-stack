@@ -1,0 +1,34 @@
+# https://docs.k3s.io/installation/requirements?os=debian
+- block:
+    - name: Deploy the Grafana Operator
+      kubernetes.core.helm:
+        chart_ref: oci://ghcr.io/grafana/helm-charts/grafana-operator
+        chart_version: v5.6.3
+        release_name: grafana-operator
+        release_namespace: default
+        kubeconfig: "{{ k3s_config_file }}"
+    - name: Deploy the observability stack Grafana objects
+      k8s:
+        kubeconfig: "{{ k3s_config_file }}"
+        context: default
+        state: present
+        definition: >-
+          {{ lookup('file', '../definitions/grafana-crds.yml') | from_yaml_all }}
+    - name: Deploy self-monitoring for the Grafana operator
+      k8s:
+        kubeconfig: "{{ k3s_config_file }}"
+        context: default
+        state: present
+        definition: >-
+          {{ lookup('file', '../definitions/grafana-servicemonitors.yml') | from_yaml_all }}
+  #    - name: Test that Prometheus is up
+  #      uri:
+  #        url: http://localhost:32090/graph
+  #      register: prometheus_up_check
+  #      until: "'status' in prometheus_up_check and prometheus_up_check.status == 200"
+  #      # Checks fail in check mode.
+  #      when: not ansible_check_mode
+  #      retries: 24
+  #      delay: 5
+  tags:
+    - grafana

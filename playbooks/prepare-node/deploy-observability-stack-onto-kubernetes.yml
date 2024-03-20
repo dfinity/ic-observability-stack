@@ -9,3 +9,4 @@
     - import_tasks: ../../tasks/setup-observability-stack-host-reqs.yml
     - import_tasks: ../../tasks/setup-observability-stack-access.yml
     - import_tasks: ../../tasks/deploy-prometheus.yml
+    - import_tasks: ../../tasks/deploy-grafana.yml

@@ -7,13 +7,13 @@
         state: present
         definition: >-
           {{ lookup('file', '../definitions/prometheus-operator.yml') | from_yaml_all }}
-    - name: Deploy the observability stack objects
+    - name: Deploy the observability stack Prometheus objects
       k8s:
         kubeconfig: "{{ k3s_config_file }}"
         context: default
         state: present
         definition: >-
-          {{ lookup('file', '../definitions/prometheus-crd.yml') | from_yaml_all }}
+          {{ lookup('file', '../definitions/prometheus-crds.yml') | from_yaml_all }}
     - name: Deploy self-monitoring for Prometheus and its operator
       k8s:
         kubeconfig: "{{ k3s_config_file }}"
