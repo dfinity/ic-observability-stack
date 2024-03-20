@@ -5,6 +5,19 @@
 * Provide Prometheus + Grafana interfaces using Let's Encrypt TLS
   certificates and authenticated access, when setting up a stack on
   a SSH remote target.
+* Enable auto-discovery for machines of particular node providers.
+  This skips having to specify addresses manually.
+* Allow the user to specify “I’m a node provider” mode during auto-
+  discovery, which will cause the stack to scrape host/guest node
+  exporter, orchestrator and replica directly.  This is already
+  possible to do by manually saying `mode: direct` but not yet
+  working in practice due to IC firewall rules.
+* Reduce maintenance cost of the stack:
+  * Re-use the DFINITY observability stack code to provide dashboards
+    for this stack.
+  * Re-use the DFINITY observability stack code to provide infrastructure
+    services (such as VictoriaMetrics and Grafana) for this stack.
+    * This may not end up being that necessary.
 
 ## Long shots
 
@@ -26,3 +39,4 @@
   * With Fedora VM.
   * With Ubuntu VM.
 * Test that scrape configs work and return expected data.
+* Test that Grafana dashboards are deployed.
