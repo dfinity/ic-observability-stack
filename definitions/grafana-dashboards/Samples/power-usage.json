@@ -1,0 +1,194 @@
+{
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "target": {
+                    "limit": 100,
+                    "matchAny": false,
+                    "tags": [],
+                    "type": "dashboard"
+                },
+                "type": "dashboard"
+            }
+        ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 8,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "ac3a473c-9da4-4225-b852-cbfe358af021"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "normal"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "watt"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 21,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "id": 2,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "displayMode": "table",
+                    "placement": "right",
+                    "showLegend": true,
+                    "sortBy": "Last *",
+                    "sortDesc": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "ac3a473c-9da4-4225-b852-cbfe358af021"
+                    },
+                    "editorMode": "code",
+                    "expr": "power_average_watts{instance=~\"[[instance]]\"}",
+                    "legendFormat": "{{instance}}",
+                    "range": true,
+                    "refId": "A"
+                }
+            ],
+            "title": "Average power usage",
+            "type": "timeseries"
+        }
+    ],
+    "refresh": "30s",
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+        "list": [
+            {
+                "current": {
+                    "selected": false,
+                    "text": "IC Metrics (cluster local)",
+                    "value": "IC Metrics (cluster local)"
+                },
+                "hide": 0,
+                "includeAll": false,
+                "multi": false,
+                "name": "datasource",
+                "options": [],
+                "query": "prometheus",
+                "refresh": 1,
+                "regex": "/IC.*/",
+                "skipUrlSync": false,
+                "type": "datasource"
+            },
+            {
+                "current": {
+                    "selected": true,
+                    "text": [
+                        "All"
+                    ],
+                    "value": [
+                        "$__all"
+                    ]
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "ac3a473c-9da4-4225-b852-cbfe358af021"
+                },
+                "definition": "label_values(up{job=\"host_node_exporter\"}, instance)",
+                "hide": 0,
+                "includeAll": true,
+                "multi": true,
+                "name": "instance",
+                "options": [],
+                "query": {
+                    "query": "label_values(up{job=\"host_node_exporter\"}, instance)",
+                    "refId": "StandardVariableQuery"
+                },
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 0,
+                "type": "query"
+            }
+        ]
+    },
+    "time": {
+        "from": "now-30m",
+        "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Power usage",
+    "uid": "kv41ZJJIz",
+    "version": 2,
+    "weekStart": ""
+}
