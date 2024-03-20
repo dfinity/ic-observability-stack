@@ -136,16 +136,6 @@ Try these sample queries:
 * `up`
 * `power_average_watts`
 
-### Accessing Grafana dashboards
-
-Grafana has in-built authentication.  The default credentials to access
-the Grafana service are defined in file [vars/grafana.yml](vars/grafana.yml);
-you should change them right away.  It's better to change the credentials
-directly in the file, and apply the stack settings again.
-
-This repository ships several default common-sense dashboards.  Feel free
-to peruse them through the Grafana dashboard list.
-
 ### Updating the scrape configuration
 
 Whenever you want to update the scrape configuration, you can change
@@ -162,6 +152,48 @@ are applied.
 
 Be patient and pemember to wait a couple of minutes for Prometheus
 to reload its scrape configuration from disk.
+
+### Accessing Grafana dashboards
+
+Grafana has in-built authentication.  The default credentials to access
+the Grafana service are defined in file [vars/grafana.yml](vars/grafana.yml);
+you should change them right away.  It's better to change the credentials
+directly in the file, and apply the stack settings again.
+
+This repository ships several default common-sense dashboards.  Feel free
+to peruse them through the Grafana dashboard list.
+
+### Provisioning your own dashboards
+
+With the Grafana JSON source of the dashboard, all you have to do
+is:
+
+1. Optionally, create a folder under `definitions/grafana-dashboards`
+   for your dashboard.
+2. In any subfolder under `definitions/grafana-dashboards` of your
+   choice, save the JSON content under a file name that ends in
+   `.json`.
+
+Then run this command to create the newly-deployed dashboard.
+
+
+```sh
+ansible-playbook -v playbooks/prepare-node.yml -t grafana_data
+```
+
+You can then check in your new dashboard into your repository
+if you so choose.
+
+To obtain the JSON source of a dashboard you have manually created,
+navigate to your dashboard's settings (cog icon at the top right)
+then click on *JSON model* to obtain and copy the JSON source.
+
+The stack manages each dashboard's Grafana UID so you don't have
+to worry about dashboard names colliding with each other.  To that
+effect, the UID you set up in your dashboard files will be overridden
+by the stack.  The folder under which the dashboard will appear in
+Grafana is dictated by the folder name it is stored in, under
+`definitions/grafana-dashboards`.
 
 ## Troubleshooting
 

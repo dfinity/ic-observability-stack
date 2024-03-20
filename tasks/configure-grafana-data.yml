@@ -6,5 +6,40 @@
         state: present
         definition: >-
           {{ lookup('file', '../definitions/grafana-datasources.yml') | from_yaml_all }}
+    - name: Deploy Grafana dashboards
+      k8s:
+        kubeconfig: "{{ k3s_config_file }}"
+        context: default
+        state: present
+        definition:
+          # Grafana IC Metrics data source
+          apiVersion: grafana.integreatly.org/v1beta1
+          kind: GrafanaDashboard
+          metadata:
+            name: >-
+              {{
+                (
+                  item.src.split('/')[-2].lower() + "-" + item.src.split('/')[-1][:-5].lower()
+                )
+                | regex_replace('[^a-z-]', '-')
+              }}
+            namespace: observability-stack
+            labels:
+              app: grafana
+          spec:
+            folder: >-
+              {{ item.src.split('/')[-2] }}
+            resyncPeriod: 30s
+            instanceSelector:
+              matchLabels:
+                dashboards: "observability-stack"
+            json: "{{
+              lookup('file', item.src)
+              | from_yaml_all
+              | combine({'uid': (item.src.split('/')[-2:] | join('/') | md5)})
+              | to_json
+              }}"
+      with_filetree: ../definitions/grafana-dashboards
+      when: item.state == "file" and item.path.endswith(".json")
   tags:
     - grafana_data
