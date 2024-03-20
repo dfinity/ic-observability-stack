@@ -11,3 +11,7 @@
   ansible.builtin.pip:
     name: kubernetes
     state: present
+- block:
+    - import_tasks: ../../tasks/install-helm.yml
+  tags:
+    - helm
