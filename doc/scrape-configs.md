@@ -14,14 +14,14 @@ scrape_configs:
 ```
 
 To make your scrape configuration, create a file named `scrape_configs.yml`
-in the root folder of this project, then add the necessary data.  The file
-should preferably be in YAML format, although JSON is also acceptable.
+in the `vars` folder of this project, then add the necessary data.  The file
+should preferably be in YAML format, although JSON is also acceptable.  You
+can then check in this file in your copy of the repository.
 
-> You can also create the file `scrape_configs.yml` in the `vars` folder.
-> If you do so, then the file can be checked into a Git repository of your
-> choice.  The same file name in the root folder of this project is ignored
-> by version control.  The contents of the file in the root folder always
-> trump the contents of the version-controlled file in `vars`.
+> ℹ️ You can also create the file `scrape_configs.yml` in the root folder.
+> If you do so, then the file will be ignored by version control. The
+> contents of the file in the root folder always trump the contents of
+> the version-controlled file in the `vars` folder.
 
 Here is a reference of the various fields that the data must have:
 

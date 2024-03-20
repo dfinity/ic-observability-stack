@@ -27,9 +27,18 @@ For usage instructions, see below under heading *Usage*.
 
 ## Preparation
 
-Clone this repository on your workstation.
+Clone this repository on your workstation.  You can fork this repository
+too, but if you do, make it private at once, to protect key credentials
+stored in this repository.  You are encouraged to keep a backup copy
+of the repository somewhere, in order to be able to restore your settings
+in case your workstation fails.
 
-Change into the directory of the cloned repository.
+> ℹ️ To check in secrets securely, consider using a credentials management
+> application compatible with Ansible to store any credentials in your
+> fork of this repository.
+
+Once you have a local clone of this, using a terminal application, change
+into its folder.
 
 Run `./bootstrap.sh`.  The program will require your administrative password
 (usually your local user's password) to set up the software necessary to
@@ -41,7 +50,7 @@ the playbook executes.**
 Once your system is prepared, configure where the playbooks will operate.
 The following command will run wizard will let you decide whether you'll
 use a preexisting machine you can SSH into, or create a locally-provisoned
-virtual machine using Vagrant and VirtualBox.  Run:
+virtual machine using Vagrant and VirtualBox (the default).  Run:
 
 ```sh
 python3 configure.py
@@ -53,15 +62,20 @@ to let the observability stack know which targets to obtain telemetry from.
 See the documentation [on scrape configuration](doc/scrape-configs.md) for
 more information on how to describe these targets.
 
-With the scrape configuration in place, run:
+With the scrape configuration in place, set up the stack by running:
 
 ```sh
 ansible-playbook -v playbooks/prepare-node.yml
 ```
 
+> This command can be run multiple times, with only necessary changes
+> being re-applied each time.  Whenever you change settings of your
+> stack within this repository, you should re-run the command to
+> ensure the settings are applied and take effect.
+
 * If you selected Vagrant provisioning in the previous step:
-  * This will provision a 2.5 GB RAM, 50 GB storage virtual Ubuntu instance on
-    your machine, where the observability stack will be set up.
+  * This will provision a 2.5 GB RAM, 50 GB storage virtual Ubuntu instance
+    on your machine, where the observability stack will be set up.
   * The machine will be rebooted after updates.
   * K3s will be provisioned.
 * In any other case:
@@ -77,30 +91,40 @@ successfully obtaining telemetry data from the targets.
 
 ## Usage
 
+### Access to services of the stack
+
 Once the stack is set up, you will be able to access Prometheus on HTTP
-port 32090 of the target machine:
+port 32090 of the target machine, and Grafana on HTTP port 32091:
 
 * If deploying via VirtualBox, the host name will be localhost, as the
   service TCP ports will be locally forwarded.
-  * The URL to access will be `http://localhost:32090/`.
-* If deploying on a remote machine via SSH, Prometheus will be listening
-  on TCP 32090 on that machine.
-  * Note that the service will be running unsecured by TLS and,
-    generally, firewall rules will not permit access to this port
+* If deploying on a remote machine via SSH, you will have to access the
+  services via SSH port forwarding.
+  * Note that the service ports will be running unsecured by TLS and,
+    generally, firewall rules will not permit access to these ports
     remotely.
-  * Therefore, you should deploy a proxy service with support for an
-    HTTPS provider such as Let's Encrypt, then use the proxy service
-    to reverse-proxy TCP port 32090 onto the standard HTTPS 443 port
-    to the public.  Make sure to also instruct the proxy service to
-    add some form of authentication.
-  * You can also use SSH port forwarding to forward local connections
-    to port 32090 in order to access the URL (which should be in that
-    case `http://localhost:32090/` from the machine you initiated the
-    forwarding).
+  * If you want to access the services without port forwarding, you
+    should deploy a proxy service with support for an HTTPS provider
+    such as Let's Encrypt, then use the proxy service to reverse-proxy
+    the ports listed below onto the standard HTTPS 443 port exposed by
+    the reverse proxy to the public.  Make sure to also instruct the
+    proxy service to add some form of authentication since Prometheus
+    does not support authentication.
+  * Port forwarding is usually accomplished by a command line similar to
+    `ssh -L 32090:localhost:32090 -L 32091:localhost:32091 <user@ip address>`.
+    When port forwarding, all software running on your client machine can
+    access the ports remotely forwarded by SSH.
   * In the future, we plan to offer automated, authenticated SSL
-    support for stacks deployed in this way.
+    support for stacks deployed in this way, ensuring no SSH port
+    forwarding is necessary.
 
-### Querying data
+Assuming a local VirtualBox VM or SSH port forwarding is active, the
+URLs to access the various services are:
+
+* Prometheus: `http://localhost:32090/`.
+* Grafana: `http://localhost:32091/`.
+
+### Querying data in Prometheus
 
 The stack can be queried using the standard URL `http://localhost:32090/graph`
 — a screen that lets you enter
@@ -111,6 +135,16 @@ Try these sample queries:
 
 * `up`
 * `power_average_watts`
+
+### Accessing Grafana dashboards
+
+Grafana has in-built authentication.  The default credentials to access
+the Grafana service are defined in file [vars/grafana.yml](vars/grafana.yml);
+you should change them right away.  It's better to change the credentials
+directly in the file, and apply the stack settings again.
+
+This repository ships several default common-sense dashboards.  Feel free
+to peruse them through the Grafana dashboard list.
 
 ### Updating the scrape configuration
 

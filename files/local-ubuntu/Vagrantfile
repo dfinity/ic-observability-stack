@@ -19,6 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = "observability"
   config.vm.network :private_network, ip: "192.168.56.42"
   config.vm.network "forwarded_port", guest: 32090, host: 32090
+  config.vm.network "forwarded_port", guest: 32091, host: 32091
 
   # Set the name of the VM. See: http://stackoverflow.com/a/17864388/100134
   config.vm.define :observability do |observability|
