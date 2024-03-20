@@ -165,9 +165,13 @@ to peruse them through the Grafana dashboard list.
 
 ### Provisioning your own dashboards
 
-With the Grafana JSON source of the dashboard, all you have to do
-is:
+> This requires familiarity with managing Grafana dashboards,
+> and the concepts related to these tasks.
 
+To provision and persist your own dashboard:
+
+1. Obtain the JSON model of the dashboard you want to provision
+   (Instructions below).
 1. Optionally, create a folder under `definitions/grafana-dashboards`
    for your dashboard.
 2. In any subfolder under `definitions/grafana-dashboards` of your
@@ -181,8 +185,8 @@ Then run this command to create the newly-deployed dashboard.
 ansible-playbook -v playbooks/prepare-node.yml -t grafana_data
 ```
 
-You can then check in your new dashboard into your repository
-if you so choose.
+You can then check in your new dashboard into your clone of the
+IC observability stack repository if you so choose.
 
 To obtain the JSON source of a dashboard you have manually created,
 navigate to your dashboard's settings (cog icon at the top right)
@@ -194,6 +198,18 @@ effect, the UID you set up in your dashboard files will be overridden
 by the stack.  The folder under which the dashboard will appear in
 Grafana is dictated by the folder name it is stored in, under
 `definitions/grafana-dashboards`.
+
+The Grafana operator does not like it when existing dashboards
+provisioned via JSON are modified, and will constantly attempt to
+redeploy modified dashboards to match their original source.  If
+you want to modify an existing dashboard (for later use), duplicate
+the existing dashboard, change its UID (via the JSON model), then
+make all the changes you want.  To persist your changes in the copy,
+use the process described above; once done, the persisted dashboard
+will appear with the same name, but under the folder you chose to save
+it into.  Note that the persisted dashboard will have a different UID
+than the manually-edited dashboard, so you may want to delete the
+manually-edited dashboard after you are done persisting it.
 
 ## Troubleshooting
 
