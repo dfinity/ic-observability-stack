@@ -28,3 +28,14 @@
     - community.general.homebrew_cask:
         name: helm
         state: present
+
+- name: Install Helm diff plugin
+  ansible.builtin.shell:
+    cmd: |
+      helm plugin list | grep ^diff || {
+        helm plugin install https://github.com/databus23/helm-diff || exit $?
+        echo INSTALLED
+      }
+  register: helm_diff
+  changed_when: >-
+    "INSTALLED" in helm_diff.stdout
