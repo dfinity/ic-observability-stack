@@ -1,6 +1,3 @@
-# FIXME:
-# Consider https://github.com/robparrott/ansible-vagrant/blob/master/library/vagrant
-# instead of shell commands.
 - name: Bring up the machine
   ansible.builtin.shell:
     cmd: |

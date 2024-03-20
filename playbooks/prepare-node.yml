@@ -6,5 +6,5 @@
   ansible.builtin.import_playbook: prepare-node/deploy-k3s-onto-node.yml
 - name: Deploy observability stack onto kubernetes in node
   ansible.builtin.import_playbook: prepare-node/deploy-observability-stack-onto-kubernetes.yml
-- name: Configure scrape targets onto observability stack
-  ansible.builtin.import_playbook: prepare-node/configure-scrape-targets.yml
+- ansible.builtin.import_playbook: prepare-node/configure-scrape-targets.yml
+- ansible.builtin.import_playbook: prepare-node/configure-grafana-data.yml

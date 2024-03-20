@@ -1,0 +1,10 @@
+- block:
+    - name: Deploy Grafana data sources
+      k8s:
+        kubeconfig: "{{ k3s_config_file }}"
+        context: default
+        state: present
+        definition: >-
+          {{ lookup('file', '../definitions/grafana-datasources.yml') | from_yaml_all }}
+  tags:
+    - grafana_data

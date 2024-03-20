@@ -1,0 +1,10 @@
+- name: Configure Grafana data in the observability stack
+  hosts: observability
+  collections:
+    - kubernetes.core
+  vars_files:
+    - ../../vars/k3s.yml
+    - ../../vars/grafana.yml
+  become: true
+  tasks:
+    - import_tasks: ../../tasks/configure-grafana-data.yml

@@ -1,4 +1,4 @@
-- name: Configure scrape targets onto the observability stack
+- name: Configure scrape targets in the observability stack
   hosts: observability
   collections:
     - kubernetes.core
