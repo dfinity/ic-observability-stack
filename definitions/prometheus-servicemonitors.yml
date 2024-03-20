@@ -1,0 +1,34 @@
+---
+# Monitor the Prometheus Operator itself.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: observability-stack
+  name: prometheus-operator
+  labels:
+    app: prometheus
+spec:
+  endpoints:
+    - interval: 30s
+      port: http
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-operator
+  namespaceSelector:
+    any: true
+---
+# Monitor our instance of Prometheus.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: observability-stack
+  name: prometheus
+  labels:
+    app: prometheus
+spec:
+  endpoints:
+    - interval: 30s
+      port: web
+  selector:
+    matchLabels:
+      app: prometheus

@@ -14,13 +14,13 @@
         state: present
         definition: >-
           {{ lookup('file', '../definitions/prometheus-crd.yml') | from_yaml_all }}
-    - name: Deploy self-monitoring for Prometheus
+    - name: Deploy self-monitoring for Prometheus and its operator
       k8s:
         kubeconfig: "{{ k3s_config_file }}"
         context: default
         state: present
         definition: >-
-          {{ lookup('file', '../definitions/prometheus-servicemonitor.yml') | from_yaml_all }}
+          {{ lookup('file', '../definitions/prometheus-servicemonitors.yml') | from_yaml_all }}
     - name: Test that Prometheus is up
       uri:
         url: http://localhost:32090/graph
