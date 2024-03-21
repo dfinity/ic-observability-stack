@@ -248,6 +248,14 @@ command. Run `vagrant init` to create a new Vagrant environment.
 then follow the *Setup* instructions above (ensuring that you
 have selected Vagrant as the provisioning mechanism).
 
+To start over, you can ask Vagrant to clean up the VM:
+
+```sh
+cd vagrant
+vagrant destroy
+# Confirm your desire in the prompt that appears.
+```
+
 ### Telemetry targets and Prometheus configuration
 
 Inspect which telemetry targets have been set up by browsing to the
