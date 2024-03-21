@@ -221,7 +221,7 @@ You can SSH into the Vagrant-provisioned VM by running the following
 commands in the repository folder:
 
 ```sh
-cd files/local-ubuntu
+cd vagrant
 vagrant ssh observability
 ```
 

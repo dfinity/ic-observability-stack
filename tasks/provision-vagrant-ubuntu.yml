@@ -11,7 +11,7 @@
         }
         >&2 echo Machine now up
       fi
-    chdir: ../../files/local-ubuntu
+    chdir: ../../vagrant
   register: vagrant_up
   changed_when: >-
     "Machine now up" in vagrant_up.stderr
@@ -24,14 +24,14 @@
       set -e
       >&2 echo Testing SSH
       vagrant ssh observability -c 'echo success'
-    chdir: ../../files/local-ubuntu
+    chdir: ../../vagrant
   check_mode: false
   changed_when: false
 - name: Provision software on the machine
   ansible.builtin.shell:
     cmd: |
       vagrant provision observability
-    chdir: ../../files/local-ubuntu
+    chdir: ../../vagrant
   register: vagrant_provision
   changed_when: >-
     "changed=0" not in vagrant_provision.stdout

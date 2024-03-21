@@ -1,1 +1,1 @@
-observability ansible_connection=vagrant ansible_vagrantfile=files/local-ubuntu/Vagrantfile ansible_remote_user=vagrant
+observability ansible_connection=vagrant ansible_vagrantfile=vagrant/Vagrantfile ansible_remote_user=vagrant

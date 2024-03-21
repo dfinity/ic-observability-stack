@@ -64,7 +64,7 @@ class VagrantConnection(Optioneer, Strable):
     def default(klass) -> "VagrantConnection":
         pwd = os.getcwd()
         os.chdir(os.path.dirname(__file__))
-        df = Path(glob.glob("*/*/Vagrantfile")[0])
+        df = Path(glob.glob("*/Vagrantfile")[0])
         os.chdir(pwd)
         return klass(
             ansible_vagrantfile=df,
