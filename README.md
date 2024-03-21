@@ -24,8 +24,8 @@ For usage instructions, see below under heading *Usage*.
   this stack needs to be set up.
 * If you plan to run this stack in a remote machine, the user account
   you log onto this machine with must have root-equivalent access via
-  `sudoers`, and should be an Ubuntu machine.  Support for Fedora
-  targets is in the works.
+  `sudoers`, and should be running an Ubuntu LTS machine or a recent
+  Fedora release.
 
 ## Preparation
 
