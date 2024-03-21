@@ -24,14 +24,14 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
-    "id": 8,
+    "id": 3,
     "links": [],
     "liveNow": false,
     "panels": [
         {
             "datasource": {
                 "type": "prometheus",
-                "uid": "ac3a473c-9da4-4225-b852-cbfe358af021"
+                "uid": "${datasource}"
             },
             "fieldConfig": {
                 "defaults": {
@@ -113,7 +113,7 @@
                 {
                     "datasource": {
                         "type": "prometheus",
-                        "uid": "ac3a473c-9da4-4225-b852-cbfe358af021"
+                        "uid": "${datasource}"
                     },
                     "editorMode": "code",
                     "expr": "power_average_watts{instance=~\"[[instance]]\"}",
@@ -165,7 +165,7 @@
                 },
                 "datasource": {
                     "type": "prometheus",
-                    "uid": "ac3a473c-9da4-4225-b852-cbfe358af021"
+                    "uid": "${datasource}"
                 },
                 "definition": "label_values(up{job=\"host_node_exporter\"}, instance)",
                 "hide": 0,
@@ -192,7 +192,7 @@
     "timepicker": {},
     "timezone": "",
     "title": "Power usage",
-    "uid": "kv41ZJJIz",
-    "version": 2,
+    "uid": "f50509061ae243e387ec9c42099c538a",
+    "version": 1,
     "weekStart": ""
 }
