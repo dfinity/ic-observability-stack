@@ -1,0 +1,20 @@
+# https://docs.k3s.io/installation/requirements?os=debian
+- block:
+    - name: Deploy multiservice-discovery
+      k8s:
+        kubeconfig: "{{ k3s_config_file }}"
+        context: default
+        state: present
+        definition: >-
+          {{ lookup('file', '../definitions/multiservice-discovery-crds.yml') | from_yaml_all }}
+  #    - name: Test that Prometheus is up
+  #      uri:
+  #        url: http://localhost:32090/graph
+  #      register: prometheus_up_check
+  #      until: "'status' in prometheus_up_check and prometheus_up_check.status == 200"
+  #      # Checks fail in check mode.
+  #      when: not ansible_check_mode
+  #      retries: 24
+  #      delay: 5
+  tags:
+    - service_discovery

@@ -8,29 +8,29 @@
 {% endif -%}
 {% if ":" in host %}[{% endif %}{{ host }}{% if ":" in host %}]{% endif %}:{{ port -}}
 {% endmacro -%}
-{% for exporter_data in vars.scrape_profiles.ic_nodes %}
-{%   set mode = exporter_data.mode %}
+{% for mode, list_of_exporter_data in vars.scrape_profiles.ic_nodes.items() %}{% for exporter_name, exporter_data in list_of_exporter_data.items() %}
 ---
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
   namespace: observability-stack
-  name: ic-nodes-{{ mode }}-{{ exporter_data.name }}
+  name: ic-nodes-static-{{ mode }}-{{ exporter_name }}
   labels:
     app: prometheus
     scrape_profile: ic-nodes
+    scrape_source: static
     scrape_mode: {{ mode }}
-    scrape_exporter: {{ exporter_data.name }}
+    scrape_exporter: {{ exporter_name }}
 spec:
   metricsPath: {{ exporter_data.endpoint }}
-  scheme: {{ exporter_data.scheme }}
-{%   if exporter_data.scheme == "HTTPS" %}
+  scheme: {{ exporter_data.scheme.upper() }}
+{%   if exporter_data.scheme == "https" %}
   tlsConfig:
     insecureSkipVerify: true
 {%   endif %}
   staticConfigs:
 {%   if "ic_nodes" in vars.scrape_configs and vars.scrape_configs.ic_nodes.get("mode", "proxied") == mode %}
-{%       for target in vars.scrape_configs.ic_nodes.nodes %}{% if target is string %}{% set target= {"address": target} %}{% endif %}
+{%       for target in vars.scrape_configs.ic_nodes.nodes | default([]) %}{% if target is string %}{% set target= {"address": target} %}{% endif %}
     - labels:
 {%       if "ic_node" in target %}
 {%         set ic_node_dict = {"ic_node": target.ic_node} %}
@@ -46,4 +46,86 @@ spec:
 {%   else %}
         []
 {%   endif %}
-{% endfor %}
+{% endfor %}{% endfor %}
+
+{% for mode, list_of_exporter_data in vars.scrape_profiles.ic_nodes.items() %}{% for exporter_name, exporter_data in list_of_exporter_data.items() %}
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  namespace: observability-stack
+  name: ic-nodes-autodiscovered-{{ mode }}-{{ exporter_name }}
+  labels:
+    app: prometheus
+    scrape_profile: ic-nodes
+    scrape_source: multiservice-discovery
+    scrape_mode: {{ mode }}
+    scrape_exporter: {{ exporter_name }}
+spec:
+{%   if "ic_nodes" in vars.scrape_configs and "criteria" in vars.scrape_configs.ic_nodes and vars.scrape_configs.ic_nodes.get("mode", "proxied") == mode %}
+  metricsPath: {{ exporter_data.endpoint }}
+  scheme: {{ exporter_data.scheme.upper() }}
+{%   if exporter_data.scheme == "https" %}
+  tlsConfig:
+    insecureSkipVerify: true
+{%     endif %}
+{%     set criteria = vars.scrape_configs.ic_nodes.get("criteria", {}) %}
+{%     set ic_name = criteria.get("ic_name", "mercury") %}
+{%     set subnet_id = criteria.get("subnet_id", "") %}{# must be empty string to exclude boundary nodes #}
+  honorLabels: true
+  httpSDConfigs:
+    - url: http://service-discovery:8000/prom/targets?ic_name={{ ic_name | urlencode() }}{%
+          if criteria.get("node_provider_id")
+        %}&node_provider_id={{ criteria.node_provider_id | urlencode() }}{%
+          endif
+        %}{%
+          if criteria.get("operator_id")
+        %}&operator_id={{ criteria.operator_id | urlencode() }}{%
+          endif
+        %}{%
+          if criteria.get("dc_id")
+        %}&dc_id={{ criteria.dc_id | urlencode() }}{%
+          endif
+        %}&subnet_id={{
+          subnet_id | urlencode()
+        }}
+      refreshInterval: 15s
+  relabelings:
+  - # Strip the scheme from the multiservice-discovery-generated address.
+    source_labels:
+    - __address__
+    target_label: __address__
+    regex: (.*)://(.*)
+    replacement: ${2}
+    action: replace
+  - # Strip the metrics path from the multiservice-discovery-generated address.
+    source_labels:
+    - __address__
+    target_label: __address__
+    regex: (.*?)/(.*)
+    replacement: ${1}
+    action: replace
+{%     if vars.scrape_profiles.ic_nodes["direct"][exporter_name].port != vars.scrape_profiles.ic_nodes[mode][exporter_name].port %}
+  - # The port for proxied scrapes is different.  Replace it.
+    sourceLabels: ["__address__"]
+    regex: "(.*):{{ vars.scrape_profiles.ic_nodes["direct"][exporter_name].port }}"
+    replacement: "${1}:{{ vars.scrape_profiles.ic_nodes[mode][exporter_name].port }}"
+    targetLabel: __address__
+    action: replace
+{%     endif %}
+{%     if exporter_data.get("transform_address_to_host", false) %}
+  - # The IP address for proxied scrapes is always the HostOS IP.
+    sourceLabels: ["__address__"]
+    regex: "(.*):6801:(.*)"
+    replacement: "${1}:6800:${2}"
+    targetLabel: address
+    action: replace
+{%     endif %}
+  - # Prevent all scrapes that do not match this job.
+    sourceLabels: ["job"]
+    regex: {{ exporter_data.labels.job | to_json }}
+    action: keep
+{%   else %}
+  {}
+{%   endif %}
+{% endfor %}{% endfor %}
