@@ -64,215 +64,468 @@
             "type": "row"
         },
         {
-            "aliasColors": {
-                "Busy": "#EAB839",
-                "Busy Iowait": "#890F02",
-                "Busy other": "#1F78C1",
-                "Idle": "#052B51",
-                "Idle - Waiting for something to happen": "#052B51",
-                "guest": "#9AC48A",
-                "idle": "#052B51",
-                "iowait": "#EAB839",
-                "irq": "#BF1B00",
-                "nice": "#C15C17",
-                "softirq": "#E24D42",
-                "steal": "#FCE2DE",
-                "system": "#508642",
-                "user": "#5195CE"
-            },
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
             "datasource": {
                 "type": "prometheus",
                 "uid": "${datasource}"
             },
-            "decimals": 2,
             "description": "Basic CPU info",
             "fieldConfig": {
                 "defaults": {
-                    "links": []
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 40,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "normal"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "links": [],
+                    "mappings": [],
+                    "max": 100,
+                    "min": 0,
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "short"
                 },
-                "overrides": []
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Busy"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#EAB839",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Busy Iowait"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#890F02",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Busy other"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#1F78C1",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Idle"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#052B51",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Idle - Waiting for something to happen"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#052B51",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "guest"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#9AC48A",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "idle"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#052B51",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "iowait"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#EAB839",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "irq"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#BF1B00",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "nice"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#C15C17",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "softirq"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#E24D42",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "steal"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#FCE2DE",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "system"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#508642",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "user"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#5195CE",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Busy Iowait"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#890F02",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Idle"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#7EB26D",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Busy System"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#EAB839",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Busy User"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#0A437C",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Busy Other"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#6D1F62",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    }
+                ]
             },
-            "fill": 4,
-            "fillGradient": 0,
             "gridPos": {
                 "h": 7,
                 "w": 12,
                 "x": 0,
                 "y": 1
             },
-            "hiddenSeries": false,
             "id": 77,
-            "legend": {
-                "alignAsTable": false,
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "rightSide": false,
-                "show": true,
-                "sideWidth": 250,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
             "links": [],
-            "maxPerRow": 6,
-            "nullPointMode": "null",
             "options": {
-                "alertThreshold": true
-            },
-            "percentage": true,
-            "pluginVersion": "9.1.6",
-            "pointradius": 5,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [
-                {
-                    "alias": "Busy Iowait",
-                    "color": "#890F02"
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "right",
+                    "showLegend": true
                 },
-                {
-                    "alias": "Idle",
-                    "color": "#7EB26D"
-                },
-                {
-                    "alias": "Busy System",
-                    "color": "#EAB839"
-                },
-                {
-                    "alias": "Busy User",
-                    "color": "#0A437C"
-                },
-                {
-                    "alias": "Busy Other",
-                    "color": "#6D1F62"
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
                 }
-            ],
-            "spaceLength": 10,
-            "stack": true,
-            "steppedLine": false,
+            },
+            "pluginVersion": "9.1.6",
             "targets": [
                 {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
                     "exemplar": true,
                     "expr": "sum by (instance)(rate(node_cpu_seconds_total{mode=\"system\",instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "hide": false,
                     "interval": "",
                     "intervalFactor": 1,
-                    "legendFormat": "Busy System",
+                    "legendFormat": "{{instance}} sys",
+                    "range": true,
                     "refId": "A",
                     "step": 240
                 },
                 {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
                     "expr": "sum by (instance)(rate(node_cpu_seconds_total{mode='user',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "hide": false,
                     "intervalFactor": 1,
-                    "legendFormat": "Busy User",
+                    "legendFormat": "{{instance}} user",
+                    "range": true,
                     "refId": "B",
                     "step": 240
                 },
                 {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
                     "expr": "sum by (instance)(rate(node_cpu_seconds_total{mode='iowait',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "Busy Iowait",
+                    "legendFormat": "{{instance}} iowait",
+                    "range": true,
                     "refId": "C",
                     "step": 240
                 },
                 {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
                     "expr": "sum by (instance)(rate(node_cpu_seconds_total{mode=~\".*irq\",instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "Busy IRQs",
+                    "legendFormat": "{{instance}}  irq",
+                    "range": true,
                     "refId": "D",
                     "step": 240
                 },
                 {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
                     "expr": "sum (rate(node_cpu_seconds_total{mode!='idle',mode!='user',mode!='system',mode!='iowait',mode!='irq',mode!='softirq',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "Busy Other",
+                    "legendFormat": "{{instance}} other",
+                    "range": true,
                     "refId": "E",
                     "step": 240
                 },
                 {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
                     "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "Idle",
+                    "legendFormat": "{{instance}} idle",
+                    "range": true,
                     "refId": "F",
                     "step": 240
                 }
             ],
-            "thresholds": [],
-            "timeRegions": [],
             "title": "CPU Basic",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "mode": "time",
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "$$hashKey": "object:123",
-                    "format": "short",
-                    "label": "",
-                    "logBase": 1,
-                    "max": "100",
-                    "min": "0",
-                    "show": true
-                },
-                {
-                    "$$hashKey": "object:124",
-                    "format": "short",
-                    "logBase": 1,
-                    "show": false
-                }
-            ],
-            "yaxis": {
-                "align": false
-            }
+            "type": "timeseries"
         },
         {
-            "aliasColors": {
-                "Recv_bytes_eth2": "#7EB26D",
-                "Recv_bytes_lo": "#0A50A1",
-                "Recv_drop_eth2": "#6ED0E0",
-                "Recv_drop_lo": "#E0F9D7",
-                "Recv_errs_eth2": "#BF1B00",
-                "Recv_errs_lo": "#CCA300",
-                "Trans_bytes_eth2": "#7EB26D",
-                "Trans_bytes_lo": "#0A50A1",
-                "Trans_drop_eth2": "#6ED0E0",
-                "Trans_drop_lo": "#E0F9D7",
-                "Trans_errs_eth2": "#BF1B00",
-                "Trans_errs_lo": "#CCA300",
-                "recv_bytes_lo": "#0A50A1",
-                "recv_drop_eth0": "#99440A",
-                "recv_drop_lo": "#967302",
-                "recv_errs_eth0": "#BF1B00",
-                "recv_errs_lo": "#890F02",
-                "trans_bytes_eth0": "#7EB26D",
-                "trans_bytes_lo": "#0A50A1",
-                "trans_drop_eth0": "#99440A",
-                "trans_drop_lo": "#967302",
-                "trans_errs_eth0": "#BF1B00",
-                "trans_errs_lo": "#890F02"
-            },
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
             "datasource": {
                 "type": "prometheus",
                 "uid": "${datasource}"
@@ -280,104 +533,469 @@
             "description": "Basic network info per interface",
             "fieldConfig": {
                 "defaults": {
-                    "links": []
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 40,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "links": [],
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "bps"
                 },
-                "overrides": []
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Recv_bytes_eth2"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#7EB26D",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Recv_bytes_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#0A50A1",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Recv_drop_eth2"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#6ED0E0",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Recv_drop_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#E0F9D7",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Recv_errs_eth2"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#BF1B00",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Recv_errs_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#CCA300",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Trans_bytes_eth2"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#7EB26D",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Trans_bytes_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#0A50A1",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Trans_drop_eth2"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#6ED0E0",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Trans_drop_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#E0F9D7",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Trans_errs_eth2"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#BF1B00",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Trans_errs_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#CCA300",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "recv_bytes_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#0A50A1",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "recv_drop_eth0"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#99440A",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "recv_drop_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#967302",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "recv_errs_eth0"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#BF1B00",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "recv_errs_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#890F02",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "trans_bytes_eth0"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#7EB26D",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "trans_bytes_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#0A50A1",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "trans_drop_eth0"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#99440A",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "trans_drop_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#967302",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "trans_errs_eth0"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#BF1B00",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "trans_errs_lo"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#890F02",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byRegexp",
+                            "options": "/.*trans.*/"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.transform",
+                                "value": "negative-Y"
+                            }
+                        ]
+                    }
+                ]
             },
-            "fill": 4,
-            "fillGradient": 0,
             "gridPos": {
                 "h": 7,
                 "w": 12,
                 "x": 12,
                 "y": 1
             },
-            "hiddenSeries": false,
             "id": 74,
-            "legend": {
-                "alignAsTable": false,
-                "avg": false,
-                "current": false,
-                "hideEmpty": false,
-                "hideZero": false,
-                "max": false,
-                "min": false,
-                "rightSide": false,
-                "show": true,
-                "sort": "current",
-                "sortDesc": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
             "links": [],
-            "nullPointMode": "null",
             "options": {
-                "alertThreshold": true
-            },
-            "percentage": false,
-            "pluginVersion": "9.1.6",
-            "pointradius": 5,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [
-                {
-                    "alias": "/.*trans.*/",
-                    "transform": "negative-Y"
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "right",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "none"
                 }
-            ],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
+            },
+            "pluginVersion": "9.1.6",
             "targets": [
                 {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
                     "expr": "rate(node_network_receive_bytes_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])*8",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "recv {{device}}",
+                    "legendFormat": "{{instance}} recv {{device}}",
+                    "range": true,
                     "refId": "A",
                     "step": 240
                 },
                 {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
                     "expr": "rate(node_network_transmit_bytes_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])*8",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "trans {{device}} ",
+                    "legendFormat": "{{instance}} trans {{device}} ",
+                    "range": true,
                     "refId": "B",
                     "step": 240
                 }
             ],
-            "thresholds": [],
-            "timeRegions": [],
             "title": "Network Traffic Basic",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "mode": "time",
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "format": "bps",
-                    "logBase": 1,
-                    "show": true
-                },
-                {
-                    "format": "pps",
-                    "label": "",
-                    "logBase": 1,
-                    "show": false
-                }
-            ],
-            "yaxis": {
-                "align": false
-            }
+            "type": "timeseries"
         },
         {
             "collapsed": true,
@@ -12199,6 +12817,6 @@
     "timezone": "utc",
     "title": "Node Exporter",
     "uid": "51412e5a92249978fe6e78d639a2c9fb",
-    "version": 1,
+    "version": 2,
     "weekStart": ""
 }
