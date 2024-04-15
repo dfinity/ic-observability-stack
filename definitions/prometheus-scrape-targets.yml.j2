@@ -72,7 +72,6 @@ spec:
 {%     set criteria = vars.scrape_configs.ic_nodes.get("criteria", {}) %}
 {%     set ic_name = criteria.get("ic_name", "mercury") %}
 {%     set subnet_id = criteria.get("subnet_id", "") %}{# must be empty string to exclude boundary nodes #}
-  honorLabels: true
   httpSDConfigs:
     - url: http://service-discovery:8000/prom/targets?ic_name={{ ic_name | urlencode() }}{%
           if criteria.get("node_provider_id")
@@ -90,39 +89,41 @@ spec:
           subnet_id | urlencode()
         }}
       refreshInterval: 15s
+  honorLabels: false
   relabelings:
   - # Strip the scheme from the multiservice-discovery-generated address.
-    source_labels:
+    sourceLabels:
     - __address__
-    target_label: __address__
+    targetLabel: __address__
     regex: (.*)://(.*)
     replacement: ${2}
     action: replace
   - # Strip the metrics path from the multiservice-discovery-generated address.
-    source_labels:
+    sourceLabels:
     - __address__
-    target_label: __address__
+    targetLabel: __address__
     regex: (.*?)/(.*)
     replacement: ${1}
     action: replace
 {%     if vars.scrape_profiles.ic_nodes["direct"][exporter_name].port != vars.scrape_profiles.ic_nodes[mode][exporter_name].port %}
   - # The port for proxied scrapes is different.  Replace it.
     sourceLabels: ["__address__"]
+    targetLabel: __address__
     regex: "(.*):{{ vars.scrape_profiles.ic_nodes["direct"][exporter_name].port }}"
     replacement: "${1}:{{ vars.scrape_profiles.ic_nodes[mode][exporter_name].port }}"
-    targetLabel: __address__
     action: replace
 {%     endif %}
 {%     if exporter_data.get("transform_address_to_host", false) %}
   - # The IP address for proxied scrapes is always the HostOS IP.
     sourceLabels: ["__address__"]
+    targetLabel: address
     regex: "(.*):6801:(.*)"
     replacement: "${1}:6800:${2}"
-    targetLabel: address
     action: replace
 {%     endif %}
   - # Prevent all scrapes that do not match this job.
     sourceLabels: ["job"]
+    targetLabel: __dropped
     regex: {{ exporter_data.labels.job | to_json }}
     action: keep
 {%   else %}
