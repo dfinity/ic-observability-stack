@@ -15,6 +15,23 @@
       ansible.builtin.package:
         name: net-tools
         state: present
+    - name: Ensure there is at least a bit of swap
+      ansible.builtin.shell:
+        cmd: |
+          set -e
+          test -f /var/swap || {
+            dd if=/dev/zero of=/var/swap bs=1M count=1024 && mkswap /var/swap && swapon /var/swap
+            echo CHANGED
+          }
+      register: swap
+      changed_when: >-
+        "CHANGED" in swap.stdout
+    - name: Ensure swap is enabled on boot
+      ansible.posix.mount:
+        src: /var/swap
+        path: none
+        fstype: swap
+        state: present
   handlers:
     - name: Restart systemd-resolved
       service:
