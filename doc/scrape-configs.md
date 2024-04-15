@@ -44,7 +44,7 @@ Here is a reference of the various fields that the data must have:
 
 ## `scrape_configs`
 
-A dictionary, currently composed of only the `ic_nodes` key at the moment.
+A dictionary, currently composed of the `ic_nodes` element.
 
 ## `ic_nodes`
 
@@ -58,12 +58,21 @@ A dictionary with the following values:
   * a list of `node`, described below.
 * `criteria` (optional if `nodes` is defined, otherwise mandatory): a dictionary
   of criteria for auto discovery (see `criteria` below).
-* `mode` (optional): can be set to either `proxied` or `direct`, and defaults
-  to `proxied`.
-  * When set to `proxied`, the publicly-available metrics endpoint is used to
-    obtain metrics from each node, at a lower resolution.
-  * When set to `direct`, a private endpoint is used — this private endpoint
-    may not be available to you since it is usually firewalled.
+* `mode`: one of
+  * `proxied`: (the default, if omitted) configures the stack to use the
+    publicly-available metrics served by Internet Computer hosts and guests,
+    on port 42372 exposed to the public.
+    * Most of these metrics update roughly every 30 seconds.
+    * This endpoint exposes only a limited set of metrics.
+  * `direct`: configures the stack to poll the specific services' internal
+    ports (such as 9100 for node exporter) directly.
+    * These metrics are not publicly accessible by default, and require
+      custom firewall configuration on each Internet Computer node.
+    * You should not use this mode unless you are a node provider and you
+      have deployed the requisite firewall rules across your infrastructure
+      to open these ports up properly and securely.
+    * Consult file [`scrape_profiles.yml`](../vars/scrape_profiles.yml)
+      for detailed information on which ports are scraped.
 
 ## `node`
 
