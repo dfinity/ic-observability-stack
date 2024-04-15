@@ -85,9 +85,12 @@ spec:
           if criteria.get("dc_id")
         %}&dc_id={{ criteria.dc_id | urlencode() }}{%
           endif
-        %}&subnet_id={{
-          subnet_id | urlencode()
-        }}
+        %}{%
+          if criteria.get("subnet_id")
+        %}&subnet_id={{ criteria.subnet_id | urlencode() }}{%
+          endif
+        %}
+
       refreshInterval: 15s
   honorLabels: false
   relabelings:
