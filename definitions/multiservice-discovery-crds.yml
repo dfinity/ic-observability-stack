@@ -68,3 +68,21 @@ spec:
     app.kubernetes.io/component: Aggregator
     app.kubernetes.io/instance: service-discovery
     app.kubernetes.io/name: service-discovery
+---
+# Monitor instances of Grafana external services.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: service-discovery
+  namespace: observability-stack
+  labels:
+    app.kubernetes.io/component: Aggregator
+    app.kubernetes.io/instance: service-discovery
+    app.kubernetes.io/name: service-discovery
+spec:
+  endpoints:
+    - interval: 30s
+      port: server
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: service-discovery
