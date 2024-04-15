@@ -163,7 +163,12 @@ More information about scrape configs can be found in
 Grafana has in-built authentication.  The default credentials to access
 the Grafana service are defined in file [vars/grafana.yml](vars/grafana.yml);
 you should change them right away.  It's better to change the credentials
-directly in the file, and apply the stack settings again.
+directly in the file, and apply the stack settings again.  To apply Grafana
+configuration only, run:
+
+```sh
+ansible-playbook -v playbooks/prepare-node.yml -t grafana
+```
 
 This repository ships several default common-sense dashboards.  Feel free
 to peruse them through the Grafana dashboard list.
@@ -183,11 +188,10 @@ To provision and persist your own dashboard:
    choice, save the JSON content under a file name that ends in
    `.json`.
 
-Then run this command to create the newly-deployed dashboard.
-
+Then run this command to create the newly-deployed dashboard:
 
 ```sh
-ansible-playbook -v playbooks/prepare-node.yml -t grafana_data
+ansible-playbook -v playbooks/prepare-node.yml -t dashboards
 ```
 
 You can then check in your new dashboard into your clone of the

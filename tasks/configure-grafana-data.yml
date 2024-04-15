@@ -41,5 +41,7 @@
               }}"
       with_filetree: ../definitions/grafana-dashboards
       when: item.state == "file" and item.path.endswith(".json")
+      tags:
+        - dashboards
   tags:
     - grafana_data
