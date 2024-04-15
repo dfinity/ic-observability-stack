@@ -445,7 +445,7 @@
                     "hide": false,
                     "interval": "",
                     "intervalFactor": 1,
-                    "legendFormat": "{{instance}} sys",
+                    "legendFormat": "{{ instance }} sys",
                     "range": true,
                     "refId": "A",
                     "step": 240
@@ -460,7 +460,7 @@
                     "format": "time_series",
                     "hide": false,
                     "intervalFactor": 1,
-                    "legendFormat": "{{instance}} user",
+                    "legendFormat": "{{ instance }} user",
                     "range": true,
                     "refId": "B",
                     "step": 240
@@ -474,7 +474,7 @@
                     "expr": "sum by (instance)(rate(node_cpu_seconds_total{mode='iowait',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "{{instance}} iowait",
+                    "legendFormat": "{{ instance }} iowait",
                     "range": true,
                     "refId": "C",
                     "step": 240
@@ -488,7 +488,7 @@
                     "expr": "sum by (instance)(rate(node_cpu_seconds_total{mode=~\".*irq\",instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "{{instance}}  irq",
+                    "legendFormat": "{{ instance }}  irq",
                     "range": true,
                     "refId": "D",
                     "step": 240
@@ -502,7 +502,7 @@
                     "expr": "sum (rate(node_cpu_seconds_total{mode!='idle',mode!='user',mode!='system',mode!='iowait',mode!='irq',mode!='softirq',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "{{instance}} other",
+                    "legendFormat": "{{ instance }} other",
                     "range": true,
                     "refId": "E",
                     "step": 240
@@ -516,7 +516,7 @@
                     "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "{{instance}} idle",
+                    "legendFormat": "{{ instance }} idle",
                     "range": true,
                     "refId": "F",
                     "step": 240
@@ -974,7 +974,7 @@
                     "expr": "rate(node_network_receive_bytes_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])*8",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "{{instance}} recv {{device}}",
+                    "legendFormat": "{{ instance }} recv {{device}}",
                     "range": true,
                     "refId": "A",
                     "step": 240
@@ -988,7 +988,7 @@
                     "expr": "rate(node_network_transmit_bytes_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])*8",
                     "format": "time_series",
                     "intervalFactor": 1,
-                    "legendFormat": "{{instance}} trans {{device}} ",
+                    "legendFormat": "{{ instance }} trans {{device}} ",
                     "range": true,
                     "refId": "B",
                     "step": 240
@@ -1085,7 +1085,7 @@
                             "format": "time_series",
                             "interval": "10s",
                             "intervalFactor": 1,
-                            "legendFormat": "System - Processes executing in kernel mode",
+                            "legendFormat": "{{ instance }} System - Processes executing in kernel mode",
                             "refId": "A",
                             "step": 240
                         },
@@ -1093,7 +1093,7 @@
                             "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='user',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "User - Normal processes executing in user mode",
+                            "legendFormat": "{{ instance }} User - Normal processes executing in user mode",
                             "refId": "B",
                             "step": 240
                         },
@@ -1101,7 +1101,7 @@
                             "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='nice',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Nice - Niced processes executing in user mode",
+                            "legendFormat": "{{ instance }} Nice - Niced processes executing in user mode",
                             "refId": "C",
                             "step": 240
                         },
@@ -1109,7 +1109,7 @@
                             "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Idle - Waiting for something to happen",
+                            "legendFormat": "{{ instance }} Idle - Waiting for something to happen",
                             "refId": "D",
                             "step": 240
                         },
@@ -1117,7 +1117,7 @@
                             "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='iowait',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Iowait - Waiting for I/O to complete",
+                            "legendFormat": "{{ instance }} Iowait - Waiting for I/O to complete",
                             "refId": "E",
                             "step": 240
                         },
@@ -1125,7 +1125,7 @@
                             "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='irq',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Irq - Servicing interrupts",
+                            "legendFormat": "{{ instance }} Irq - Servicing interrupts",
                             "refId": "F",
                             "step": 240
                         },
@@ -1133,7 +1133,7 @@
                             "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='softirq',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Softirq - Servicing softirqs",
+                            "legendFormat": "{{ instance }} Softirq - Servicing softirqs",
                             "refId": "G",
                             "step": 240
                         },
@@ -1141,7 +1141,7 @@
                             "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='steal',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Steal - Time spent in other operating systems when running in a virtualized environment",
+                            "legendFormat": "{{ instance }} Steal - Time spent in other operating systems when running in a virtualized environment",
                             "refId": "H",
                             "step": 240
                         },
@@ -1149,7 +1149,7 @@
                             "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='guest',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Guest - Time spent running a virtual CPU for a guest operating system",
+                            "legendFormat": "{{ instance }} Guest - Time spent running a virtual CPU for a guest operating system",
                             "refId": "I",
                             "step": 240
                         }
@@ -1275,7 +1275,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Apps - Memory used by user-space applications",
+                            "legendFormat": "{{ instance }} Apps - Memory used by user-space applications",
                             "refId": "A",
                             "step": 240
                         },
@@ -1284,7 +1284,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "PageTables - Memory used to map between virtual and physical memory addresses",
+                            "legendFormat": "{{ instance }} PageTables - Memory used to map between virtual and physical memory addresses",
                             "refId": "B",
                             "step": 240
                         },
@@ -1292,7 +1292,7 @@
                             "expr": "node_memory_SwapCached_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "SwapCache - Memory that keeps track of pages that have been fetched from swap but not yet been modified",
+                            "legendFormat": "{{ instance }} SwapCache - Memory that keeps track of pages that have been fetched from swap but not yet been modified",
                             "refId": "C",
                             "step": 240
                         },
@@ -1301,7 +1301,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Slab - Memory used by the kernel to cache data structures for its own use (caches like inode, dentry, etc)",
+                            "legendFormat": "{{ instance }} Slab - Memory used by the kernel to cache data structures for its own use (caches like inode, dentry, etc)",
                             "refId": "D",
                             "step": 240
                         },
@@ -1310,7 +1310,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Cache - Parked file data (file content) cache",
+                            "legendFormat": "{{ instance }} Cache - Parked file data (file content) cache",
                             "refId": "E",
                             "step": 240
                         },
@@ -1319,7 +1319,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Buffers - Block device (e.g. harddisk) cache",
+                            "legendFormat": "{{ instance }} Buffers - Block device (e.g. harddisk) cache",
                             "refId": "F",
                             "step": 240
                         },
@@ -1328,7 +1328,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Unused - Free memory unassigned",
+                            "legendFormat": "{{ instance }} Unused - Free memory unassigned",
                             "refId": "G",
                             "step": 240
                         },
@@ -1337,7 +1337,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Swap - Swap space used",
+                            "legendFormat": "{{ instance }} Swap - Swap space used",
                             "refId": "H",
                             "step": 240
                         },
@@ -1346,7 +1346,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Hardware Corrupted - Amount of RAM that the kernel identified as corrupted / not working",
+                            "legendFormat": "{{ instance }} Hardware Corrupted - Amount of RAM that the kernel identified as corrupted / not working",
                             "refId": "I",
                             "step": 240
                         }
@@ -1452,7 +1452,7 @@
                             "expr": "rate(node_network_receive_bytes_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])*8",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Receive",
+                            "legendFormat": "{{ instance }} {{device}} - Receive",
                             "refId": "A",
                             "step": 240
                         },
@@ -1460,7 +1460,7 @@
                             "expr": "rate(node_network_transmit_bytes_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])*8",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Transmit",
+                            "legendFormat": "{{ instance }} {{device}} - Transmit",
                             "refId": "B",
                             "step": 240
                         }
@@ -1562,7 +1562,7 @@
                             "expr": "node_filesystem_size_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\",device!~'rootfs'} - node_filesystem_avail_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\",device!~'rootfs'}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{mountpoint}}",
+                            "legendFormat": "{{ instance }} {{mountpoint}}",
                             "refId": "A",
                             "step": 240
                         }
@@ -1748,14 +1748,14 @@
                         {
                             "expr": "rate(node_disk_reads_completed_total{instance=~\"[[instance]]\",job=\"host_node_exporter\",device=~\"$diskdevices\"}[$__rate_interval])",
                             "intervalFactor": 4,
-                            "legendFormat": "{{device}} - Reads completed",
+                            "legendFormat": "{{ instance }} {{device}} - Reads completed",
                             "refId": "A",
                             "step": 240
                         },
                         {
                             "expr": "rate(node_disk_writes_completed_total{instance=~\"[[instance]]\",job=\"host_node_exporter\",device=~\"$diskdevices\"}[$__rate_interval])",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Writes completed",
+                            "legendFormat": "{{ instance }} {{device}} - Writes completed",
                             "refId": "B",
                             "step": 240
                         }
@@ -1880,7 +1880,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Successfully read bytes",
+                            "legendFormat": "{{ instance }} {{device}} - Successfully read bytes",
                             "refId": "A",
                             "step": 240
                         },
@@ -1889,7 +1889,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Successfully written bytes",
+                            "legendFormat": "{{ instance }} {{device}} - Successfully written bytes",
                             "refId": "B",
                             "step": 240
                         }
@@ -1993,7 +1993,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}}",
+                            "legendFormat": "{{ instance }} {{device}}",
                             "refId": "A",
                             "step": 240
                         }
@@ -2122,7 +2122,7 @@
                             "expr": "node_memory_Inactive_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Inactive - Memory which has been less recently used.  It is more eligible to be reclaimed for other purposes",
+                            "legendFormat": "{{ instance }} Inactive - Memory which has been less recently used.  It is more eligible to be reclaimed for other purposes",
                             "refId": "A",
                             "step": 240
                         },
@@ -2130,7 +2130,7 @@
                             "expr": "node_memory_Active_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Active - Memory that has been used more recently and usually not reclaimed unless absolutely necessary",
+                            "legendFormat": "{{ instance }} Active - Memory that has been used more recently and usually not reclaimed unless absolutely necessary",
                             "refId": "B",
                             "step": 240
                         }
@@ -2247,7 +2247,7 @@
                             "expr": "node_memory_Committed_AS_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Committed_AS - Amount of memory presently allocated on the system",
+                            "legendFormat": "{{ instance }} Committed_AS - Amount of memory presently allocated on the system",
                             "refId": "A",
                             "step": 240
                         },
@@ -2255,7 +2255,7 @@
                             "expr": "node_memory_CommitLimit_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "CommitLimit - Amount of  memory currently available to be allocated on the system",
+                            "legendFormat": "{{ instance }} CommitLimit - Amount of  memory currently available to be allocated on the system",
                             "refId": "B",
                             "step": 240
                         }
@@ -2364,7 +2364,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Inactive_file - File-backed memory on inactive LRU list",
+                            "legendFormat": "{{ instance }} Inactive_file - File-backed memory on inactive LRU list",
                             "refId": "A",
                             "step": 240
                         },
@@ -2373,7 +2373,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Inactive_anon - Anonymous and swap cache on inactive LRU list, including tmpfs (shmem)",
+                            "legendFormat": "{{ instance }} Inactive_anon - Anonymous and swap cache on inactive LRU list, including tmpfs (shmem)",
                             "refId": "B",
                             "step": 240
                         },
@@ -2382,7 +2382,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Active_file - File-backed memory on active LRU list",
+                            "legendFormat": "{{ instance }} Active_file - File-backed memory on active LRU list",
                             "refId": "C",
                             "step": 240
                         },
@@ -2391,7 +2391,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Active_anon - Anonymous and swap cache on active least-recently-used (LRU) list, including tmpfs",
+                            "legendFormat": "{{ instance }} Active_anon - Anonymous and swap cache on active least-recently-used (LRU) list, including tmpfs",
                             "refId": "D",
                             "step": 240
                         }
@@ -2500,7 +2500,7 @@
                             "expr": "node_memory_Writeback_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Writeback - Memory which is actively being written back to disk",
+                            "legendFormat": "{{ instance }} Writeback - Memory which is actively being written back to disk",
                             "refId": "A",
                             "step": 240
                         },
@@ -2508,7 +2508,7 @@
                             "expr": "node_memory_WritebackTmp_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "WritebackTmp - Memory used by FUSE for temporary writeback buffers",
+                            "legendFormat": "{{ instance }} WritebackTmp - Memory used by FUSE for temporary writeback buffers",
                             "refId": "B",
                             "step": 240
                         },
@@ -2516,7 +2516,7 @@
                             "expr": "node_memory_Dirty_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Dirty - Memory which is waiting to get written back to the disk",
+                            "legendFormat": "{{ instance }} Dirty - Memory which is waiting to get written back to the disk",
                             "refId": "C",
                             "step": 240
                         }
@@ -2635,7 +2635,7 @@
                             "expr": "node_memory_Mapped_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Mapped - Used memory in mapped pages files which have been mmaped, such as libraries",
+                            "legendFormat": "{{ instance }} Mapped - Used memory in mapped pages files which have been mmaped, such as libraries",
                             "refId": "A",
                             "step": 240
                         },
@@ -2643,7 +2643,7 @@
                             "expr": "node_memory_Shmem_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Shmem - Used shared memory (shared between several processes, thus including RAM disks)",
+                            "legendFormat": "{{ instance }} Shmem - Used shared memory (shared between several processes, thus including RAM disks)",
                             "refId": "B",
                             "step": 240
                         },
@@ -2652,7 +2652,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "ShmemHugePages - Memory used by shared memory (shmem) and tmpfs allocated  with huge pages",
+                            "legendFormat": "{{ instance }} ShmemHugePages - Memory used by shared memory (shmem) and tmpfs allocated  with huge pages",
                             "refId": "C",
                             "step": 240
                         },
@@ -2661,7 +2661,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "ShmemPmdMapped - Ammount of shared (shmem/tmpfs) memory backed by huge pages",
+                            "legendFormat": "{{ instance }} ShmemPmdMapped - Ammount of shared (shmem/tmpfs) memory backed by huge pages",
                             "refId": "D",
                             "step": 240
                         }
@@ -2772,7 +2772,7 @@
                             "expr": "node_memory_SUnreclaim_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "SUnreclaim - Part of Slab, that cannot be reclaimed on memory pressure",
+                            "legendFormat": "{{ instance }} SUnreclaim - Part of Slab, that cannot be reclaimed on memory pressure",
                             "refId": "A",
                             "step": 240
                         },
@@ -2780,7 +2780,7 @@
                             "expr": "node_memory_SReclaimable_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "SReclaimable - Part of Slab, that might be reclaimed, such as caches",
+                            "legendFormat": "{{ instance }} SReclaimable - Part of Slab, that might be reclaimed, such as caches",
                             "refId": "B",
                             "step": 240
                         }
@@ -2889,7 +2889,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "VmallocChunk - Largest contigious block of vmalloc area which is free",
+                            "legendFormat": "{{ instance }} VmallocChunk - Largest contigious block of vmalloc area which is free",
                             "refId": "A",
                             "step": 240
                         },
@@ -2898,7 +2898,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "VmallocTotal - Total size of vmalloc memory area",
+                            "legendFormat": "{{ instance }} VmallocTotal - Total size of vmalloc memory area",
                             "refId": "B",
                             "step": 240
                         },
@@ -2907,7 +2907,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "VmallocUsed - Amount of vmalloc area which is used",
+                            "legendFormat": "{{ instance }} VmallocUsed - Amount of vmalloc area which is used",
                             "refId": "C",
                             "step": 240
                         }
@@ -3015,7 +3015,7 @@
                             "expr": "node_memory_Bounce_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Bounce - Memory used for block device bounce buffers",
+                            "legendFormat": "{{ instance }} Bounce - Memory used for block device bounce buffers",
                             "refId": "A",
                             "step": 240
                         }
@@ -3128,7 +3128,7 @@
                             "expr": "node_memory_AnonHugePages_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "AnonHugePages - Memory in anonymous huge pages",
+                            "legendFormat": "{{ instance }} AnonHugePages - Memory in anonymous huge pages",
                             "refId": "A",
                             "step": 240
                         },
@@ -3136,7 +3136,7 @@
                             "expr": "node_memory_AnonPages_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "AnonPages - Memory in user pages not backed by files",
+                            "legendFormat": "{{ instance }} AnonPages - Memory in user pages not backed by files",
                             "refId": "B",
                             "step": 240
                         }
@@ -3244,7 +3244,7 @@
                             "expr": "node_memory_KernelStack_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "KernelStack - Kernel memory stack. This is not reclaimable",
+                            "legendFormat": "{{ instance }} KernelStack - Kernel memory stack. This is not reclaimable",
                             "refId": "A",
                             "step": 240
                         },
@@ -3253,7 +3253,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "PerCPU - Per CPU memory allocated dynamically by loadable modules",
+                            "legendFormat": "{{ instance }} PerCPU - Per CPU memory allocated dynamically by loadable modules",
                             "refId": "B",
                             "step": 240
                         }
@@ -3361,7 +3361,7 @@
                             "expr": "node_memory_HugePages_Free{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "HugePages_Free - Huge pages in the pool that are not yet allocated",
+                            "legendFormat": "{{ instance }} HugePages_Free - Huge pages in the pool that are not yet allocated",
                             "refId": "A",
                             "step": 240
                         },
@@ -3369,7 +3369,7 @@
                             "expr": "node_memory_HugePages_Rsvd{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "HugePages_Rsvd - Huge pages for which a commitment to allocate from the pool has been made, but no allocation has yet been made",
+                            "legendFormat": "{{ instance }} HugePages_Rsvd - Huge pages for which a commitment to allocate from the pool has been made, but no allocation has yet been made",
                             "refId": "B",
                             "step": 240
                         },
@@ -3377,7 +3377,7 @@
                             "expr": "node_memory_HugePages_Surp{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "HugePages_Surp - Huge pages in the pool above the value in /proc/sys/vm/nr_hugepages",
+                            "legendFormat": "{{ instance }} HugePages_Surp - Huge pages in the pool above the value in /proc/sys/vm/nr_hugepages",
                             "refId": "C",
                             "step": 240
                         }
@@ -3486,7 +3486,7 @@
                             "expr": "node_memory_HugePages_Total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "HugePages - Total size of the pool of huge pages",
+                            "legendFormat": "{{ instance }} HugePages - Total size of the pool of huge pages",
                             "refId": "A",
                             "step": 240
                         },
@@ -3494,7 +3494,7 @@
                             "expr": "node_memory_Hugepagesize_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Hugepagesize - Huge Page size",
+                            "legendFormat": "{{ instance }} Hugepagesize - Huge Page size",
                             "refId": "B",
                             "step": 240
                         }
@@ -3605,7 +3605,7 @@
                             "expr": "node_memory_DirectMap1G_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "DirectMap1G - Amount of pages mapped as this size",
+                            "legendFormat": "{{ instance }} DirectMap1G - Amount of pages mapped as this size",
                             "refId": "A",
                             "step": 240
                         },
@@ -3614,7 +3614,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "DirectMap2M - Amount of pages mapped as this size",
+                            "legendFormat": "{{ instance }} DirectMap2M - Amount of pages mapped as this size",
                             "refId": "B",
                             "step": 240
                         },
@@ -3623,7 +3623,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "DirectMap4K - Amount of pages mapped as this size",
+                            "legendFormat": "{{ instance }} DirectMap4K - Amount of pages mapped as this size",
                             "refId": "C",
                             "step": 240
                         }
@@ -3731,7 +3731,7 @@
                             "expr": "node_memory_Unevictable_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Unevictable - Amount of unevictable memory that can't be swapped out for a variety of reasons",
+                            "legendFormat": "{{ instance }} Unevictable - Amount of unevictable memory that can't be swapped out for a variety of reasons",
                             "refId": "A",
                             "step": 240
                         },
@@ -3739,7 +3739,7 @@
                             "expr": "node_memory_Mlocked_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "MLocked - Size of pages locked to memory using the mlock() system call",
+                            "legendFormat": "{{ instance }} MLocked - Size of pages locked to memory using the mlock() system call",
                             "refId": "B",
                             "step": 240
                         }
@@ -3848,7 +3848,7 @@
                             "expr": "node_memory_NFS_Unstable_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "NFS Unstable - Memory in NFS pages sent to the server, but not yet commited to the storage",
+                            "legendFormat": "{{ instance }} NFS Unstable - Memory in NFS pages sent to the server, but not yet commited to the storage",
                             "refId": "A",
                             "step": 240
                         }
@@ -3959,7 +3959,7 @@
                             "expr": "rate(node_vmstat_pgpgin{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Pagesin - Page in operations",
+                            "legendFormat": "{{ instance }} Pagesin - Page in operations",
                             "refId": "A",
                             "step": 240
                         },
@@ -3967,7 +3967,7 @@
                             "expr": "rate(node_vmstat_pgpgout{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Pagesout - Page out operations",
+                            "legendFormat": "{{ instance }} Pagesout - Page out operations",
                             "refId": "B",
                             "step": 240
                         }
@@ -4059,7 +4059,7 @@
                             "expr": "rate(node_vmstat_pswpin{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Pswpin - Pages swapped in",
+                            "legendFormat": "{{ instance }} Pswpin - Pages swapped in",
                             "refId": "A",
                             "step": 240
                         },
@@ -4067,7 +4067,7 @@
                             "expr": "rate(node_vmstat_pswpout{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Pswpout - Pages swapped out",
+                            "legendFormat": "{{ instance }} Pswpout - Pages swapped out",
                             "refId": "B",
                             "step": 240
                         }
@@ -4181,7 +4181,7 @@
                             "expr": "rate(node_vmstat_pgfault{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Pgfault - Page major and minor fault operations",
+                            "legendFormat": "{{ instance }} Pgfault - Page major and minor fault operations",
                             "refId": "A",
                             "step": 240
                         },
@@ -4189,7 +4189,7 @@
                             "expr": "rate(node_vmstat_pgmajfault{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Pgmajfault - Major page fault operations",
+                            "legendFormat": "{{ instance }} Pgmajfault - Major page fault operations",
                             "refId": "B",
                             "step": 240
                         },
@@ -4197,7 +4197,7 @@
                             "expr": "rate(node_vmstat_pgfault{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])  - rate(node_vmstat_pgmajfault{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Pgminfault - Minor page fault operations",
+                            "legendFormat": "P{{ instance }} gminfault - Minor page fault operations",
                             "refId": "C",
                             "step": 240
                         }
@@ -4309,7 +4309,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "oom killer invocations ",
+                            "legendFormat": "{{ instance }} oom killer invocations ",
                             "refId": "A",
                             "step": 240
                         }
@@ -4423,7 +4423,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Estimated error in seconds",
+                            "legendFormat": "{{ instance }} Estimated error in seconds",
                             "refId": "A",
                             "step": 240
                         },
@@ -4433,7 +4433,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Time offset in between local system and reference clock",
+                            "legendFormat": "{{ instance }} Time offset in between local system and reference clock",
                             "refId": "B",
                             "step": 240
                         },
@@ -4443,7 +4443,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Maximum error in seconds",
+                            "legendFormat": "{{ instance }} Maximum error in seconds",
                             "refId": "C",
                             "step": 240
                         }
@@ -4531,7 +4531,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Phase-locked loop time adjust",
+                            "legendFormat": "{{ instance }} Phase-locked loop time adjust",
                             "refId": "A",
                             "step": 240
                         }
@@ -4623,7 +4623,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Is clock synchronized to a reliable server (1 = yes, 0 = no)",
+                            "legendFormat": "{{ instance }} Is clock synchronized to a reliable server (1 = yes, 0 = no)",
                             "refId": "A",
                             "step": 240
                         },
@@ -4632,7 +4632,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Local clock frequency adjustment",
+                            "legendFormat": "{{ instance }} Local clock frequency adjustment",
                             "refId": "B",
                             "step": 240
                         }
@@ -4719,7 +4719,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Seconds between clock ticks",
+                            "legendFormat": "{{ instance }} Seconds between clock ticks",
                             "refId": "A",
                             "step": 240
                         },
@@ -4728,7 +4728,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "International Atomic Time (TAI) offset",
+                            "legendFormat": "{{ instance }} International Atomic Time (TAI) offset",
                             "refId": "B",
                             "step": 240
                         }
@@ -4832,7 +4832,7 @@
                             "expr": "node_procs_blocked{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Processes blocked waiting for I/O to complete",
+                            "legendFormat": "{{ instance }} Processes blocked waiting for I/O to complete",
                             "refId": "A",
                             "step": 240
                         },
@@ -4840,7 +4840,7 @@
                             "expr": "node_procs_running{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Processes in runnable state",
+                            "legendFormat": "{{ instance }} Processes in runnable state",
                             "refId": "B",
                             "step": 240
                         }
@@ -4930,7 +4930,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ state }}",
+                            "legendFormat": "{{ instance }} {{ state }}",
                             "refId": "A",
                             "step": 240
                         }
@@ -5020,7 +5020,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Processes forks second",
+                            "legendFormat": "{{ instance }} Processes forks second",
                             "refId": "A",
                             "step": 240
                         }
@@ -5114,7 +5114,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Processes virtual memory size in bytes",
+                            "legendFormat": "{{ instance }} Processes virtual memory size in bytes",
                             "refId": "A",
                             "step": 240
                         },
@@ -5123,7 +5123,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Maximum amount of virtual memory available in bytes",
+                            "legendFormat": "{{ instance }} Maximum amount of virtual memory available in bytes",
                             "refId": "B",
                             "step": 240
                         },
@@ -5132,7 +5132,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Processes virtual memory size in bytes",
+                            "legendFormat": "{{ instance }} Processes virtual memory size in bytes",
                             "refId": "C",
                             "step": 240
                         },
@@ -5141,7 +5141,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Maximum amount of virtual memory available in bytes",
+                            "legendFormat": "{{ instance }} Maximum amount of virtual memory available in bytes",
                             "refId": "D",
                             "step": 240
                         }
@@ -5236,7 +5236,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Number of PIDs",
+                            "legendFormat": "{{ instance }} Number of PIDs",
                             "refId": "A",
                             "step": 240
                         },
@@ -5245,7 +5245,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "PIDs limit",
+                            "legendFormat": "{{ instance }} PIDs limit",
                             "refId": "B",
                             "step": 240
                         }
@@ -5341,7 +5341,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "CPU {{ cpu }} - seconds spent running a process",
+                            "legendFormat": "{{ instance }} CPU {{ cpu }} - seconds spent running a process",
                             "refId": "A",
                             "step": 240
                         },
@@ -5350,7 +5350,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "CPU {{ cpu }} - seconds spent by processing waiting for this CPU",
+                            "legendFormat": "{{ instance }} CPU {{ cpu }} - seconds spent by processing waiting for this CPU",
                             "refId": "B",
                             "step": 240
                         }
@@ -5446,7 +5446,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Allocated threads",
+                            "legendFormat": "{{ instance }} Allocated threads",
                             "refId": "A",
                             "step": 240
                         },
@@ -5455,7 +5455,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Threads limit",
+                            "legendFormat": "{{ instance }} Threads limit",
                             "refId": "B",
                             "step": 240
                         }
@@ -5562,7 +5562,7 @@
                             "expr": "rate(node_context_switches_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Context switches",
+                            "legendFormat": "{{ instance }} Context switches",
                             "refId": "A",
                             "step": 240
                         },
@@ -5571,7 +5571,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "Interrupts",
+                            "legendFormat": "{{ instance }} Interrupts",
                             "refId": "B",
                             "step": 240
                         }
@@ -5658,7 +5658,7 @@
                             "expr": "node_load1{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 4,
-                            "legendFormat": "Load 1m",
+                            "legendFormat": "{{ instance }} Load 1m",
                             "refId": "A",
                             "step": 240
                         },
@@ -5666,7 +5666,7 @@
                             "expr": "node_load5{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 4,
-                            "legendFormat": "Load 5m",
+                            "legendFormat": "{{ instance }} Load 5m",
                             "refId": "B",
                             "step": 240
                         },
@@ -5674,7 +5674,7 @@
                             "expr": "node_load15{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 4,
-                            "legendFormat": "Load 15m",
+                            "legendFormat": "{{ instance }} Load 15m",
                             "refId": "C",
                             "step": 240
                         }
@@ -5774,7 +5774,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ type }} - {{ info }}",
+                            "legendFormat": "{{ instance }} {{ type }} - {{ info }}",
                             "refId": "A",
                             "step": 240
                         }
@@ -5862,7 +5862,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "CPU {{ cpu }}",
+                            "legendFormat": "{{ instance }} CPU {{ cpu }}",
                             "refId": "A",
                             "step": 240
                         }
@@ -5950,7 +5950,7 @@
                             "expr": "node_entropy_available_bits{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Entropy available to random number generators",
+                            "legendFormat": "{{ instance }} Entropy available to random number generators",
                             "refId": "A",
                             "step": 240
                         }
@@ -6040,7 +6040,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Time spent",
+                            "legendFormat": "{{ instance }} Time spent",
                             "refId": "A",
                             "step": 240
                         }
@@ -6134,7 +6134,7 @@
                             "expr": "process_max_fds{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Maximum open file descriptors",
+                            "legendFormat": "{{ instance }} Maximum open file descriptors",
                             "refId": "A",
                             "step": 240
                         },
@@ -6142,7 +6142,7 @@
                             "expr": "process_open_fds{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Open file descriptors",
+                            "legendFormat": "{{ instance }} Open file descriptors",
                             "refId": "B",
                             "step": 240
                         }
@@ -6262,7 +6262,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ chip }} {{ sensor }} temp",
+                            "legendFormat": "{{ instance }} {{ chip }} {{ sensor }} temp",
                             "refId": "A",
                             "step": 240
                         },
@@ -6272,7 +6272,7 @@
                             "hide": true,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ chip }} {{ sensor }} Critical Alarm",
+                            "legendFormat": "{{ instance }} {{ chip }} {{ sensor }} Critical Alarm",
                             "refId": "B",
                             "step": 240
                         },
@@ -6281,7 +6281,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ chip }} {{ sensor }} Critical",
+                            "legendFormat": "{{ instance }} {{ chip }} {{ sensor }} Critical",
                             "refId": "C",
                             "step": 240
                         },
@@ -6291,7 +6291,7 @@
                             "hide": true,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ chip }} {{ sensor }} Critical Historical",
+                            "legendFormat": "{{ instance }} {{ chip }} {{ sensor }} Critical Historical",
                             "refId": "D",
                             "step": 240
                         },
@@ -6301,7 +6301,7 @@
                             "hide": true,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ chip }} {{ sensor }} Max",
+                            "legendFormat": "{{ instance }} {{ chip }} {{ sensor }} Max",
                             "refId": "E",
                             "step": 240
                         }
@@ -6398,7 +6398,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Current {{ name }} in {{ type }}",
+                            "legendFormat": "{{ instance }} Current {{ name }} in {{ type }}",
                             "refId": "A",
                             "step": 240
                         },
@@ -6407,7 +6407,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Max {{ name }} in {{ type }}",
+                            "legendFormat": "{{ instance }} Max {{ name }} in {{ type }}",
                             "refId": "B",
                             "step": 240
                         }
@@ -6496,7 +6496,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ power_supply }} online",
+                            "legendFormat": "{{ instance }} {{ power_supply }} online",
                             "refId": "A",
                             "step": 240
                         }
@@ -6602,7 +6602,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ name }} Connections",
+                            "legendFormat": "{{ instance }} {{ name }} Connections",
                             "refId": "A",
                             "step": 240
                         }
@@ -6710,7 +6710,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Activating",
+                            "legendFormat": "{{ instance }} Activating",
                             "refId": "A",
                             "step": 240
                         },
@@ -6719,7 +6719,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Active",
+                            "legendFormat": "{{ instance }} Active",
                             "refId": "B",
                             "step": 240
                         },
@@ -6728,7 +6728,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Deactivating",
+                            "legendFormat": "{{ instance }} Deactivating",
                             "refId": "C",
                             "step": 240
                         },
@@ -6737,7 +6737,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Failed",
+                            "legendFormat": "{{ instance }} Failed",
                             "refId": "D",
                             "step": 240
                         },
@@ -6746,7 +6746,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Inactive",
+                            "legendFormat": "{{ instance }} Inactive",
                             "refId": "E",
                             "step": 240
                         }
@@ -6965,14 +6965,14 @@
                         {
                             "expr": "rate(node_disk_reads_completed_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "intervalFactor": 4,
-                            "legendFormat": "{{device}} - Reads completed",
+                            "legendFormat": "{{ instance }} {{device}} - Reads completed",
                             "refId": "A",
                             "step": 240
                         },
                         {
                             "expr": "rate(node_disk_writes_completed_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Writes completed",
+                            "legendFormat": "{{ instance }} {{device}} - Writes completed",
                             "refId": "B",
                             "step": 240
                         }
@@ -7155,7 +7155,7 @@
                             "expr": "rate(node_disk_read_bytes_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 4,
-                            "legendFormat": "{{device}} - Read bytes",
+                            "legendFormat": "{{ instance }} {{device}} - Read bytes",
                             "refId": "A",
                             "step": 240
                         },
@@ -7163,7 +7163,7 @@
                             "expr": "rate(node_disk_written_bytes_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Written bytes",
+                            "legendFormat": "{{ instance }} {{device}} - Written bytes",
                             "refId": "B",
                             "step": 240
                         }
@@ -7349,7 +7349,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 4,
-                            "legendFormat": "{{device}} - Read wait time avg",
+                            "legendFormat": "{{ instance }} {{device}} - Read wait time avg",
                             "refId": "A",
                             "step": 240
                         },
@@ -7358,7 +7358,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Write wait time avg",
+                            "legendFormat": "{{ instance }} {{device}} - Write wait time avg",
                             "refId": "B",
                             "step": 240
                         }
@@ -7539,7 +7539,7 @@
                             "expr": "rate(node_disk_io_time_weighted_seconds_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "interval": "",
                             "intervalFactor": 4,
-                            "legendFormat": "{{device}}",
+                            "legendFormat": "{{ instance }} {{device}}",
                             "refId": "A",
                             "step": 240
                         }
@@ -7724,14 +7724,14 @@
                         {
                             "expr": "rate(node_disk_reads_merged_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Read merged",
+                            "legendFormat": "{{ instance }} {{device}} - Read merged",
                             "refId": "A",
                             "step": 240
                         },
                         {
                             "expr": "rate(node_disk_writes_merged_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Write merged",
+                            "legendFormat": "{{ instance }} {{device}} - Write merged",
                             "refId": "B",
                             "step": 240
                         }
@@ -7912,7 +7912,7 @@
                             "expr": "rate(node_disk_io_time_seconds_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "interval": "",
                             "intervalFactor": 4,
-                            "legendFormat": "{{device}} - IO",
+                            "legendFormat": "{{ instance }} {{device}} - IO",
                             "refId": "A",
                             "step": 240
                         },
@@ -7920,7 +7920,7 @@
                             "expr": "rate(node_disk_discard_time_seconds_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "interval": "",
                             "intervalFactor": 4,
-                            "legendFormat": "{{device}} - discard",
+                            "legendFormat": "{{ instance }} {{device}} - discard",
                             "refId": "B",
                             "step": 240
                         }
@@ -8102,7 +8102,7 @@
                             "expr": "node_disk_io_now{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "interval": "",
                             "intervalFactor": 4,
-                            "legendFormat": "{{device}} - IO now",
+                            "legendFormat": "{{ instance }} {{device}} - IO now",
                             "refId": "A",
                             "step": 240
                         }
@@ -8302,7 +8302,7 @@
                             "expr": "rate(node_disk_discards_completed_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "interval": "",
                             "intervalFactor": 4,
-                            "legendFormat": "{{device}} - Discards completed",
+                            "legendFormat": "{{ instance }} {{device}} - Discards completed",
                             "refId": "A",
                             "step": 240
                         },
@@ -8310,7 +8310,7 @@
                             "expr": "rate(node_disk_discards_merged_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Discards merged",
+                            "legendFormat": "{{ instance }} {{device}} - Discards merged",
                             "refId": "B",
                             "step": 240
                         }
@@ -8431,7 +8431,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{mountpoint}} - Available",
+                            "legendFormat": "{{ instance }} {{mountpoint}} - Available",
                             "metric": "",
                             "refId": "A",
                             "step": 240
@@ -8531,7 +8531,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "{{mountpoint}} - Free file nodes",
+                            "legendFormat": "{{ instance }} {{mountpoint}} - Free file nodes",
                             "refId": "A",
                             "step": 240
                         }
@@ -8628,7 +8628,7 @@
                             "expr": "node_filefd_maximum{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 4,
-                            "legendFormat": "Max open files",
+                            "legendFormat": "{{ instance }} Max open files",
                             "refId": "A",
                             "step": 240
                         },
@@ -8636,7 +8636,7 @@
                             "expr": "node_filefd_allocated{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "Open files",
+                            "legendFormat": "{{ instance }} Open files",
                             "refId": "B",
                             "step": 240
                         }
@@ -8733,7 +8733,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "{{mountpoint}} - File nodes total",
+                            "legendFormat": "{{ instance }} {{mountpoint}} - File nodes total",
                             "refId": "A",
                             "step": 240
                         }
@@ -8833,7 +8833,7 @@
                             "expr": "node_filesystem_readonly{instance=~\"[[instance]]\",job=\"host_node_exporter\",device!~'rootfs'}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{mountpoint}} - ReadOnly",
+                            "legendFormat": "{{ instance }} {{mountpoint}} - ReadOnly",
                             "refId": "A",
                             "step": 240
                         },
@@ -8842,7 +8842,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{mountpoint}} - Device error",
+                            "legendFormat": "{{ instance }} {{mountpoint}} - Device error",
                             "refId": "B",
                             "step": 240
                         }
@@ -8962,7 +8962,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Receive",
+                            "legendFormat": "{{ instance }} {{device}} - Receive",
                             "refId": "A",
                             "step": 240
                         },
@@ -8971,7 +8971,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Transmit",
+                            "legendFormat": "{{ instance }} {{device}} - Transmit",
                             "refId": "B",
                             "step": 240
                         }
@@ -9067,7 +9067,7 @@
                             "expr": "rate(node_network_receive_errs_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Receive errors",
+                            "legendFormat": "{{ instance }} {{device}} - Receive errors",
                             "refId": "A",
                             "step": 240
                         },
@@ -9075,7 +9075,7 @@
                             "expr": "rate(node_network_transmit_errs_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Rransmit errors",
+                            "legendFormat": "{{ instance }} {{device}} - Rransmit errors",
                             "refId": "B",
                             "step": 240
                         }
@@ -9171,7 +9171,7 @@
                             "expr": "rate(node_network_receive_drop_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Receive drop",
+                            "legendFormat": "{{ instance }} {{device}} - Receive drop",
                             "refId": "A",
                             "step": 240
                         },
@@ -9179,7 +9179,7 @@
                             "expr": "rate(node_network_transmit_drop_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Transmit drop",
+                            "legendFormat": "{{ instance }} {{device}} - Transmit drop",
                             "refId": "B",
                             "step": 240
                         }
@@ -9275,7 +9275,7 @@
                             "expr": "rate(node_network_receive_compressed_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Receive compressed",
+                            "legendFormat": "{{ instance }} {{device}} - Receive compressed",
                             "refId": "A",
                             "step": 240
                         },
@@ -9283,7 +9283,7 @@
                             "expr": "rate(node_network_transmit_compressed_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Transmit compressed",
+                            "legendFormat": "{{ instance }} {{device}} - Transmit compressed",
                             "refId": "B",
                             "step": 240
                         }
@@ -9379,7 +9379,7 @@
                             "expr": "rate(node_network_receive_multicast_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Receive multicast",
+                            "legendFormat": "{{ instance }} {{device}} - Receive multicast",
                             "refId": "A",
                             "step": 240
                         }
@@ -9475,7 +9475,7 @@
                             "expr": "rate(node_network_receive_fifo_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Receive fifo",
+                            "legendFormat": "{{ instance }} {{device}} - Receive fifo",
                             "refId": "A",
                             "step": 240
                         },
@@ -9483,7 +9483,7 @@
                             "expr": "rate(node_network_transmit_fifo_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Transmit fifo",
+                            "legendFormat": "{{ instance }} {{device}} - Transmit fifo",
                             "refId": "B",
                             "step": 240
                         }
@@ -9581,7 +9581,7 @@
                             "format": "time_series",
                             "hide": false,
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Receive frame",
+                            "legendFormat": "{{ instance }} {{device}} - Receive frame",
                             "refId": "A",
                             "step": 240
                         }
@@ -9674,7 +9674,7 @@
                             "expr": "rate(node_network_transmit_carrier_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Statistic transmit_carrier",
+                            "legendFormat": "{{ instance }} {{device}} - Statistic transmit_carrier",
                             "refId": "A",
                             "step": 240
                         }
@@ -9770,7 +9770,7 @@
                             "expr": "rate(node_network_transmit_colls_total{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{device}} - Transmit colls",
+                            "legendFormat": "{{ instance }} {{device}} - Transmit colls",
                             "refId": "A",
                             "step": 240
                         }
@@ -9863,7 +9863,7 @@
                             "expr": "node_nf_conntrack_entries{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "NF conntrack entries",
+                            "legendFormat": "{{ instance }} NF conntrack entries",
                             "refId": "A",
                             "step": 240
                         },
@@ -9871,7 +9871,7 @@
                             "expr": "node_nf_conntrack_entries_limit{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "NF conntrack limit",
+                            "legendFormat": "{{ instance }} NF conntrack limit",
                             "refId": "B",
                             "step": 240
                         }
@@ -9960,7 +9960,7 @@
                             "expr": "node_arp_entries{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ device }} - ARP entries",
+                            "legendFormat": "{{ instance }} {{ device }} - ARP entries",
                             "refId": "A",
                             "step": 240
                         }
@@ -10047,7 +10047,7 @@
                             "expr": "node_network_mtu_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ device }} - Bytes",
+                            "legendFormat": "{{ instance }} {{ device }} - Bytes",
                             "refId": "A",
                             "step": 240
                         }
@@ -10135,7 +10135,7 @@
                             "expr": "node_network_speed_bytes{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ device }} - Speed",
+                            "legendFormat": "{{ instance }} {{ device }} - Speed",
                             "refId": "A",
                             "step": 240
                         }
@@ -10223,7 +10223,7 @@
                             "expr": "node_network_transmit_queue_length{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{ device }} -   Interface transmit queue length",
+                            "legendFormat": "{{ instance }} {{ device }} -   Interface transmit queue length",
                             "refId": "A",
                             "step": 240
                         }
@@ -10323,7 +10323,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "CPU {{cpu}} - Processed",
+                            "legendFormat": "{{ instance }} CPU {{cpu}} - Processed",
                             "refId": "A",
                             "step": 240
                         },
@@ -10332,7 +10332,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "CPU {{cpu}} - Dropped",
+                            "legendFormat": "{{ instance }} CPU {{cpu}} - Dropped",
                             "refId": "B",
                             "step": 240
                         }
@@ -10426,7 +10426,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "CPU {{cpu}} - Squeezed",
+                            "legendFormat": "{{ instance }} CPU {{cpu}} - Squeezed",
                             "refId": "A",
                             "step": 240
                         }
@@ -10519,7 +10519,7 @@
                             "expr": "node_network_up{operstate=\"up\",instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "{{interface}} - Operational state UP",
+                            "legendFormat": "{{ instance }} {{interface}} - Operational state UP",
                             "refId": "A",
                             "step": 240
                         },
@@ -10527,7 +10527,7 @@
                             "expr": "node_network_carrier{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "format": "time_series",
                             "instant": false,
-                            "legendFormat": "{{device}} - Physical link state",
+                            "legendFormat": "{{ instance }} {{device}} - Physical link state",
                             "refId": "B"
                         }
                     ],
@@ -10642,7 +10642,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "TCP_alloc - Allocated sockets",
+                            "legendFormat": "{{ instance }} TCP_alloc - Allocated sockets",
                             "refId": "A",
                             "step": 240
                         },
@@ -10651,7 +10651,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "TCP_inuse - Tcp sockets currently in use",
+                            "legendFormat": "{{ instance }} TCP_inuse - Tcp sockets currently in use",
                             "refId": "B",
                             "step": 240
                         },
@@ -10661,7 +10661,7 @@
                             "hide": true,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "TCP_mem - Used memory for tcp",
+                            "legendFormat": "{{ instance }} TCP_mem - Used memory for tcp",
                             "refId": "C",
                             "step": 240
                         },
@@ -10670,7 +10670,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "TCP_orphan - Orphan sockets",
+                            "legendFormat": "{{ instance }} TCP_orphan - Orphan sockets",
                             "refId": "D",
                             "step": 240
                         },
@@ -10679,7 +10679,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "TCP_tw - Sockets wating close",
+                            "legendFormat": "{{ instance }} TCP_tw - Sockets wating close",
                             "refId": "E",
                             "step": 240
                         }
@@ -10778,7 +10778,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "UDPLITE_inuse - Udplite sockets currently in use",
+                            "legendFormat": "{{ instance }} UDPLITE_inuse - Udplite sockets currently in use",
                             "refId": "A",
                             "step": 240
                         },
@@ -10787,7 +10787,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "UDP_inuse - Udp sockets currently in use",
+                            "legendFormat": "{{ instance }} UDP_inuse - Udp sockets currently in use",
                             "refId": "B",
                             "step": 240
                         },
@@ -10796,7 +10796,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "UDP_mem - Used memory for udp",
+                            "legendFormat": "{{ instance }} UDP_mem - Used memory for udp",
                             "refId": "C",
                             "step": 240
                         }
@@ -10895,7 +10895,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "FRAG_inuse - Frag sockets currently in use",
+                            "legendFormat": "{{ instance }} FRAG_inuse - Frag sockets currently in use",
                             "refId": "A",
                             "step": 240
                         },
@@ -10904,7 +10904,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "RAW_inuse - Raw sockets currently in use",
+                            "legendFormat": "{{ instance }} RAW_inuse - Raw sockets currently in use",
                             "refId": "C",
                             "step": 240
                         }
@@ -11005,7 +11005,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "mem_bytes - TCP sockets in that state",
+                            "legendFormat": "{{ instance }} mem_bytes - TCP sockets in that state",
                             "refId": "A",
                             "step": 240
                         },
@@ -11014,7 +11014,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "mem_bytes - UDP sockets in that state",
+                            "legendFormat": "{{ instance }} mem_bytes - UDP sockets in that state",
                             "refId": "B",
                             "step": 240
                         },
@@ -11022,7 +11022,7 @@
                             "expr": "node_sockstat_FRAG_memory{instance=~\"[[instance]]\",job=\"host_node_exporter\"}",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "FRAG_memory - Used memory for frag",
+                            "legendFormat": "{{ instance }} FRAG_memory - Used memory for frag",
                             "refId": "C"
                         }
                     ],
@@ -11120,7 +11120,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Sockets_used - Sockets currently in use",
+                            "legendFormat": "{{ instance }} Sockets_used - Sockets currently in use",
                             "refId": "A",
                             "step": 240
                         }
@@ -11247,7 +11247,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "InOctets - Received octets",
+                            "legendFormat": "{{ instance }} InOctets - Received octets",
                             "refId": "A",
                             "step": 240
                         },
@@ -11255,7 +11255,7 @@
                             "expr": "rate(node_netstat_IpExt_OutOctets{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "format": "time_series",
                             "intervalFactor": 1,
-                            "legendFormat": "OutOctets - Sent octets",
+                            "legendFormat": "{{ instance }} OutOctets - Sent octets",
                             "refId": "B",
                             "step": 240
                         }
@@ -11358,7 +11358,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "Forwarding - IP forwarding",
+                            "legendFormat": "{{ instance }} Forwarding - IP forwarding",
                             "refId": "A",
                             "step": 240
                         }
@@ -11466,7 +11466,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "InMsgs -  Messages which the entity received. Note that this counter includes all those counted by icmpInErrors",
+                            "legendFormat": "{{ instance }} InMsgs -  Messages which the entity received. Note that this counter includes all those counted by icmpInErrors",
                             "refId": "A",
                             "step": 240
                         },
@@ -11475,7 +11475,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "OutMsgs - Messages which this entity attempted to send. Note that this counter includes all those counted by icmpOutErrors",
+                            "legendFormat": "{{ instance }} OutMsgs - Messages which this entity attempted to send. Note that this counter includes all those counted by icmpOutErrors",
                             "refId": "B",
                             "step": 240
                         }
@@ -11580,7 +11580,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "InErrors - Messages which the entity received but determined as having ICMP-specific errors (bad ICMP checksums, bad length, etc.)",
+                            "legendFormat": "{{ instance }} InErrors - Messages which the entity received but determined as having ICMP-specific errors (bad ICMP checksums, bad length, etc.)",
                             "refId": "A",
                             "step": 240
                         }
@@ -11689,7 +11689,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "InDatagrams - Datagrams received",
+                            "legendFormat": "{{ instance }} InDatagrams - Datagrams received",
                             "refId": "A",
                             "step": 240
                         },
@@ -11698,7 +11698,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "OutDatagrams - Datagrams sent",
+                            "legendFormat": "{{ instance }} OutDatagrams - Datagrams sent",
                             "refId": "B",
                             "step": 240
                         }
@@ -11798,7 +11798,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "InErrors - UDP Datagrams that could not be delivered to an application",
+                            "legendFormat": "{{ instance }} InErrors - UDP Datagrams that could not be delivered to an application",
                             "refId": "A",
                             "step": 240
                         },
@@ -11807,14 +11807,14 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "NoPorts - UDP Datagrams received on a port with no listener",
+                            "legendFormat": "{{ instance }} NoPorts - UDP Datagrams received on a port with no listener",
                             "refId": "B",
                             "step": 240
                         },
                         {
                             "expr": "rate(node_netstat_UdpLite_InErrors{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "interval": "",
-                            "legendFormat": "InErrors Lite - UDPLite Datagrams that could not be delivered to an application",
+                            "legendFormat": "{{ instance }} InErrors Lite - UDPLite Datagrams that could not be delivered to an application",
                             "refId": "C"
                         },
                         {
@@ -11822,7 +11822,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "RcvbufErrors - UDP buffer errors received",
+                            "legendFormat": "{{ instance }} RcvbufErrors - UDP buffer errors received",
                             "refId": "D",
                             "step": 240
                         },
@@ -11831,7 +11831,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "SndbufErrors - UDP buffer errors send",
+                            "legendFormat": "{{ instance }} SndbufErrors - UDP buffer errors send",
                             "refId": "E",
                             "step": 240
                         }
@@ -11943,7 +11943,7 @@
                             "instant": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "InSegs - Segments received, including those received in error. This count includes segments received on currently established connections",
+                            "legendFormat": "{{ instance }} InSegs - Segments received, including those received in error. This count includes segments received on currently established connections",
                             "refId": "A",
                             "step": 240
                         },
@@ -11952,7 +11952,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "OutSegs - Segments sent, including those on current connections but excluding those containing only retransmitted octets",
+                            "legendFormat": "{{ instance }} OutSegs - Segments sent, including those on current connections but excluding those containing only retransmitted octets",
                             "refId": "B",
                             "step": 240
                         }
@@ -12055,7 +12055,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "ListenOverflows - Times the listen queue of a socket overflowed",
+                            "legendFormat": "{{ instance }} ListenOverflows - Times the listen queue of a socket overflowed",
                             "refId": "A",
                             "step": 240
                         },
@@ -12065,7 +12065,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "ListenDrops - SYNs to LISTEN sockets ignored",
+                            "legendFormat": "{{ instance }} ListenDrops - SYNs to LISTEN sockets ignored",
                             "refId": "B",
                             "step": 240
                         },
@@ -12074,26 +12074,26 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "TCPSynRetrans - SYN-SYN/ACK retransmits to break down retransmissions in SYN, fast/timeout retransmits",
+                            "legendFormat": "{{ instance }} TCPSynRetrans - SYN-SYN/ACK retransmits to break down retransmissions in SYN, fast/timeout retransmits",
                             "refId": "C",
                             "step": 240
                         },
                         {
                             "expr": "rate(node_netstat_Tcp_RetransSegs{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "interval": "",
-                            "legendFormat": "RetransSegs - Segments retransmitted - that is, the number of TCP segments transmitted containing one or more previously transmitted octets",
+                            "legendFormat": "{{ instance }} RetransSegs - Segments retransmitted - that is, the number of TCP segments transmitted containing one or more previously transmitted octets",
                             "refId": "D"
                         },
                         {
                             "expr": "rate(node_netstat_Tcp_InErrs{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "interval": "",
-                            "legendFormat": "InErrs - Segments received in error (e.g., bad TCP checksums)",
+                            "legendFormat": "{{ instance }} InErrs - Segments received in error (e.g., bad TCP checksums)",
                             "refId": "E"
                         },
                         {
                             "expr": "rate(node_netstat_Tcp_OutRsts{instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])",
                             "interval": "",
-                            "legendFormat": "OutRsts - Segments sent with RST flag",
+                            "legendFormat": "{{ instance }} OutRsts - Segments sent with RST flag",
                             "refId": "F"
                         }
                     ],
@@ -12200,7 +12200,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "CurrEstab - TCP connections for which the current state is either ESTABLISHED or CLOSE- WAIT",
+                            "legendFormat": "{{ instance }} CurrEstab - TCP connections for which the current state is either ESTABLISHED or CLOSE- WAIT",
                             "refId": "A",
                             "step": 240
                         },
@@ -12210,7 +12210,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "MaxConn - Limit on the total number of TCP connections the entity can support (Dinamic is \"-1\")",
+                            "legendFormat": "{{ instance }} MaxConn - Limit on the total number of TCP connections the entity can support (Dinamic is \"-1\")",
                             "refId": "B",
                             "step": 240
                         }
@@ -12321,7 +12321,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "SyncookiesFailed - Invalid SYN cookies received",
+                            "legendFormat": "{{ instance }} SyncookiesFailed - Invalid SYN cookies received",
                             "refId": "A",
                             "step": 240
                         },
@@ -12331,7 +12331,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "SyncookiesRecv - SYN cookies received",
+                            "legendFormat": "{{ instance }} SyncookiesRecv - SYN cookies received",
                             "refId": "B",
                             "step": 240
                         },
@@ -12341,7 +12341,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "SyncookiesSent - SYN cookies sent",
+                            "legendFormat": "{{ instance }} SyncookiesSent - SYN cookies sent",
                             "refId": "C",
                             "step": 240
                         }
@@ -12440,7 +12440,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "ActiveOpens - TCP connections that have made a direct transition to the SYN-SENT state from the CLOSED state",
+                            "legendFormat": "{{ instance }} ActiveOpens - TCP connections that have made a direct transition to the SYN-SENT state from the CLOSED state",
                             "refId": "A",
                             "step": 240
                         },
@@ -12449,7 +12449,7 @@
                             "format": "time_series",
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "PassiveOpens - TCP connections that have made a direct transition to the SYN-RCVD state from the LISTEN state",
+                            "legendFormat": "{{ instance }} PassiveOpens - TCP connections that have made a direct transition to the SYN-RCVD state from the LISTEN state",
                             "refId": "B",
                             "step": 240
                         }
@@ -12558,7 +12558,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{collector}} - Scrape duration",
+                            "legendFormat": "{{ instance }} {{collector}} - Scrape duration",
                             "refId": "A",
                             "step": 240
                         }
@@ -12653,7 +12653,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{collector}} - Scrape success",
+                            "legendFormat": "{{ instance }} {{collector}} - Scrape success",
                             "refId": "A",
                             "step": 240
                         },
@@ -12663,7 +12663,7 @@
                             "hide": false,
                             "interval": "",
                             "intervalFactor": 1,
-                            "legendFormat": "{{collector}} - Scrape textfile error (1 = true)",
+                            "legendFormat": "{{ instance }} {{collector}} - Scrape textfile error (1 = true)",
                             "refId": "B",
                             "step": 240
                         }
