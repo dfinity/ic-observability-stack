@@ -499,7 +499,7 @@
                         "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
                     },
                     "editorMode": "code",
-                    "expr": "sum (rate(node_cpu_seconds_total{mode!='idle',mode!='user',mode!='system',mode!='iowait',mode!='irq',mode!='softirq',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
+                    "expr": "sum by (instance) (rate(node_cpu_seconds_total{mode!='idle',mode!='user',mode!='system',mode!='iowait',mode!='irq',mode!='softirq',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "intervalFactor": 1,
                     "legendFormat": "{{ instance }} other",
@@ -513,7 +513,7 @@
                         "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
                     },
                     "editorMode": "code",
-                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
+                    "expr": "sum by (instance, mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
                     "format": "time_series",
                     "intervalFactor": 1,
                     "legendFormat": "{{ instance }} idle",
@@ -12817,6 +12817,6 @@
     "timezone": "utc",
     "title": "Node Exporter",
     "uid": "51412e5a92249978fe6e78d639a2c9fb",
-    "version": 2,
+    "version": 4,
     "weekStart": ""
 }
