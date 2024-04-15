@@ -65,7 +65,7 @@ spec:
 {%   if "ic_nodes" in vars.scrape_configs and "criteria" in vars.scrape_configs.ic_nodes and vars.scrape_configs.ic_nodes.get("mode", "proxied") == mode %}
   metricsPath: {{ exporter_data.endpoint }}
   scheme: {{ exporter_data.scheme.upper() }}
-{%   if exporter_data.scheme == "https" %}
+{%     if exporter_data.scheme == "https" %}
   tlsConfig:
     insecureSkipVerify: true
 {%     endif %}
@@ -127,6 +127,6 @@ spec:
     regex: {{ exporter_data.labels.job | to_json }}
     action: keep
 {%   else %}
-  {}
+  httpSDConfigs: []
 {%   endif %}
 {% endfor %}{% endfor %}
