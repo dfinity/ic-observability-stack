@@ -79,8 +79,6 @@
                         "axisColorMode": "text",
                         "axisLabel": "",
                         "axisPlacement": "auto",
-                        "axisSoftMax": 100,
-                        "axisSoftMin": 0,
                         "barAlignment": 0,
                         "drawStyle": "line",
                         "fillOpacity": 40,
@@ -108,6 +106,7 @@
                     },
                     "links": [],
                     "mappings": [],
+                    "min": 0,
                     "thresholds": {
                         "mode": "absolute",
                         "steps": [
@@ -1030,8 +1029,6 @@
                         "axisColorMode": "text",
                         "axisLabel": "percentage",
                         "axisPlacement": "auto",
-                        "axisSoftMax": 100,
-                        "axisSoftMin": 0,
                         "barAlignment": 0,
                         "drawStyle": "line",
                         "fillOpacity": 40,
@@ -1059,7 +1056,6 @@
                     },
                     "links": [],
                     "mappings": [],
-                    "max": 5,
                     "min": 0,
                     "thresholds": {
                         "mode": "absolute",
