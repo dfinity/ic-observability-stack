@@ -19,10 +19,19 @@
       ansible.builtin.shell:
         cmd: |
           set -e
-          test -f /var/swap || {
-            dd if=/dev/zero of=/var/swap bs=1M count=1024 && mkswap /var/swap && swapon /var/swap
+          size=0
+          if test -f /var/swap
+          then
+            size=$(stat --format=%s /var/swap)
+          fi
+          if [ "$size" != "2147483648" ]
+          then
+            swapoff /var/swap || true
+            dd if=/dev/zero of=/var/swap bs=1M count=2048
+            mkswap /var/swap
+            swapon /var/swap
             echo CHANGED
-          }
+          fi
       register: swap
       changed_when: >-
         "CHANGED" in swap.stdout
