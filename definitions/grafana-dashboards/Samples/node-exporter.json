@@ -121,7 +121,7 @@
                             }
                         ]
                     },
-                    "unit": "percentunit"
+                    "unit": "s/s"
                 },
                 "overrides": [
                     {
@@ -1074,7 +1074,7 @@
                             }
                         ]
                     },
-                    "unit": "short"
+                    "unit": "s/s"
                 },
                 "overrides": [
                     {
@@ -1258,75 +1258,129 @@
             "pluginVersion": "9.1.6",
             "targets": [
                 {
-                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode=\"system\",instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode=\"system\",instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval]))",
                     "format": "time_series",
                     "interval": "10s",
                     "intervalFactor": 1,
                     "legendFormat": "{{ instance }} System - Processes executing in kernel mode",
+                    "range": true,
                     "refId": "A",
                     "step": 240
                 },
                 {
-                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='user',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='user',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval]))",
                     "format": "time_series",
                     "intervalFactor": 1,
                     "legendFormat": "{{ instance }} User - Normal processes executing in user mode",
+                    "range": true,
                     "refId": "B",
                     "step": 240
                 },
                 {
-                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='nice',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='nice',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval]))",
                     "format": "time_series",
                     "intervalFactor": 1,
                     "legendFormat": "{{ instance }} Nice - Niced processes executing in user mode",
+                    "range": true,
                     "refId": "C",
                     "step": 240
                 },
                 {
-                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='idle',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval]))",
                     "format": "time_series",
                     "intervalFactor": 1,
                     "legendFormat": "{{ instance }} Idle - Waiting for something to happen",
+                    "range": true,
                     "refId": "D",
                     "step": 240
                 },
                 {
-                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='iowait',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='iowait',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval]))",
                     "format": "time_series",
                     "intervalFactor": 1,
                     "legendFormat": "{{ instance }} Iowait - Waiting for I/O to complete",
+                    "range": true,
                     "refId": "E",
                     "step": 240
                 },
                 {
-                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='irq',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='irq',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval]))",
                     "format": "time_series",
                     "intervalFactor": 1,
                     "legendFormat": "{{ instance }} Irq - Servicing interrupts",
+                    "range": true,
                     "refId": "F",
                     "step": 240
                 },
                 {
-                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='softirq',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='softirq',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval]))",
                     "format": "time_series",
                     "intervalFactor": 1,
                     "legendFormat": "{{ instance }} Softirq - Servicing softirqs",
+                    "range": true,
                     "refId": "G",
                     "step": 240
                 },
                 {
-                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='steal',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='steal',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval]))",
                     "format": "time_series",
                     "intervalFactor": 1,
                     "legendFormat": "{{ instance }} Steal - Time spent in other operating systems when running in a virtualized environment",
+                    "range": true,
                     "refId": "H",
                     "step": 240
                 },
                 {
-                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='guest',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval])) * 100",
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "1813a8c2-ee86-4cb9-b1a7-8b54a85c97d6"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum by (mode)(rate(node_cpu_seconds_total{mode='guest',instance=~\"[[instance]]\",job=\"host_node_exporter\"}[$__rate_interval]))",
                     "format": "time_series",
                     "intervalFactor": 1,
                     "legendFormat": "{{ instance }} Guest - Time spent running a virtual CPU for a guest operating system",
+                    "range": true,
                     "refId": "I",
                     "step": 240
                 }
@@ -12958,6 +13012,6 @@
     "timezone": "utc",
     "title": "Node Exporter",
     "uid": "51412e5a92249978fe6e78d639a2c9fb",
-    "version": 6,
+    "version": 7,
     "weekStart": ""
 }
