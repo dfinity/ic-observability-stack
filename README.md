@@ -152,8 +152,11 @@ scraping on Prometheus, and nothing more.  It will certainly be much
 faster, and it will skip rebooting the target machine when updates
 are applied.
 
-Be patient and pemember to wait a couple of minutes for Prometheus
+Be patient and remember to wait a couple of minutes for Prometheus
 to reload its scrape configuration from disk.
+
+More information about scrape configs can be found in
+[the scrape configs documentation](doc/scrape-configs.md).
 
 ### Accessing Grafana dashboards
 

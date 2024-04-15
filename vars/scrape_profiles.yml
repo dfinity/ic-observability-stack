@@ -1,55 +1,59 @@
 scrape_profiles:
-  ic_nodes: [
-      {
-        "mode": "proxied",
-        "name": "hostos-node-exporter",
-        "port": 42372,
-        "endpoint": "/metrics/hostos_node_exporter",
-        "scheme": "HTTPS",
-        "labels": { "job": "host_node_exporter" },
-      },
-      {
-        "mode": "proxied",
-        "name": "guestos-node-exporter",
-        "port": 42372,
-        "endpoint": "/metrics/guestos_node_exporter",
-        "scheme": "HTTPS",
-        "labels": { "job": "node_exporter" },
-      },
+  ic_nodes:
+    proxied:
+      hostos-node-exporter:
+        {
+          "scheme": "https",
+          "port": 42372,
+          "endpoint": "/metrics/hostos_node_exporter",
+          "labels": { "job": "host_node_exporter" },
+        }
+      guestos-node-exporter:
+        {
+          "scheme": "https",
+          "port": 42372,
+          "endpoint": "/metrics/guestos_node_exporter",
+          "labels": { "job": "node_exporter" },
+          "transform_address_to_host": true,
+        }
+    direct:
       # https://github.com/dfinity/dre/blob/main/rs/ic-observability/service-discovery/src/job_types.rs#L37
-      {
-        "mode": "direct",
-        "name": "hostos-node-exporter",
-        "port": 9100,
-        "endpoint": "/metrics",
-        "scheme": "HTTPS",
-        "labels": { "job": "host_node_exporter" },
-      },
-      {
-        "mode": "direct",
-        "name": "guestos-node-exporter",
-        "port": 9100,
-        "endpoint": "/metrics",
-        "scheme": "HTTPS",
-        "transform_address_to_guest": true,
-        "labels": { "job": "node_exporter" },
-      },
-      {
-        "mode": "direct",
-        "name": "guestos-replica",
-        "port": 9090,
-        "endpoint": "/",
-        "scheme": "HTTP",
-        "transform_address_to_guest": true,
-        "labels": { "job": "replica" },
-      },
-      {
-        "mode": "direct",
-        "name": "guestos-orchestrator",
-        "port": 9091,
-        "endpoint": "/",
-        "scheme": "HTTP",
-        "transform_address_to_guest": true,
-        "labels": { "job": "orchestrator" },
-      },
-    ]
+      hostos-node-exporter:
+        {
+          "scheme": "https",
+          "mode": "direct",
+          "name": "hostos-node-exporter",
+          "port": 9100,
+          "endpoint": "/metrics",
+          "labels": { "job": "host_node_exporter" },
+        }
+      guestos-node-exporter:
+        {
+          "scheme": "https",
+          "mode": "direct",
+          "name": "guestos-node-exporter",
+          "port": 9100,
+          "endpoint": "/metrics",
+          "transform_address_to_guest": true,
+          "labels": { "job": "node_exporter" },
+        }
+      guestos-replica:
+        {
+          "scheme": "http",
+          "mode": "direct",
+          "name": "guestos-replica",
+          "port": 9090,
+          "endpoint": "/",
+          "transform_address_to_guest": true,
+          "labels": { "job": "replica" },
+        }
+      guestos-orchestrator:
+        {
+          "scheme": "http",
+          "mode": "direct",
+          "name": "guestos-orchestrator",
+          "port": 9091,
+          "endpoint": "/",
+          "transform_address_to_guest": true,
+          "labels": { "job": "orchestrator" },
+        }

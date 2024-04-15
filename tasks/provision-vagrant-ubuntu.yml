@@ -1,3 +1,26 @@
+- name: Ensure VirtualBox has all drivers loaded
+  ansible.builtin.shell:
+    cmd: |
+      load=no
+      which lsmod >/dev/null 2>&1 || {
+        >&2 echo Skipping driver loading as this is not a Linux system.
+        exit 0
+      }
+      lsmod | grep -q vboxdrv || load=yes
+      lsmod | grep -q vboxnetadp || load=yes
+      lsmod | grep -q vboxnetflt || load=yes
+      if [ "$load" = "yes" ]
+      then
+        modprobe vboxdrv && modprobe vboxnetadp && modprobe vboxnetflt || {
+          >&2 echo VirtualBox is not properly installed.
+          >&2 echo Please re-run bootstrap.sh and follow instructions onscreen.
+          exit 4
+        }
+        echo CHANGED
+      fi
+  register: vboxdrivers
+  changed_when: >-
+    "CHANGED" in vboxdrivers.stdout
 - name: Bring up the machine
   ansible.builtin.shell:
     cmd: |

@@ -1,4 +1,4 @@
-- name: Configure scrape targets in the observability stack
+- name: Setup target scraping in the stack
   hosts: observability
   collections:
     - kubernetes.core
@@ -9,4 +9,5 @@
     - ../../scrape_configs.yml
   become: true
   tasks:
+    - import_tasks: ../../tasks/configure-service-discovery.yml
     - import_tasks: ../../tasks/configure-scrape-targets.yml
