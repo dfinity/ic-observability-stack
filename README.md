@@ -20,7 +20,8 @@ nodes to observability stack -- under the standard *proxied mode*
 ![Architecture of IC metrics](doc/architecture.png)
 
 This stack also supports *direct mode* (not visualized in the diagram
-above), in case the firewall of your IC nodes permit direct access.
+above), in case the firewall of your IC nodes permits direct access
+to your instance of the stack.
 
 ## Prerequisites
 
