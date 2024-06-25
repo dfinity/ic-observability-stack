@@ -10,6 +10,18 @@ a remote machine designated by you.
 
 For usage instructions, see below under heading *Usage*.
 
+## How does this work?
+
+IC nodes emit metrics on certain HTTP ports, which can be scraped by
+telemetry agents.  The architecture of how the metrics flow from
+nodes to observability stack -- under the standard *proxied mode*
+-- is designed as follows:
+
+![Architecture of IC metrics](doc/architecture.png)
+
+This stack also supports *direct mode* (not visualized in the diagram
+above), in case the firewall of your IC nodes permit direct access.
+
 ## Prerequisites
 
 * IPv6 connectivity.
