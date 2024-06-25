@@ -119,7 +119,7 @@ spec:
 {%     if exporter_data.get("transform_address_to_host", false) %}
   - # The IP address for proxied scrapes is always the HostOS IP.
     sourceLabels: ["__address__"]
-    targetLabel: address
+    targetLabel: __address__
     regex: "(.*):6801:(.*)"
     replacement: "${1}:6800:${2}"
     action: replace
