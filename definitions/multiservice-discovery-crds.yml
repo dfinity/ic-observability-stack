@@ -31,7 +31,7 @@ spec:
         app.kubernetes.io/name: service-discovery
     spec:
       containers:
-        - image: ghcr.io/dfinity/dre/multiservice-discovery:1b2f8df72d3f4f3df32b9c480bbb87b6a1aafdf2
+        - image: ghcr.io/dfinity/dre/multiservice-discovery:e00f95d876050cbb08f0f320ad6ba1ca0cf6442b
           imagePullPolicy: IfNotPresent
           name: service-discovery
           ports:
