@@ -12,6 +12,10 @@ For usage instructions, see below under heading *Usage*.
 
 ## How does this work?
 
+The stack selects IC nodes and collects metrics from each node, saving them
+in a local Prometheus database every few seconds.  This database is
+queryable through a Grafana deployed side-to-side with Prometheus.
+
 Nodes of the Internet Computer all make available to the public a series
 of metrics (in [Prometheus text format](https://github.com/Prometheus/docs/blob/777846211d502a287ab2b304cb515dc779de3474/content/docs/instrumenting/exposition_formats.md#text-based-format))
 that can be collected and analyzed by software such as this.
