@@ -12,8 +12,17 @@ For usage instructions, see below under heading *Usage*.
 
 ## How does this work?
 
-IC nodes emit metrics on certain HTTP ports, which can be scraped by
-telemetry agents.  The architecture of how the metrics flow from
+Nodes of the Internet Computer all make available to the public a series
+of metrics (in OpenTelemetry time series format) that can be collected and
+analyzed by software such as this.
+
+Publicly-available metrics are published on the node’s public IPv6 address
+through HTTPS port 42372, on paths `/metrics/hostos_node_exporter` and
+`/metrics/guestos_replica` .  Not coincidentally, the first path produces
+[Prometheus node exporter](https://github.com/prometheus/node_exporter)
+metrics, which means IC hardware status can be observed and diagnosed.
+
+The architecture of how the metrics flow from
 nodes to observability stack -- under the standard *proxied mode*
 -- is designed as follows:
 
