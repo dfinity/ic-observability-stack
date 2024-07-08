@@ -13,8 +13,8 @@ For usage instructions, see below under heading *Usage*.
 ## How does this work?
 
 Nodes of the Internet Computer all make available to the public a series
-of metrics (in OpenTelemetry time series format) that can be collected and
-analyzed by software such as this.
+of metrics (in [Prometheus text format](https://github.com/Prometheus/docs/blob/777846211d502a287ab2b304cb515dc779de3474/content/docs/instrumenting/exposition_formats.md#text-based-format))
+that can be collected and analyzed by software such as this.
 
 Publicly-available metrics are published on the node’s public IPv6 address
 through HTTPS port 42372, on paths `/metrics/hostos_node_exporter` and
