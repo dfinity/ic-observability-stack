@@ -7,7 +7,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provider :virtualbox do |v|
     v.name = "observability"
-    v.memory = 3600
+    v.memory = 4096
     v.cpus = 2
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
     v.customize ["modifyvm", :id, "--natdnsproxy1", "off"]

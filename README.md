@@ -108,7 +108,7 @@ ansible-playbook -v playbooks/prepare-node.yml
 > ensure the settings are applied and take effect.
 
 * If you selected Vagrant provisioning in the previous step:
-  * This will provision a 2.5 GB RAM, 50 GB storage virtual Ubuntu instance
+  * This will provision a 4 GB RAM, 50 GB storage virtual Ubuntu instance
     on your machine, where the observability stack will be set up.
   * The machine will be rebooted after updates.
   * K3s will be provisioned.
