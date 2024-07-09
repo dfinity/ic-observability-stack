@@ -93,6 +93,12 @@ more information on how to describe these targets.
 With the scrape configuration in place, set up the stack by running:
 
 ```sh
+command -v ansible-playbook || {
+  >&2 echo Please set up and export your PATH environment variable so the
+  >&2 echo installed ansible-playbook can be found by your shell.  The
+  >&2 echo command might have been deployed to "$HOME/.local/bin".
+  >&2 echo The next command will fail until PATH is set up properly.
+}
 ansible-playbook -v playbooks/prepare-node.yml
 ```
 
