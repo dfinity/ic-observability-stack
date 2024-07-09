@@ -6,4 +6,4 @@
         - block:
                 - include_tasks: ../../tasks/setup-virtualbox-natnetwork-ipv6.yml
                 - include_tasks: ../../tasks/provision-vagrant-ubuntu.yml
-          when: hostvars["observability"]["ansible_connection"] == "vagrant"
+          when: hostvars["observability"].get("ansible_connection", "ssh") == "vagrant"
