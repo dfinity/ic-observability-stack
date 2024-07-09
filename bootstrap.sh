@@ -5,9 +5,9 @@ FAILED=16
 MANUAL_INTERVENTION=8
 
 check_ansible_version() {
-    if ansible --version | head -1 | grep -q '[[]core'
+    if ansible --version | head -1 | grep -q '[[]core 2[.]17[.]1'
     then
-        >&2 echo '* Ansible found and up-to-date enough.'
+        >&2 echo '* Ansible found and correct version.'
     else
         >&2 echo "Your system's Ansible version is too old"
         >&2 ansible --version
@@ -47,7 +47,7 @@ case "$(uname -s)" in
         then
             check_ansible_version
         else
-            pip3 install --user ansible || {
+            pip3 install --user ansible-core==2.17.1 ansible || {
                 >&2 echo "* Ansible installation failed."
                 exit $FAILED
             }
