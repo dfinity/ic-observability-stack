@@ -85,4 +85,5 @@ case "$(uname -s)" in
 esac
 
 >&2 echo "Ansible is going to run on your machine to install some software, and you will now be prompted for your user account password (what Ansible calls 'BECOME password').  This will be used to become administrator and deploy various packages needed locally; if 'sudo' does not require a password on this machine, simply hit ENTER.  Follow onscreen instructions as the playbook runs.  If the next step hangs for a long period of time, interrupt it and check that you typed your root password correctly."
+export PATH="$HOME/.local/bin:$PATH"
 ansible-playbook -v -K playbooks/prepare-local-system.yml
