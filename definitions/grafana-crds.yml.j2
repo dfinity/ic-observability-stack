@@ -50,6 +50,11 @@ spec:
                     secretKeyRef:
                       key: GF_SECURITY_ADMIN_PASSWORD
                       name: grafana-credentials
+              resources:
+                limits:
+                  memory: 2Gi
+                requests:
+                  memory: 512Mi
   config:
     log:
       mode: "console"
