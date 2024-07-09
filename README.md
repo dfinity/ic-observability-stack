@@ -120,7 +120,7 @@ Once K3s is deployed, an instance of Prometheus will be deployed onto
 the observability stack node, and all the telemetry targets will be
 configured.
 
-Roughly 4 minutes after this process is done, Prometheus should be
+Roughly **4 minutes** after this process is done, Prometheus should be
 successfully obtaining telemetry data from the targets.
 
 ## Usage
@@ -155,8 +155,9 @@ port 32090 of the target machine, and Grafana on HTTP port 32091:
 Assuming a local VirtualBox VM or SSH port forwarding is active, the
 URLs to access the various services are:
 
-* Prometheus: `http://localhost:32090/`.
-* Grafana: `http://localhost:32091/`.
+* Prometheus: `http://localhost:32090/`.  No authentication is required.
+* Grafana: `http://localhost:32091/`.  To log in, use the user name and
+  password described below in section *Accessing Grafana dashboards*.
 
 ### Querying data in Prometheus
 
@@ -190,20 +191,23 @@ to reload its scrape configuration from disk.
 More information about scrape configs can be found in
 [the scrape configs documentation](doc/scrape-configs.md).
 
-### Accessing Grafana dashboards
+### Accessing Grafana and controlling authentication
 
 Grafana has in-built authentication.  The default credentials to access
 the Grafana service are defined in file [vars/grafana.yml](vars/grafana.yml);
-you should change them right away.  It's better to change the credentials
-directly in the file, and apply the stack settings again.  To apply Grafana
+you should change them and apply the stack settings again, before exposing
+Grafana beyond the target host or your workstation.  To re-apply Grafana
 configuration only, run:
 
 ```sh
 ansible-playbook -v playbooks/prepare-node.yml -t grafana
 ```
 
-This repository ships several default common-sense dashboards.  Feel free
-to peruse them through the Grafana dashboard list.
+### Accessing Grafana dashboards
+
+This repository ships several default common-sense dashboards under the
+Grafana dashboards folder named *Samples*.  Feel free to peruse them
+through the Grafana dashboard listing, after logging in to Grafana.
 
 ### Provisioning your own dashboards
 
