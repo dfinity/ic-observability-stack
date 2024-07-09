@@ -24,7 +24,7 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
-    "id": 3,
+    "id": 2,
     "links": [],
     "liveNow": false,
     "panels": [
@@ -87,7 +87,7 @@
                 "overrides": []
             },
             "gridPos": {
-                "h": 21,
+                "h": 17,
                 "w": 24,
                 "x": 0,
                 "y": 0
@@ -116,17 +116,110 @@
                         "uid": "${datasource}"
                     },
                     "editorMode": "code",
-                    "expr": "power_average_watts{instance=~\"[[instance]]\"}",
+                    "expr": "power_average_watts{instance=~\"[[instance]]\", ic_subnet=~\"[[ic_subnet]]\"}",
                     "legendFormat": "{{instance}}",
                     "range": true,
                     "refId": "A"
                 }
             ],
-            "title": "Average power usage",
+            "title": "Average power usage over time",
             "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "52fa8e1a-4143-4757-b4d7-aff2a7e4ae02"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "custom": {
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "scaleDistribution": {
+                            "type": "linear"
+                        }
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 17,
+                "w": 24,
+                "x": 0,
+                "y": 17
+            },
+            "id": 4,
+            "interval": "60s",
+            "options": {
+                "calculate": true,
+                "calculation": {
+                    "xBuckets": {
+                        "value": "$__interval"
+                    },
+                    "yBuckets": {
+                        "mode": "size",
+                        "value": "20"
+                    }
+                },
+                "cellGap": 0,
+                "color": {
+                    "exponent": 0.5,
+                    "fill": "dark-orange",
+                    "min": 0,
+                    "mode": "scheme",
+                    "reverse": false,
+                    "scale": "exponential",
+                    "scheme": "Oranges",
+                    "steps": 64
+                },
+                "exemplars": {
+                    "color": "rgba(255,0,255,0.7)"
+                },
+                "filterValues": {
+                    "le": "1e-9"
+                },
+                "legend": {
+                    "show": true
+                },
+                "rowsFrame": {
+                    "layout": "auto"
+                },
+                "tooltip": {
+                    "show": true,
+                    "yHistogram": false
+                },
+                "yAxis": {
+                    "axisPlacement": "left",
+                    "reverse": false
+                }
+            },
+            "pluginVersion": "9.1.6",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "52fa8e1a-4143-4757-b4d7-aff2a7e4ae02"
+                    },
+                    "editorMode": "code",
+                    "exemplar": false,
+                    "expr": "avg_over_time(power_instantaneous_watts{instance=~\"[[instance]]\", ic_subnet=~\"[[ic_subnet]]\"}[$__interval])",
+                    "format": "table",
+                    "instant": false,
+                    "interval": "",
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "A"
+                }
+            ],
+            "title": "Power draw distribution",
+            "transformations": [],
+            "type": "heatmap"
         }
     ],
-    "refresh": "30s",
+    "refresh": "1m",
     "schemaVersion": 37,
     "style": "dark",
     "tags": [
@@ -148,10 +241,43 @@
                 "name": "datasource",
                 "options": [],
                 "query": "prometheus",
+                "queryValue": "",
                 "refresh": 1,
                 "regex": "/IC.*/",
                 "skipUrlSync": false,
                 "type": "datasource"
+            },
+            {
+                "allValue": ".*",
+                "current": {
+                    "selected": true,
+                    "text": [
+                        "All"
+                    ],
+                    "value": [
+                        "$__all"
+                    ]
+                },
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                },
+                "definition": "label_values(up{job=\"host_node_exporter\"}, ic_subnet)",
+                "hide": 0,
+                "includeAll": true,
+                "label": "Subnet",
+                "multi": true,
+                "name": "ic_subnet",
+                "options": [],
+                "query": {
+                    "query": "label_values(up{job=\"host_node_exporter\"}, ic_subnet)",
+                    "refId": "StandardVariableQuery"
+                },
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 1,
+                "type": "query"
             },
             {
                 "current": {
@@ -167,14 +293,14 @@
                     "type": "prometheus",
                     "uid": "${datasource}"
                 },
-                "definition": "label_values(up{job=\"host_node_exporter\"}, instance)",
+                "definition": "label_values(up{job=\"host_node_exporter\", ic_subnet=~\"[[ic_subnet]]\"}, instance)",
                 "hide": 0,
                 "includeAll": true,
                 "multi": true,
                 "name": "instance",
                 "options": [],
                 "query": {
-                    "query": "label_values(up{job=\"host_node_exporter\"}, instance)",
+                    "query": "label_values(up{job=\"host_node_exporter\", ic_subnet=~\"[[ic_subnet]]\"}, instance)",
                     "refId": "StandardVariableQuery"
                 },
                 "refresh": 1,
@@ -193,6 +319,6 @@
     "timezone": "",
     "title": "Power usage",
     "uid": "f50509061ae243e387ec9c42099c538a",
-    "version": 1,
+    "version": 7,
     "weekStart": ""
 }
