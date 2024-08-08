@@ -1,5 +1,6 @@
 import glob
 import os
+import platform
 from pathlib import Path
 from typing import Any, Union
 from textwrap import dedent as d, indent
@@ -231,6 +232,14 @@ def main():
 
     cfg = HostConfiguration.from_hosts("observability", hosts)
 
+    def vagrant_mac_warning() -> None:
+        if isinstance(cfg.kind, VagrantConnection) and (
+            "arm" in platform.processor()
+            and sys.platform == "darwin"
+        ):
+            print("Warning: VirtualBox will not run reliably on Apple Silicon at this time.")
+            print("Get more information on this particular in the README.md documentation file.")
+
     def change_target_type(must_choose: bool = False):
         nonlocal cfg
         if not must_choose:
@@ -398,8 +407,10 @@ def main():
             new_hosts = cfg.into_hosts(hosts)
             with open(hosts_path, "w") as f:
                 hosts = f.write(new_hosts)
+            vagrant_mac_warning()
             break
         elif choice == "q":
+            vagrant_mac_warning()
             break
 
 

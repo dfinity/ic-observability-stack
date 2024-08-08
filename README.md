@@ -48,10 +48,16 @@ to your instance of the stack.
     the end of the provisioning step.
 * Root-equivalent access on your workstation, to deploy the software
   this stack needs to be set up.
-* If you plan to run this stack in a remote machine, the user account
-  you log onto this machine with must have root-equivalent access via
-  `sudoers`, and should be running an Ubuntu LTS machine or a recent
-  Fedora release.
+* Hardware.
+  * If you plan to run this stack in a local virtual machine, you
+    cannot currently use an Apple Silicon Mac machine for that purpose.
+    At this time, VirtualBox does not reliably emulate x86_64 instructions
+    on Apple Silicon.  Note that you can still deploy and use the stack on
+    a remote machine.
+  * If you plan to run this stack in a remote machine, the user account
+    you log onto this machine with must have root-equivalent access via
+    `sudoers`, and should be running an Ubuntu LTS machine or a recent
+    Fedora release.
 
 ## Preparation
 
