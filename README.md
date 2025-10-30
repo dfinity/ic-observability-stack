@@ -102,8 +102,12 @@ With the scrape configuration in place, set up the stack by running:
 command -v ansible-playbook || {
   >&2 echo Please set up and export your PATH environment variable so the
   >&2 echo installed ansible-playbook can be found by your shell.  The
-  >&2 echo command might have been deployed to "$HOME/.local/bin".
+  >&2 echo command might have been deployed to "$HOME/.local/bin" or
+  >&2 echo to "$PWD"/.venv/bin or to /usr/local/bin.
   >&2 echo The next command will fail until PATH is set up properly.
+  >&2
+  >&2 echo PATH is typically set by running a command like:
+  >&2 echo '  export PATH="$PWD/.venv.bin:$PATH"'
 }
 ansible-playbook -v playbooks/prepare-node.yml
 ```
