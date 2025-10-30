@@ -264,6 +264,45 @@ manually-edited dashboard after you are done persisting it.
 
 ## Troubleshooting
 
+### VirtualBox won't install on Ubuntu 24.04 during bootstrapping
+
+This is a known issue.  It stems from the kernel version shipping in
+Ubuntu as of October 2025.  There is a ticket tracking it:
+
+https://bugs.launchpad.net/ubuntu/+source/virtualbox/+bug/2089861
+
+The workaround to use VirtualBox again is to downgrade your kernel to
+6.12 or older, delete the more up to date kernels from your system,
+and reboot.
+
+Example of how to downgrade to the generic, older image:
+
+```sh
+apt-get install linux-image-generic=6.8.0-86.87 \
+  linux-headers-generic=6.8.0-86.87 \
+  linux-tools-generic=6.8.0-86.87 \
+  linux-tools-common=6.8.0-86.87
+# The command above might finish with an error.
+
+# The following command deletes kernel 6.16.3, which
+# may be causing you issue.  Discover kernels versions on
+# your system by running dpkg -l | grep linux-image | grep ^ii
+# then discover all packages to remove (that match the kernel)
+# with dpkg -l | grep linux | grep ^ii | grep <version>
+apt-get purge linux-headers-6.16.3-76061603-generic \
+  linux-image-6.16.3-76061603-generic \
+  linux-modules-6.16.3-76061603-generic \
+  linux-tools-6.16.3-76061603-generic
+```
+
+After removing the offending packages, APT will properly configure
+the DKMS modules for VirtualBox, and your system will be ready to
+continue the bootstrap.  Do note that you will have to use some
+mechanism in Ubuntu (like APT pinning) to prevent the
+`linux-image-generic`, `linux-headers-generic`,
+`linux-tools-common` and `linux-tools-generic` from being upgraded
+in the future, which would break VirtualBox and APT again.
+
 ### Debugging Vagrant-provisioned VMs
 
 You can SSH into the Vagrant-provisioned VM by running the following

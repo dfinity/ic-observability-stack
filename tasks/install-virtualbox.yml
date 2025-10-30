@@ -7,15 +7,36 @@
 - name: Install VirtualBox on Debian-based systems
   when: ansible_facts["os_family"] == "Debian"
   block:
-    - name: Install VirtualBox
-      ansible.builtin.package:
-        name: virtualbox
-        state: present
+    - name: Prevent System76 packages from screwing with VirtualBox
+      ansible.builtin.copy:
+        dest: "{{ item }}-no-vbox"
+        content: |
+          Package: virtualbox*
+          Pin: release o=LP-PPA-system76-dev-stable
+          Pin-Priority: -1
+
+          Package: virtualbox*
+          Pin: release o=LP-PPA-system76-dev-pre-stable
+          Pin-Priority: -1
+
+          Package: virtualbox
+          Pin: release o=LP-PPA-system76-dev-stable
+          Pin-Priority: -1
+
+          Package: virtualbox
+          Pin: release o=LP-PPA-system76-dev-pre-stable
+          Pin-Priority: -1
+      with_first_found:
+        - files:
+            - /etc/apt/preferences.d/system76-apt-preferences
+          skip: true
       become: true
       become_user: root
-    - name: Install VirtualBox DKMS
+    - name: Install VirtualBox
       ansible.builtin.package:
-        name: virtualbox-dkms
+        name:
+          - virtualbox
+          - virtualbox-dkms
         state: present
       become: true
       become_user: root
@@ -23,15 +44,26 @@
       shell: |
         if modprobe vboxdrv && modprobe vboxnetadp && modprobe vboxnetflt
         then
-          >&2 echo VirtualBox is now activated properly
+          >&2 echo VirtualBox is activated properly
           exit
         else
-          output=$(dkms autoinstall 2>&1)
-          if echo "$output" | grep -q "Please.install.the"
+          output=$(dkms autoinstall 2>&1) ; ret=$? ; >&2 echo "$output"
+          if [ "$ret" != "0" ] && echo "$output" | grep -q "Please.install.the"
           then
             kernel=$(echo "$output" | grep "Please.install.the" | awk ' { print $4 } ')
             apt-get install -y "$kernel"
-            dkms autoinstall
+            dkms autoinstall >&2 ; ret=$?
+            if [ "$ret" != "0" ]
+            then
+              log=$(find /var/lib/dkms/virtualbox -mmin -5 -name make.log)
+              >&2 cat "$log"
+              exit $ret
+            fi
+          elif [ "$ret" != "0" ]
+          then
+            log=$(find /var/lib/dkms/virtualbox -mmin -5 -name make.log)
+            >&2 cat "$log"
+            exit $ret
           fi
           modprobe vboxdrv && modprobe vboxnetadp && modprobe vboxnetflt || {
             exit 16
@@ -41,6 +73,9 @@
         fi
       become: true
       become_user: root
+      register: vbox
+      changed_when: >-
+        "VirtualBox is now activated properly" in vbox.stderr
 
 - name: Install VirtualBox on Fedora systems
   when: ansible_facts["distribution"] == "Fedora"
@@ -74,15 +109,22 @@
       shell: |
         if modprobe vboxdrv && modprobe vboxnetadp && modprobe vboxnetflt
         then
-          >&2 echo VirtualBox is now activated properly
+          >&2 echo VirtualBox is activated properly
           exit
         else
-          >&2 echo Currently this playbook does not know how to compile the VirtualBox kernel modules for {{ ansible_facts["distribution"] }}.
-          >&2 echo Please use DKMS to install the kernel modules, then load modules using modprobe vboxdrv vboxnetadp vboxnetflt
-          exit 32
+          dkms autoinstall || {
+            ret=$?
+            log=$(find /var/lib/dkms/virtualbox -mmin -5 -name make.log)
+            >&2 cat "$log"
+            exit $ret
+          }
+          >&2 echo VirtualBox is now activated properly
         fi
       become: true
       become_user: root
+      register: vbox
+      changed_when: >-
+        "VirtualBox is now activated properly" in vbox.stderr
 
 - name: Install VirtualBox on Mac OS X
   when: ansible_facts["os_family"] == "Darwin"

@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+MYDIR=$(cd `dirname "$0"` && pwd)
+echo "$MYDIR"
+
 UNSUPPORTED=32
 FAILED=16
 MANUAL_INTERVENTION=8
@@ -20,35 +23,44 @@ got() {
     which "$1" >/dev/null 2>&1
 }
 
+mod() {
+    python3 -c 'import '"$1" >/dev/null 2>&1
+}
+
 case "$(uname -s)" in
     Linux*) {
-        if got pip3
+        if mod venv >/dev/null 2>&1
         then
-            >&2 echo '* pip found and installed.'
+            >&2 echo '* Python 3 venv found and installed.'
         else
-            if got apt-get
-            then
-                sudo apt-get install -y python3-pip || {
-                    >&2 echo "* pip installation failed."
-                    exit $FAILED
-                }
-            elif got dnf
-            then
-                sudo dnf install -y python3-pip || {
-                    >&2 echo "* pip installation failed."
-                    exit $FAILED
-                }
-            else
-                >&2 echo "Your operating system is not currently supported by this script.  Please install the Python pip package using your operating system's package manager or the documented method for your operating system."
-                exit $UNSUPPORTED
-            fi
+            >&2 echo "* Your /usr/bin/python3 does not have support for venv virtual environments.  Please update to a newer Linux distribution."
+            exit $FAILED
         fi
+        if test -x "$MYDIR/.venv/python3"
+        then
+            >&2 echo '* Python 3 virtual environment found.'
+        else
+            /usr/bin/python3 -m venv "$MYDIR/.venv" || {
+                >&2 echo "* Failed to create Python 3 virtual environment."
+                exit $FAILED
+            }
+        fi
+        export PATH="$MYDIR/.venv/bin":"$PATH"
         if got ansible
         then
             check_ansible_version
         else
-            pip3 install --user ansible-core==2.17.1 ansible || {
+            pip3 install ansible-core==2.17.1 ansible || {
                 >&2 echo "* Ansible installation failed."
+                exit $FAILED
+            }
+        fi
+        if mod debian
+        then
+            >&2 echo '* Python 3 Debian library found.'
+        else
+            pip3 install python-debian || {
+                >&2 echo "* Debian library for Python installation failed."
                 exit $FAILED
             }
         fi
@@ -77,6 +89,7 @@ case "$(uname -s)" in
                 exit $FAILED
             }
         fi
+        export PATH="$HOME/.local/bin:$PATH"
     };;
     *) {
        >&2 echo "Your operating system is not currently supported by this script.  Please install the Ansible package using your operating system's package manager or the documented method for your operating system."
@@ -85,5 +98,4 @@ case "$(uname -s)" in
 esac
 
 >&2 echo "Ansible is going to run on your machine to install some software, and you will now be prompted for your user account password (what Ansible calls 'BECOME password').  This will be used to become administrator and deploy various packages needed locally; if 'sudo' does not require a password on this machine, simply hit ENTER.  Follow onscreen instructions as the playbook runs.  If the next step hangs for a long period of time, interrupt it and check that you typed your root password correctly."
-export PATH="$HOME/.local/bin:$PATH"
 ansible-playbook -v -K playbooks/prepare-local-system.yml
