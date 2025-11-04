@@ -1,15 +1,27 @@
+- name: Check if Vagrant is already installed
+  ansible.builtin.command: which vagrant
+  register: vagrant_check
+  ignore_errors: true
+
+- name: Skip installation if Vagrant is already installed
+  ansible.builtin.debug:
+    msg: "Vagrant is already installed at {{ vagrant_check.stdout }}"
+  when: vagrant_check.rc == 0
+
 - name: Fail on unsupported distribution
   ansible.builtin.fail:
     msg: "Your operating system is not supported.  Please install Vagrant on your system using the method documented by the Vagrant project."
-  when: >-
-    not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin")
+  when:
+    - vagrant_check.rc != 0
+    - not (ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin")
 
 - name: Install Vagrant
   ansible.builtin.package:
     name: vagrant
     state: present
-  when: >-
-    ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora"
+  when: 
+    - vagrant_check.rc != 0
+    - ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora"
   become: true
   become_user: root
 
@@ -17,8 +29,9 @@
   community.general.homebrew_cask:
     name: vagrant
     state: present
-  when: >-
-    ansible_facts["os_family"] == "Darwin"
+  when: 
+    - vagrant_check.rc != 0
+    - ansible_facts["os_family"] == "Darwin"
   become: false
 
 - name: Install Vagrant disk size plugin
@@ -28,8 +41,9 @@
         vagrant plugin install vagrant-disksize
         >&2 echo Plugin installed
       }
-  when: >-
-    ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin"
+  when:
+    - vagrant_check.rc != 0
+    - ansible_facts["os_family"] == "Debian" or ansible_facts["distribution"] == "Fedora" or ansible_facts["os_family"] == "Darwin"
   register: vagrant_disksize
   changed_when: >-
     "Plugin installed" in vagrant_disksize.stderr

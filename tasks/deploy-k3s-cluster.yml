@@ -24,6 +24,12 @@
   check_mode: false
   changed_when: false
   register: k3s_check
+- name: Make sure that anyone can read /etc/rancher/k3s/k3s.yaml
+  ansible.builtin.shell:
+    cmd: chmod 644 /etc/rancher/k3s/k3s.yaml
+  check_mode: false
+  changed_when: false
+  become: true
 - name: Wait until K3s is ready
   ansible.builtin.shell:
     cmd: |

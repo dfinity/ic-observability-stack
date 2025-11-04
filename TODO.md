@@ -19,6 +19,12 @@
     services (such as VictoriaMetrics and Grafana) for this stack.
     * This may not end up being that necessary.
 
+## Quality of life improvements:
+* On some Linux distros `host` isn't present outside of the box. We should
+  ensure that all of the commands are present before proceeding.
+* We should allow people to install vagrant and vbox on their own but
+  specify the requirements (like vagrant disksize plugin)
+
 ## Long shots
 
 * Persistent storage for Grafana would be nice to have.
