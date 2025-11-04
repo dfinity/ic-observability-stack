@@ -4,12 +4,12 @@
     pkg: python3-pip
     state: present
 - name: Install OpenShift pip module
-  ansible.builtin.pip:
-    name: openshift
+  ansible.builtin.apt:
+    name: python3-openshift
     state: present
 - name: Install Kubernetes pip module
-  ansible.builtin.pip:
-    name: kubernetes
+  ansible.builtin.apt:
+    name: python3-kubernetes
     state: present
 - block:
     - import_tasks: ../../tasks/install-helm.yml
