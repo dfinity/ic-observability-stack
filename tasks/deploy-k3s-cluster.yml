@@ -5,6 +5,10 @@
   failed_when: false
   register: k3s_status
   changed_when: false
+- name: Ensure k3s local provisioner path exists
+  ansible.builtin.file:
+    path: "{{ persistence_volume_path | expanduser }}"
+    state: directory
 - name: Retrieve K3s installer
   ansible.builtin.get_url:
     url: https://get.k3s.io

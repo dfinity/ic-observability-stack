@@ -5,8 +5,6 @@
 * Reduce maintenance cost of the stack:
   * Re-use the DFINITY observability stack code to provide dashboards
     for this stack.
-* Allow specifying the setup local-path where k3s will store data
-* Set sane defaults for prometheus resources
 * Add alerting configuration
 * Rework the sample dashboard to use principal ids instead of hosts
 * Document service discovery endpoint

@@ -1,3 +1,10 @@
 # You can add your scrape configuration here, if you plan to check this
 # data into a Git repository of your own.  The scrape_configs.yml in
 # the root folder of this project is not version-controlled.
+# Sample scrape configuration
+scrape_configs:
+  ic_nodes:
+    mode: direct
+    criteria:
+      # Only monitor nodes from this node provider:
+      node_provider_id: bvcsg-3od6r-jnydw-eysln-aql7w-td5zn-ay5m6-sibd2-jzojt-anwag-mqe

@@ -13,7 +13,7 @@
         context: default
         state: present
         definition: >-
-          {{ lookup('file', '../definitions/prometheus-crds.yml') | from_yaml_all }}
+          {{ lookup('template', '../definitions/prometheus-crds.yml.j2') | from_yaml_all }}
     - name: Deploy self-monitoring for Prometheus and its operator
       k8s:
         kubeconfig: "{{ k3s_config_file }}"

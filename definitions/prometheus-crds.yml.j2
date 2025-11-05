@@ -72,7 +72,7 @@ spec:
   replicas: 1
   resources:
     requests:
-      memory: 400Mi
+      memory: {{ prometheus.ram_request }}
   securityContext:
     fsGroup: 2000
     runAsNonRoot: true
@@ -86,7 +86,7 @@ spec:
         storageClassName: local-path
         resources:
           requests:
-            storage: 20Gi
+            storage: {{ prometheus.storage_request }}
   scrapeConfigSelector:
     matchLabels:
       app: prometheus
