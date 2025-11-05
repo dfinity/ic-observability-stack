@@ -1,1 +1,1 @@
-observability ansible_host=devenv
+observability ansible_connection=vagrant ansible_vagrantfile=vagrant/Vagrantfile ansible_remote_user=vagrant
