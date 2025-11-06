@@ -28,6 +28,8 @@ services:
 
   grafana:
     image: grafana/grafana:12.2.1
+    environment:
+      PROM_HOST: prometheus
     volumes:
       - ./config/grafana:/etc/grafana
       - ./volumes/grafana:/var/lib/grafana
