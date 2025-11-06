@@ -1,4 +1,5 @@
 import argparse
+import urllib.parse
 
 import yaml
 
@@ -37,6 +38,13 @@ def parse_args() -> argparse.Namespace:
         help="The data center id represented with two letters and a number",
     )
 
+    parser.add_argument(
+        "--sd-url",
+        dest="sd_url",
+        default="multiservice-discovery",
+        help="Override the host for multiservice-discovery container. If running in network_mode: host it will be localhost",
+    )
+
     return parser.parse_args()
 
 
@@ -67,8 +75,16 @@ if __name__ == "__main__":
         scrape_config["relabel_configs"][2]["regex"] = job_name
 
         url = scrape_config["http_sd_configs"][0]["url"]
-        url = f"{url}?node_provider_id={args.node_provider_id}{'&dc_id={dc_id}'.format(dc_id=args.dc_id) if args.dc_id is not None else ''}"
-        scrape_config["http_sd_configs"][0]["url"] = url
+        params = {"node_provider_id": args.node_provider_id}
+        if args.dc_id is not None:
+            params["dc_id"] = args.dc_id
+
+        url_parts = urllib.parse.urlparse(url)
+        encoded_query = urllib.parse.urlencode(params)
+
+        scrape_config["http_sd_configs"][0]["url"] = urllib.parse.urlunparse(
+            url_parts._replace(query=encoded_query, netloc=args.sd_url)
+        )
 
     # Drop anchors
     del template["anchors"]
