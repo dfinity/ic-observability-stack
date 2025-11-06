@@ -17,8 +17,11 @@ services:
     image: quay.io/prometheus/prometheus:v2.51.1
     volumes:
       - ./config/prometheus:/config
+      - ./volumes/prometheus/:/prometheus
     command:
       - --config.file
       - /config/config.yaml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=6m
     ports:
       - 9090:9090

@@ -1,0 +1,9 @@
+services:
+  prom-config-builder:
+    build:
+      context: ./config/prometheus/
+      dockerfile: ./config/prometheus/prom-config-builder.Dockerfile
+    volumes:
+      - ./config/prometheus/:/config/prometheus
+    working_dir: /
+
