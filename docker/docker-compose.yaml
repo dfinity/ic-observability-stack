@@ -25,3 +25,11 @@ services:
       - --storage.tsdb.retention.time=6m
     ports:
       - 9090:9090
+
+  grafana:
+    image: grafana/grafana:12.2.1
+    volumes:
+      - ./config/grafana:/etc/grafana
+      - ./volumes/grafana:/var/lib/grafana
+    ports:
+      - 3000:3000
