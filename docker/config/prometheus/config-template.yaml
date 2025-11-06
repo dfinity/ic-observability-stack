@@ -1,0 +1,19 @@
+global:
+  # Change this to control how frequently prometheus
+  # scrapes the targets. Prometheus accepts <duration>
+  # as the value for this field.
+  # More about duration: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#duration
+  scrape_interval: 30s
+
+scrape_configs:
+  - job_name: node-provider-dc-scrape
+
+    tls_config:
+      insecure_skip_verify: true
+
+    http_sd_configs:
+      - url: http://multiservice-discovery:8000/prom/targets
+        http_headers:
+          # Change these to tailor your setup
+          node_provider_id: <provider-id>
+          dc_id: <dc-id>

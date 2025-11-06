@@ -6,9 +6,20 @@ services:
     command:
       - --targets-dir
       - /msd
-      - --network-state-file
+      - --networks-state-file
       - /msd/definitions.json
-    volume:
-      - ./volumes/msd:/targets
-    network: host # If the stack is behind a VPN
+    volumes:
+      - ./volumes/msd:/msd
+    ports:
+      - 8000:8000
+
+  prometheus:
+    image: quay.io/prometheus/prometheus:v2.51.1
+    ports: 
+      - 32090:9090
+    volumes:
+      - ./config/prometheus:/config
+    command:
+      - --config.file
+      - /config/config.yaml
 
