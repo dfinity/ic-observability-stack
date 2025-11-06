@@ -25,6 +25,12 @@ services:
       - --storage.tsdb.retention.time=6m
     ports:
       - 9090:9090
+    deploy:
+      resources:
+        limits:
+          memory: 12G
+        reservations:
+          memory: 12G
 
   grafana:
     image: grafana/grafana:12.2.1
