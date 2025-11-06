@@ -15,11 +15,10 @@ services:
 
   prometheus:
     image: quay.io/prometheus/prometheus:v2.51.1
-    ports: 
-      - 32090:9090
     volumes:
       - ./config/prometheus:/config
     command:
       - --config.file
       - /config/config.yaml
-
+    ports:
+      - 9090:9090
