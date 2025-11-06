@@ -58,6 +58,8 @@ to your instance of the stack.
     you log onto this machine with must have root-equivalent access via
     `sudoers`, and should be running an Ubuntu LTS machine or a recent
     Fedora release.
+  * The recommended spec for the machine require 16GB of RAM and around
+    100GB of storage.
 
 ## Preparation
 
@@ -95,6 +97,15 @@ configuration variable `scrape_configs`.  This configuration will be used
 to let the observability stack know which targets to obtain telemetry from.
 See the documentation [on scrape configuration](doc/scrape-configs.md) for
 more information on how to describe these targets.
+
+After that, ensure to setup the correct path for persisting the data. By
+default, the configuration will create a directory `$HOME/k3s/volumes` and will
+store volumes there. To change this, modify variable `persistence_volume_path` 
+found in `./vars/k3s.yml`.
+
+If you would want to (at your own risk) run a setup that is weaker than
+recommended you can modify `./vars/prometheus.yml` and set your prefered
+ram and storage requests.
 
 With the scrape configuration in place, set up the stack by running:
 
