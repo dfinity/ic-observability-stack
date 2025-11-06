@@ -1,0 +1,14 @@
+
+services:
+
+  multiservice-discovery:
+    image: ghcr.io/dfinity/dre/multiservice-discovery:cac3154c7868faf9acad14f8585d37df27169573
+    command:
+      - --targets-dir
+      - /msd
+      - --network-state-file
+      - /msd/definitions.json
+    volume:
+      - ./volumes/msd:/targets
+    network: host # If the stack is behind a VPN
+
