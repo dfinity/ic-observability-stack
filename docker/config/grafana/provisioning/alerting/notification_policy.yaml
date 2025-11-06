@@ -1,0 +1,10 @@
+apiVersion: 1
+
+policies:
+  - receiver: Obs contact points 
+    matchers:
+      - severity =~ "warning|critical"
+    group_by:
+      - alertname
+      - ic_node
+      - job

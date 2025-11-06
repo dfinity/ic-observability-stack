@@ -1,0 +1,39 @@
+apiVersion: 1
+
+templates:
+  - name: obs.message
+    template: |
+      {{ define "alert_message" }}
+      **ALERT: {{ .Status | toUpper }}**
+      {{ range .Alerts }}
+      ---
+      **Alert Name:** {{ .Labels.alertname }} ({{ .Labels.severity | toUpper }})
+      **Status:** {{ .Status }}
+
+      {{ if .Annotations.description }}
+      **Description:** {{ .Annotations.description }}
+      {{ end }}
+
+      **Labels:**
+      {{ range $key, $value := .Labels }}
+        • {{ $key }}: {{ $value }}
+      {{ end }}
+
+      {{ if .Annotations }}
+      **Annotations:**
+      {{ range $key, $value := .Annotations }}
+        • {{ $key }}: {{ $value }}
+      {{ end }}
+      {{ end }}
+
+      **Origin Generator URL:**
+      <{{ .GeneratorURL }}>
+
+      {{ end }}
+      {{ end }}
+
+  - name: obs.subject
+    template: |
+      {{ define "obs.subject" }}
+      {{ len .Alerts.Firing }} firing alert(s), {{ len .Alerts.Resolved }} resolved alert(s)
+      {{ end }}
