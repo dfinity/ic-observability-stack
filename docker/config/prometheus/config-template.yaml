@@ -6,14 +6,128 @@ global:
   scrape_interval: 30s
 
 scrape_configs:
-  - job_name: node-provider-dc-scrape
+  - job_name: replica
+    metrics_path: ""
 
     tls_config:
       insecure_skip_verify: true
 
     http_sd_configs:
-      - url: http://multiservice-discovery:8000/prom/targets
-        http_headers:
-          # Change these to tailor your setup
-          node_provider_id: <provider-id>
-          dc_id: <dc-id>
+      - url: http://multiservice-discovery:8000/prom/targets?node_provider_id=<node-provider-principal-id>&dc_id=<dc-id>
+        refresh_interval: 15s
+
+    relabel_configs:
+      - # Strip the scheme from the multiservice-discovery-generated address.
+        source_labels:
+          - __address__
+        target_label: __address__
+        regex: (.*)://(.*)
+        replacement: ${2}
+        action: replace
+      - # Strip the metrics path from the multiservice-discovery-generated address.
+        source_labels:
+          - __address__
+        target_label: __address__
+        regex: (.*?)/(.*)
+        replacement: ${1}
+        action: replace
+      - # Prevent all scrapes that do not match this job.
+        source_labels: ["job"]
+        target_label: __dropped
+        regex: "replica"
+        action: keep
+
+  - job_name: orchestrator
+    metrics_path: ""
+
+    tls_config:
+      insecure_skip_verify: true
+
+    http_sd_configs:
+      - url: http://multiservice-discovery:8000/prom/targets?node_provider_id=<node-provider-principal-id>&dc_id=<dc-id>
+        refresh_interval: 15s
+
+    relabel_configs:
+      - # Strip the scheme from the multiservice-discovery-generated address.
+        source_labels:
+          - __address__
+        target_label: __address__
+        regex: (.*)://(.*)
+        replacement: ${2}
+        action: replace
+      - # Strip the metrics path from the multiservice-discovery-generated address.
+        source_labels:
+          - __address__
+        target_label: __address__
+        regex: (.*?)/(.*)
+        replacement: ${1}
+        action: replace
+      - # Prevent all scrapes that do not match this job.
+        source_labels: ["job"]
+        target_label: __dropped
+        regex: "orchestrator"
+        action: keep
+
+  - job_name: node_exporter
+    metrics_path: /metrics
+    scheme: https
+
+    tls_config:
+      insecure_skip_verify: true
+
+    http_sd_configs:
+      - url: http://multiservice-discovery:8000/prom/targets?node_provider_id=<node-provider-principal-id>&dc_id=<dc-id>
+        refresh_interval: 15s
+
+    relabel_configs:
+      - # Strip the scheme from the multiservice-discovery-generated address.
+        source_labels:
+          - __address__
+        target_label: __address__
+        regex: (.*)://(.*)
+        replacement: ${2}
+        action: replace
+      - # Strip the metrics path from the multiservice-discovery-generated address.
+        source_labels:
+          - __address__
+        target_label: __address__
+        regex: (.*?)/(.*)
+        replacement: ${1}
+        action: replace
+      - # Prevent all scrapes that do not match this job.
+        source_labels: ["job"]
+        target_label: __dropped
+        regex: "node_exporter"
+        action: keep
+
+  - job_name: host_node_exporter
+    metrics_path: /metrics
+    scheme: https
+
+    tls_config:
+      insecure_skip_verify: true
+
+    http_sd_configs:
+      - url: http://multiservice-discovery:8000/prom/targets?node_provider_id=<node-provider-principal-id>&dc_id=<dc-id>
+        refresh_interval: 15s
+
+    relabel_configs:
+      - # Strip the scheme from the multiservice-discovery-generated address.
+        source_labels:
+          - __address__
+        target_label: __address__
+        regex: (.*)://(.*)
+        replacement: ${2}
+        action: replace
+      - # Strip the metrics path from the multiservice-discovery-generated address.
+        source_labels:
+          - __address__
+        target_label: __address__
+        regex: (.*?)/(.*)
+        replacement: ${1}
+        action: replace
+      - # Prevent all scrapes that do not match this job.
+        source_labels: ["job"]
+        target_label: __dropped
+        regex: "host_node_exporter"
+        action: keep
