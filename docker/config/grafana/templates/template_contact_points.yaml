@@ -1,9 +1,24 @@
 apiVersion: 1
 
+# NOTE:
+# After once enabling the contact point, later commenting out and restarting won't remove the
+# contact point. Once provisioned, contact points are stored in the database and can't be 
+# deleted. To delete them, you have to:
+#   1. stop grafana (docker compose down)
+#   2. sudo rm -rf ./volumes/grafana
+#   3. git checkout -- ./volumes/grafana
+#   4. sudo chmod -R 777 ./volumes/grafana
+#   5. make changes to the contact_points.yaml (the one in ./config/grafana/provisioning/alerting)
+#   6. docker compose up -d
+
 contactPoints:
   - orgId: 1
     name: Obs contact points 
     receivers:
+      # This receiver is useful if you have a bigger
+      # observability setup somewhere and just want to
+      # forward the alerts to that Alertmanager which
+      # will later route alerts to you in a prefered way.
       # - uid: alertmanager
       #   type: prometheus-alertmanager
       #   settings:
@@ -11,14 +26,8 @@ contactPoints:
       #     basicAuthUser: <user-if-any> # keep commented out if not needed
       #     basicAuthPassword: <pass-if-any> # keep commented out if not needed
       #
-      # - uid: dingdong
-      #   type: dingdong
-      #   settings:
-      #     url: https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxxx
-      #     msgType: link
-      #     message: |
-      #       {{ template "obs.message" . }}
-      #
+      # This option is free. You can create your own server 
+      # and in it, in settings, you can add "integrations"
       # - uid: discord
       #   type: discord
       #   settings:
@@ -28,6 +37,9 @@ contactPoints:
       #     message: |
       #       {{ template "obs.message" . }}
       #
+      # To use this receiver you need to add smtp configuration
+      # in `./config/grafana/grafana.ini`. To read more visit:
+      # https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#smtp
       # - uid: email
       #   type: email
       #   settings:
@@ -36,6 +48,11 @@ contactPoints:
       #     subject: |
       #       {{ template "obs.title" . }}
       #
+      # This is only possible if you have a google organization.
+      # If you have an organization, in it you can create a new 
+      # space. In Space Settings > Apps & Integrations press
+      # "Add webhooks", pick a name and an avatar and a URL will
+      # be generated which you should put in `url` part of `settings`
       # - uid: googlechat
       #   type: googlechat
       #   settings:
@@ -48,11 +65,6 @@ contactPoints:
       #   settings: 
       #     kafkaRestProxy: http://localhost:8082
       #     kafkaTopic: topic1
-      #
-      # - uid: line
-      #   type: line
-      #   settings:
-      #     token: xxx
       #
       # - uid: mqtt
       #   type: mqtt
