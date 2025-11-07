@@ -6,3 +6,6 @@ docker compose -f ./docker-compose.tools.yaml run --rm prom-config-builder \
 ```
 
 # Explain how to configure contact points
+
+- sudo chmod 777 -R ./volumes/grafana/ 
+- sudo chmod 777 -R ./volumes/prometheus/
