@@ -232,8 +232,8 @@
             {
                 "current": {
                     "selected": false,
-                    "text": "IC Metrics (cluster local)",
-                    "value": "IC Metrics (cluster local)"
+                    "text": "prometheus",
+                    "value": "prometheus"
                 },
                 "hide": 0,
                 "includeAll": false,

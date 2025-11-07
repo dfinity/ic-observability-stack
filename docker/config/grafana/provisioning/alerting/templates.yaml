@@ -3,7 +3,7 @@ apiVersion: 1
 templates:
   - name: obs.message
     template: |
-      {{ define "alert_message" }}
+      {{ define "obs.message" }}
       **ALERT: {{ .Status | toUpper }}**
       {{ range .Alerts }}
       ---
@@ -19,21 +19,14 @@ templates:
         • {{ $key }}: {{ $value }}
       {{ end }}
 
-      {{ if .Annotations }}
-      **Annotations:**
-      {{ range $key, $value := .Annotations }}
-        • {{ $key }}: {{ $value }}
-      {{ end }}
-      {{ end }}
-
       **Origin Generator URL:**
       <{{ .GeneratorURL }}>
 
       {{ end }}
       {{ end }}
 
-  - name: obs.subject
+  - name: obs.title
     template: |
-      {{ define "obs.subject" }}
+      {{ define "obs.title" }}
       {{ len .Alerts.Firing }} firing alert(s), {{ len .Alerts.Resolved }} resolved alert(s)
       {{ end }}
