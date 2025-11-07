@@ -8,3 +8,4 @@ policies:
       - alertname
       - ic_node
       - job
+
