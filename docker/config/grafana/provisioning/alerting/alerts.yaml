@@ -102,10 +102,11 @@ groups:
                 type: threshold
           noDataState: OK
           execErrState: OK
-          for: 2m
+          for: 5m
           annotations:
             description: |
-                Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}
+                Node memory is filling up (< 10% left)
+                VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -158,7 +159,8 @@ groups:
             severity: warning
           annotations: 
             description: |
-                The node is under heavy memory pressure. High rate of loading memory pages from disk.\n  VALUE = {{ $value }}
+                The node is under heavy memory pressure. High rate of loading memory pages from disk.
+                VALUE = {{ $value }}
           isPaused: false
         - uid: HostUnusualNetworkThroughputIn 
           title: HostUnusualNetworkThroughputIn
@@ -207,7 +209,8 @@ groups:
           execErrState: OK
           annotations:
             description: |
-                Host receive bandwidth is high (>80%).\n  VALUE = {{ $value }}
+                Host receive bandwidth is high (>80%).
+                VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -257,7 +260,9 @@ groups:
           noDataState: OK
           execErrState: OK
           annotations:
-            description: Host transmit bandwidth is high (>80%)\n  VALUE = {{ $value }}
+            description: |
+                Host transmit bandwidth is high (>80%)
+                VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -308,7 +313,8 @@ groups:
           execErrState: OK
           annotations:
             description: |
-              Disk is too busy (IO wait > 80%)\n  VALUE = {{ $value }}
+              Disk is too busy (IO wait > 80%)
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -323,7 +329,7 @@ groups:
               datasourceUid: prometheus
               model:
                 editorMode: code
-                expr: (node_filesystem_avail_bytes{mountpoint="/var/lib/ic/data"} * 100) / node_filesystem_size_bytes{mountpoint="/var/lib/ic/data"}
+                expr: (node_filesystem_avail_bytes{mountpoint="/"}  * 100) / node_filesystem_size_bytes{mountpoint="/"}
                 instant: true
                 intervalMs: 1000
                 legendFormat: __auto
@@ -360,7 +366,8 @@ groups:
           for: 5m
           annotations:
             description: |
-              Disk is almost full (< 10% left)\n  VALUE = {{ $value }}
+              Disk is almost full (< 10% left)
+              VALUE = {{ $value }}
           labels:
             severity: critical
           isPaused: false
@@ -412,7 +419,8 @@ groups:
           for: 2m
           annotations:
             description: |
-              Error stat-ing the {{ $labels.mountpoint }} filesystem\n  VALUE = {{ $value }}
+              Error stat-ing the {{ $labels.mountpoint }} filesystem
+              VALUE = {{ $value }}
           labels:
             severity: critical
           isPaused: false
@@ -427,7 +435,7 @@ groups:
               datasourceUid: prometheus
               model:
                 editorMode: code
-                expr: rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 0.1 and rate(node_disk_reads_completed_total[1m]) > 0
+                expr: rate(node_disk_read_time_seconds_total[1m]) / (rate(node_disk_reads_completed_total[1m]) > 0)
                 instant: true
                 intervalMs: 1000
                 legendFormat: __auto
@@ -461,10 +469,11 @@ groups:
                 type: threshold
           noDataState: OK
           execErrState: OK
-          for: 2m
+          for: 10m
           annotations:
             description: |
-              Disk latency is growing (read operations > 100ms)\n  VALUE = {{ $value }}
+              Disk latency is growing (read operations > 100ms)
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -479,7 +488,7 @@ groups:
               datasourceUid: prometheus
               model:
                 editorMode: code
-                expr: rate(node_disk_write_time_seconds_total[1m]) / rate(node_disk_writes_completed_total[1m]) > 0.1 and rate(node_disk_writes_completed_total[1m]) > 0
+                expr: rate(node_disk_write_time_seconds_total[1m]) / (rate(node_disk_writes_completed_total[1m]) > 0)
                 instant: true
                 intervalMs: 1000
                 legendFormat: __auto
@@ -492,7 +501,7 @@ groups:
                 conditions:
                     - evaluator:
                         params:
-                            - 0
+                            - 0.1
                         type: gt
                       operator:
                         type: and
@@ -513,10 +522,11 @@ groups:
                 type: threshold
           noDataState: OK
           execErrState: OK
-          for: 2m
+          for: 10m
           annotations:
             description: |
-              Disk latency is growing (write operations > 100ms)\n  VALUE = {{ $value }}
+              Disk latency is growing (write operations > 100ms)
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -568,7 +578,8 @@ groups:
           for: 5m
           annotations:
             description: |
-              CPU load is > 80%\n  VALUE = {{ $value }}
+              CPU load is > 80%  
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -619,7 +630,8 @@ groups:
           execErrState: OK
           annotations:
             description: |
-              CPU iowait > 10%. Your CPU is idling waiting for storage to respond.\n  VALUE = {{ $value }}
+              CPU iowait > 10%. Your CPU is idling waiting for storage to respond.
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -671,7 +683,8 @@ groups:
           for: 5m
           annotations:
             description: |
-              Disk usage >80%. Check storage for issues or increase IOPS capabilities. Check storage for issues.\n  VALUE = {{ $value }}
+              Disk usage >80%. Check storage for issues or increase IOPS capabilities. Check storage for issues.
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -723,7 +736,8 @@ groups:
           for: 2m
           annotations:
             description: |
-              Swap is filling up (>80%)\n  VALUE = {{ $value }}
+              Swap is filling up (>80%)
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -774,7 +788,8 @@ groups:
           execErrState: OK
           annotations:
             description: |
-              systemd service crashed\n  VALUE = {{ $value }}
+              systemd service crashed
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -825,7 +840,8 @@ groups:
           execErrState: OK
           annotations:
             description: |
-              Physical node temperature alarm triggered\n  VALUE = {{ $value }}
+              Physical node temperature alarm triggered
+              VALUE = {{ $value }}
           labels:
             severity: critical
           isPaused: false
@@ -877,7 +893,8 @@ groups:
           for: 5m
           annotations:
             description: |
-              Physical hardware component too hot\n  VALUE = {{ $value }}
+              Physical hardware component too hot
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -928,7 +945,8 @@ groups:
           execErrState: OK
           annotations:
             description: |
-              OOM kill detected\n  VALUE = {{ $value }}
+              OOM kill detected
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -980,7 +998,8 @@ groups:
           for: 2m
           annotations:
             description: |
-              Host {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf \"%.0f\" $value }} receive errors in the last two minutes.\n  VALUE = {{ $value }}
+              Host {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ $value }} receive errors in the last two minutes.
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
@@ -1032,7 +1051,114 @@ groups:
           for: 2m
           annotations:
             description: |
-              Host {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ printf \"%.0f\" $value }} transmit errors in the last two minutes.\n  VALUE = {{ $value }}
+              Host {{ $labels.instance }} interface {{ $labels.device }} has encountered {{ $value }} transmit errors in the last two minutes.
+              VALUE = {{ $value }}
+          labels:
+            severity: warning
+          isPaused: false
+        - uid: IC_Node_DataPartitionAlmostFull
+          title: IC_Node_DataPartitionAlmostFull
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: prometheus
+              model:
+                editorMode: code
+                expr: (node_filesystem_avail_bytes{mountpoint="/var/lib/ic/data"}) / node_filesystem_size_bytes{mountpoint="/var/lib/ic/data"}
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.1
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 5m
+          annotations:
+            description: |
+              This node's data partition is almost full (< 10% left)
+              VALUE = {{ $value }}
+          labels:
+            severity: warning
+          isPaused: false
+        - uid: IC_Node_BackupPartitionAlmostFull
+          title: IC_Node_BackupPartitionAlmostFull
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: prometheus
+              model:
+                editorMode: code
+                expr: (node_filesystem_avail_bytes{mountpoint="/var/lib/ic/backup"}) / node_filesystem_size_bytes{mountpoint="/var/lib/ic/backup"}
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.3
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 5m
+          annotations:
+            description: |
+              This node's backup partition is almost full (< 30% left)
+              VALUE = {{ $value }}
           labels:
             severity: warning
           isPaused: false
