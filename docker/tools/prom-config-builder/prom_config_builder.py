@@ -41,8 +41,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--sd-url",
         dest="sd_url",
-        default="multiservice-discovery:8000",
-        help="Override the host for multiservice-discovery container. If running in network_mode: host it will be localhost",
+        default="localhost:8000",
+        help="Override the host for multiservice-discovery container. If not running in network_mode: host it will be multiservice-discovery:8000",
     )
 
     return parser.parse_args()
