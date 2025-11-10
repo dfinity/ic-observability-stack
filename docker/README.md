@@ -102,6 +102,13 @@ sudo chmod 777 -R ./volumes/grafana/
 sudo chmod 777 -R ./volumes/prometheus/
 ```
 
+*NOTE*: `./volumes/prometheus/` is your database and you should take special care not to
+delete it, because if you do, you will lose all historical data that has been stored.
+*NOTE*: `./volumes/grafana/` is also quite important, but can be recreated. Your first 
+start will generate a lot of things using grafana provisoning, but things that you later
+modify or add using the grafana ui will be lost if you haven't exported them and codified
+them into `provisoning`.
+
 ## Running the stack
 
 To deploy the stack run the following command:
@@ -120,6 +127,7 @@ read *Troubleshooting*
 Once started, you will see the following applications:
 * Prometheus - http://localhost:9090
 * Grafana - http://localhost:3000 - default creds can be see in `./config/grafana/grafana.ini` 
+* Service discovery - http://localhost:8000
 
 After 5-10 minutes you should see targets discovered in prometheus on the [targets page](http://localhost:9090/targets?search=). Initially, they might apear in red and if you keep monitoring they should
 slowly start getting blue, which means that the targets are successfuly scraped.
@@ -148,7 +156,7 @@ the other ones that contain `severity: warning` with `severity: critical`.
 
 To access the stack remotely you can do the following:
 ```bash
-ssh -L 3000:localhost:3000 -L 9090:localhost:9090 <machine-with-obs-stack>
+ssh -L 3000:localhost:3000 -L 9090:localhost:9090 -L 8000:localhost:8000 <machine-with-obs-stack>
 ```
 
 Example command with all parameters:
@@ -157,11 +165,119 @@ ssh -L 3000:localhost:3000 -L 9090:localhost:9090 -i ~/.ssh/priv_key.pem myuser@
 ```
 
 ## Extending
+
+Extending this stack usually means adding new alerts or dashboards. Those might
+be your own modifications or the ones that come from someone else.
+
 ### Dashboards
+
+Building grafana dashboards is usually done via [grafana ui](http://localhost:3000/dashboard/new?orgId=1&from=now-6h&to=now&timezone=browser). You can follow
+[this tutorial](https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/create-dashboard/) from grafana to make your custom dashboards.
+
+After creating the dashboard it is suggested to export it and save it
+`./config/grafana/provisioning/dashboards/`. This will make sure that
+if you later need to restore the dashboard or do a fresh deployment 
+of grafana it will be persisted.
+
+*NOTE*: Storing a dashboard and restarting can make lead to errors 
+due to overlapping dashboard `uids`. If you export the dashboard and 
+save it you should, be sure to do a clean deployment of grafana.
+
 ### Alerts
+
+Adding grafana alerts can also be done via [grafana ui](https://grafana.com/docs/grafana/latest/alerting/alerting-rules/create-grafana-managed-rule/).
+
+Similarly to dashboards, it is suggested to export alerts and save them 
+in `./config/grafana/provisioning/alerting/` which will make sure that
+they persist after full grafana redeployments.
 
 ## Troubleshooting
 
+### Service discovery failing
 
-- sudo chmod 777 -R ./volumes/grafana/ 
-- sudo chmod 777 -R ./volumes/prometheus/
+It is possible that usually due to networking issues, service discovery component
+may fail. To debug why you can run the following command to inspect the logs:
+```bash
+# From the same folder of this README
+docker compose logs multiservice-discovery
+```
+
+You may see something along the lines of:
+```bash
+multiservice-discovery-1  | Nov 10 13:25:07.044 WARN Failed to sync registry for mercury @ interval Instant { tv_sec: 9050, tv_nsec: 707832535 }: SyncWithNnsFailed { failures: [("targets", RegistryTransportError { source: UnknownError("Failed to query get_certified_changes_since on canister rwlgt-iiaaa-aaaaa-aaaaa-cai: Request failed for http://[2606:fb40:201:1001:6801:2fff:fef5:b129]:8080/api/v2/canister/rwlgt-iiaaa-aaaaa-aaaaa-cai/query: hyper_util::client::legacy::Error(Connect, ConnectError(\"tcp connect error\", [2606:fb40:201:1001:6801:2fff:fef5:b129]:8080, Os { code: 101, kind: NetworkUnreachable, message: \"Network is unreachable\" }))") })] }
+```
+
+This is usually a transient error and may happen from time to time. What this 
+means is that the discovery cannot sync with the registry canister and may be 
+serving stale targets. Usually this is acceptable but if that happens when 
+deploying and the initial sync fails you may be unable to see any of your 
+nodes. As long as you can see your nodes on the following link you can safely
+ignore the transient failures.
+```bash
+curl http://localhost:8000/prom/targets?node_provider_id=<node-provider-id>&dc_id=<dc-id>
+```
+
+*NOTE*: The initial sync of service discovery may take up to 15 minutes! Syncing 
+will be clearly logged in the multiservice discovery.
+
+### Prometheus
+
+#### No targets visible in targets view
+
+If you don't see anything in the [prometheus targets view](http://localhost:9090/targets?search=), 
+that means that prometheus failed to receive targets from the service discovery.
+
+To check the logs run:
+```bash
+# From the same folder of this README
+docker compose logs prometheus
+```
+
+Check if you can see your nodes by running the following command:
+```bash
+curl http://localhost:8000/prom/targets?node_provider_id=<node-provider-id>&dc_id=<dc-id>
+```
+
+#### Targets visible but are being shown in read
+
+You should now see 4 jobs:
+* `host_node_exporter`
+* `node_exporter`
+* `orchestrator`
+* `replica`
+
+If any of them are shown in read it means that some of the targets (or all of them)
+are failing to be scraped. You can see that from the logs as well:
+```bash
+# From the same folder of this README
+docker compose logs prometheus
+```
+
+This means that the prometheus scraper cannot reach the nodes it is trying
+to scrape. It can be because the workstation for this observability stack
+isn't in the same network subnet as the nodes, or due to other network 
+issues.
+
+### Stack restart
+
+To make a full clean restart (or partial) you can do the following:
+* Ensure that everything you created through grafana ui is exported
+  * Dashboards (save them into `./config/grafana/provisioning/dashboards/`)
+  * Alerts (save them into `./config/grafana/provisioning/alerting/`)
+  * Contact points (save them into `./config/grafana/provisioning/alerting/`)
+  * Message templates (save them into `./config/grafana/provisioning/alerting/`)
+  * Notification policies (save them into `./config/grafana/provisioning/alerting/`)
+* If you haven't created the resources, or don't mind losing them 
+  you can proceed.
+* Stop the stack: `docker compose -f ./docker-compose.yaml down`
+* Clean the volumes. You don't have to clean everything, pick just
+  ones that you wish to restart fully:
+  * prometheus: `sudo rm -rf ./volumes/prometheus/`
+  * grafana: `sudo rm -rf ./volumes/grafana/`
+  * multiservice discovery: `sudo rm -rf ./volumes/msd/`
+* Reset the folder structure: `git checkout -- ./volumes/`
+* Change permissions:
+  * prometheus: `sudo chmod 777 -R ./volumes/prometheus/`
+  * grafana: `sudo chmod 777 -R ./volumes/grafana/`
+* Run the stack again: `docker compose -f ./docker-compose.yaml up -d`
+
