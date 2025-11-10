@@ -3,6 +3,7 @@ services:
 
   multiservice-discovery:
     image: ghcr.io/dfinity/dre/multiservice-discovery:cac3154c7868faf9acad14f8585d37df27169573
+    network_mode: host
     command:
       - --targets-dir
       - /msd
@@ -10,11 +11,10 @@ services:
       - /msd/definitions.json
     volumes:
       - ./volumes/msd:/msd
-    ports:
-      - 8000:8000
 
   prometheus:
     image: quay.io/prometheus/prometheus:v2.51.1
+    network_mode: host
     volumes:
       - ./config/prometheus:/config
       - ./volumes/prometheus/:/prometheus
@@ -23,8 +23,6 @@ services:
       - /config/config.yaml
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=6m
-    ports:
-      - 9090:9090
     deploy:
       resources:
         limits:
@@ -34,10 +32,9 @@ services:
 
   grafana:
     image: grafana/grafana:12.2.1
+    network_mode: host
     environment:
-      PROM_HOST: prometheus
+      PROM_HOST: localhost
     volumes:
       - ./config/grafana:/etc/grafana
       - ./volumes/grafana:/var/lib/grafana
-    ports:
-      - 3000:3000
