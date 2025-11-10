@@ -1,0 +1,79 @@
+anchors:
+  tls: &tls
+    tls_config:
+      insecure_skip_verify: true
+
+  relabelings: &relabelings
+    relabel_configs:
+      - # Strip the scheme from the discovery generated address.
+        source_labels:
+          - __address__
+        target_label: __address__
+        regex: (.*)://(.*)
+        replacement: ${2}
+        action: replace
+      - # Strip the metrics path from the discovery generated address.
+        source_labels:
+          - __address__
+        target_label: __address__
+        regex: (.*?)/(.*)
+        replacement: ${1}
+        action: replace
+      - # Prevent all scrapes that do not match this job.
+        source_labels: ["job"]
+        target_label: __dropped
+        regex: "<job-relabel-placeholder>"
+        action: keep 
+
+  http_configs: &http_configs
+    http_sd_configs:
+      - url: http://multiservice-discovery:8000/prom/targets
+        refresh_interval: 15s
+
+global:
+  # Change this to control how frequently prometheus
+  # scrapes the targets. Prometheus accepts <duration>
+  # as the value for this field.
+  # More about duration: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#duration
+  scrape_interval: 30s
+
+scrape_configs:
+  - job_name: replica
+    metrics_path: ""
+
+    <<: *tls
+
+    <<: *http_configs
+
+    <<: *relabelings
+
+  - job_name: orchestrator
+    metrics_path: ""
+    
+    <<: *tls
+
+    <<: *http_configs
+
+    <<: *relabelings
+
+  - job_name: node_exporter
+    metrics_path: /metrics
+    scheme: https
+    
+    <<: *tls
+
+    <<: *http_configs
+
+    <<: *relabelings
+
+
+  - job_name: host_node_exporter
+    metrics_path: /metrics
+    scheme: https
+    
+    <<: *tls
+
+    <<: *http_configs
+
+    <<: *relabelings
+

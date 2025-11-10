@@ -1,0 +1,295 @@
+apiVersion: 1
+
+# NOTE:
+# After once enabling the contact point, later commenting out and restarting won't remove the
+# contact point. Once provisioned, contact points are stored in the database and can't be 
+# deleted. To delete them, you have to:
+#   1. stop grafana (docker compose down)
+#   2. rm -rf ./volumes/grafana
+#   3. git checkout -- ./volumes/grafana
+#   5. make changes to the contact_points.yaml (the one in ./config/grafana/provisioning/alerting)
+#   6. docker compose up -d
+
+contactPoints:
+  - orgId: 1
+    name: Obs contact points 
+    receivers:
+      # This receiver is useful if you have a bigger
+      # observability setup somewhere and just want to
+      # forward the alerts to that Alertmanager which
+      # will later route alerts to you in a prefered way.
+      # - uid: alertmanager
+      #   type: prometheus-alertmanager
+      #   settings:
+      #     url: <alertmanager-url>
+      #     basicAuthUser: <user-if-any> # keep commented out if not needed
+      #     basicAuthPassword: <pass-if-any> # keep commented out if not needed
+      #
+      # This option is free. You can create your own server 
+      # and in it, in settings, you can add "integrations"
+      # - uid: discord
+      #   type: discord
+      #   settings:
+      #     url: https://discord/webhook
+      #     avatar_url: https://my_avatar
+      #     use_discord_username: false
+      #     message: |
+      #       {{ template "obs.message" . }}
+      #
+      # To use this receiver you need to add smtp configuration
+      # in `./config/grafana/grafana.ini`. To read more visit:
+      # https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#smtp
+      # - uid: email
+      #   type: email
+      #   settings:
+      #     addresses: me@example.com;you@example.com
+      #     singleEmail: false
+      #     subject: |
+      #       {{ template "obs.title" . }}
+      #
+      # This is only possible if you have a google organization.
+      # If you have an organization, in it you can create a new 
+      # space. In Space Settings > Apps & Integrations press
+      # "Add webhooks", pick a name and an avatar and a URL will
+      # be generated which you should put in `url` part of `settings`
+      # - uid: googlechat
+      #   type: googlechat
+      #   settings:
+      #     url: https://google/webhook
+      #     message: |
+      #       {{ template "obs.message" . }}
+      #
+      # - uid: kafka
+      #   type: kafka
+      #   settings: 
+      #     kafkaRestProxy: http://localhost:8082
+      #     kafkaTopic: topic1
+      #
+      # - uid: mqtt
+      #   type: mqtt
+      #   settings:
+      #     # <string, required>
+      #     brokerUrl: tcp://127.0.0.1:1883
+      #     # <string>
+      #     clientId: grafana
+      #     # <string, required>
+      #     topic: grafana/alerts
+      #     # <string>
+      #     messageFormat: json
+      #     # <string>
+      #     username: grafana
+      #     # <string>
+      #     password: password1
+      #     # <string>
+      #     qos: 0
+      #     # <bool>
+      #     retain: false
+      #     # <map>
+      #     tlsConfig:
+      #       # <bool>
+      #       insecureSkipVerify: false
+      #       # <string>
+      #       clientCertificate: certificate in PEM format
+      #       # <string>
+      #       clientKey: key in PEM format
+      #       # <string>
+      #       caCertificate: CA certificate in PEM format
+      # 
+      # - uid: teams
+      #   type: teams
+      #   settings:
+      #     # <string, required>
+      #     url: https://ms_teams_url
+      #     # <string>
+      #     title: |
+      #       {{ template "obs.title" . }}
+      #     # <string>
+      #     sectiontitle: ''
+      #     # <string>
+      #     message: |
+      #       {{ template "obs.message" . }}
+      #
+      # - uid: opsgenie
+      #   type: opsgenie
+      #   settings:
+      #     # <string, required>
+      #     apiKey: xxx
+      #     # <string, required>
+      #     apiUrl: https://api.opsgenie.com/v2/alerts
+      #     # <string>
+      #     message: |
+      #       {{ template "obs.title" . }}
+      #     # <string>
+      #     description: some descriptive description
+      #     # <bool>
+      #     autoClose: false
+      #     # <bool>
+      #     overridePriority: false
+      #     # <string> options: tags, details, both
+      #     sendTagsAs: both
+      #
+      # - uid: pagerduty
+      #   type: pagerduty
+      #   settings:
+      #     # <string, required> the 32-character Events API key https://support.pagerduty.com/docs/api-access-keys#events-api-keys
+      #     integrationKey: XXX
+      #     # <string> options: critical, error, warning, info
+      #     severity: critical
+      #     # <string>
+      #     class: ping failure
+      #     # <string>
+      #     component: Grafana
+      #     # <string>
+      #     group: app-stack
+      #     # <string>
+      #     summary: |
+      #       {{ template "obs.message" . }}
+      #
+      # - uid: pushover
+      #   type: pushover
+      #   settings:
+      #     # <string, required>
+      #     apiToken: XXX
+      #     # <string, required>
+      #     userKey: user1,user2
+      #     # <string>
+      #     device: device1,device2
+      #     # <string> options (high to low): 2,1,0,-1,-2
+      #     priority: '2'
+      #     # <string>
+      #     retry: '30'
+      #     # <string>
+      #     expire: '120'
+      #     # <string> the number of seconds before a message expires and is deleted automatically. Examples: 10s, 5m30s, 8h.
+      #     ttl:
+      #     # <string>
+      #     sound: siren
+      #     # <string>
+      #     okSound: magic
+      #     # <string>
+      #     message: |
+      #       {{ template "obs.message" . }}
+      #
+      # - uid: slack
+      #   type: slack
+      #   settings: 
+      #     # <string, required>
+      #     recipient: alerting-dev
+      #     # <string, required>
+      #     token: xxx
+      #     # <string>
+      #     username: grafana_bot
+      #     # <string>
+      #     icon_emoji: heart
+      #     # <string>
+      #     icon_url: https://icon_url
+      #     # <string>
+      #     mentionUsers: user_1,user_2
+      #     # <string>
+      #     mentionGroups: group_1,group_2
+      #     # <string> options: here, channel
+      #     mentionChannel: here
+      #     # <string> Optionally provide a Slack incoming webhook URL for sending messages, in this case the token isn't necessary
+      #     url: https://some_webhook_url
+      #     # <string>
+      #     endpointUrl: https://custom_url/api/chat.postMessage
+      #     # <string>
+      #     title: |
+      #       {{ template "slack.obs.title" . }}
+      #     text: |
+      #       {{ template "slack.default.text" . }}
+      # 
+      # - uid: sensugo
+      #   type: sensugo
+      #   settings:
+      #     # <string, required>
+      #     url: http://sensu-api.local:8080
+      #     # <string, required>
+      #     apikey: xxx
+      #     # <string>
+      #     entity: default
+      #     # <string>
+      #     check: default
+      #     # <string>
+      #     handler: some_handler
+      #     # <string>
+      #     namespace: default
+      #     # <string>
+      #     message: |
+      #       {{ template "obs.message" . }}
+      #
+      # - uid: telegram
+      #   type: telegram
+      #   settings:
+      #     # <string, required>
+      #     bottoken: xxx
+      #     # <string, required>
+      #     chatid: some_chat_id
+      #     # <string>
+      #     message: |
+      #       {{ template "obs.message" . }}     
+      #
+      # - uid: threema
+      #   type: threema
+      #   settings:
+      #     # <string, required>
+      #     api_secret: xxx
+      #     # <string, required>
+      #     gateway_id: A5K94S9
+      #     # <string, required>
+      #     recipient_id: A9R4KL4S
+      #
+      # - uid: victorops
+      #   type: victorops
+      #   settings:
+      #     # <string, required>
+      #     url: XXX
+      #     # <string> options: CRITICAL, WARNING
+      #     messageType: CRITICAL
+      #
+      # - uid: webhook
+      #   type: webhook
+      #   settings:
+      #     # <string, required>
+      #     url: https://endpoint_url
+      #     # <string> options: POST, PUT
+      #     httpMethod: POST
+      #     # <string>
+      #     username: abc
+      #     # <string>
+      #     password: abc123
+      #     # <string>
+      #     authorization_scheme: Bearer
+      #     # <string>
+      #     authorization_credentials: abc123
+      #     # <string>
+      #     maxAlerts: '10'
+      #     # <map>
+      #     tlsConfig:
+      #       # <bool>
+      #       insecureSkipVerify: false
+      #       # <string>
+      #       clientCertificate: certificate in PEM format
+      #       # <string>
+      #       clientKey: key in PEM format
+      #       # <string>
+      #       caCertificate: CA certificate in PEM format
+      #     hmacConfig:
+      #       #<string>
+      #       secret: secret-key
+      #       #<string>
+      #       header: X-Grafana-Alerting-Signature
+      #       #<string>
+      #       timestampHeader: X-Grafana-Alerting-Signature-Timestamp
+      #
+      # - uid: wecom
+      #   type: wecom
+      #   settings:
+      #     # <string, required>
+      #     url: https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxxxxxxx
+      #     # <string>
+      #     message: |
+      #       {{ template "obs.message" . }}
+      #     # <string>
+      #     title: |
+      #       {{ template "obs.title" . }}
