@@ -12905,8 +12905,8 @@
             {
                 "current": {
                     "selected": false,
-                    "text": "IC Metrics (cluster local)",
-                    "value": "IC Metrics (cluster local)"
+                    "text": "prometheus",
+                    "value": "prometheus"
                 },
                 "hide": 0,
                 "includeAll": false,
@@ -12915,7 +12915,6 @@
                 "options": [],
                 "query": "prometheus",
                 "refresh": 1,
-                "regex": "/IC.*/",
                 "skipUrlSync": false,
                 "type": "datasource"
             },
@@ -13007,7 +13006,7 @@
     },
     "timezone": "utc",
     "title": "Node Exporter",
-    "uid": "51412e5a92249978fe6e78d639a2c9fb",
+    "uid": "1",
     "version": 9,
     "weekStart": ""
 }

@@ -243,7 +243,6 @@
                 "query": "prometheus",
                 "queryValue": "",
                 "refresh": 1,
-                "regex": "/IC.*/",
                 "skipUrlSync": false,
                 "type": "datasource"
             },
@@ -318,7 +317,7 @@
     "timepicker": {},
     "timezone": "",
     "title": "Power usage",
-    "uid": "f50509061ae243e387ec9c42099c538a",
+    "uid": "2",
     "version": 7,
     "weekStart": ""
 }
