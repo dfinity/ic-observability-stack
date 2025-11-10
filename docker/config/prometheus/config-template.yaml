@@ -90,7 +90,7 @@ scrape_configs:
     static_configs:
       - targets:
         - uuew5-iiaaa-aaaaa-qbx4q-cai.raw.icp0.io
-        - 4ofd5-6aaaa-aaaaa-qahza-cai.raw.icp0.io
+        - sgymv-uiaaa-aaaaa-aaaia-cai.raw.icp0.io
 
     # Don't need to filter on job
     relabel_configs:
@@ -107,9 +107,9 @@ scrape_configs:
         regex: .*
         replacement: dev
         action: replace
-      # Assign env="prod" to 4ofd5-6aaaa-aaaaa-qahza-cai
+      # Assign env="prod" to sgymv-uiaaa-aaaaa-aaaia-cai
       - source_labels: ["canister_id"]
         target_label: env
-        regex: 4ofd5-6aaaa-aaaaa-qahza-cai 
+        regex: sgymv-uiaaa-aaaaa-aaaia-cai 
         replacement: prod
         action: replace
