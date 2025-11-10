@@ -102,13 +102,13 @@ scrape_configs:
         replacement: ${1}
         action: replace 
       # Assign env="dev" to all
-      - source_labels: ["__address__"]
+      - source_labels: ["canister_id"]
         target_label: env
         regex: .*
         replacement: dev
         action: replace
       # Assign env="prod" to 4ofd5-6aaaa-aaaaa-qahza-cai
-      - source_labels: ["__address__"]
+      - source_labels: ["canister_id"]
         target_label: env
         regex: 4ofd5-6aaaa-aaaaa-qahza-cai 
         replacement: prod
