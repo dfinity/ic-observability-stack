@@ -61,6 +61,8 @@ def expand_anchors_text(yaml_text: str) -> str:
     )
 
 
+SKIP_JOBS = ["node_reward_canister"]
+
 if __name__ == "__main__":
     args = parse_args()
 
@@ -70,6 +72,9 @@ if __name__ == "__main__":
 
     for scrape_config in template["scrape_configs"]:
         job_name = scrape_config["job_name"]
+
+        if job_name in SKIP_JOBS:
+            continue
 
         # Restrict job
         scrape_config["relabel_configs"][2]["regex"] = job_name

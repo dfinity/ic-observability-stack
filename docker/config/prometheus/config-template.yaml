@@ -3,27 +3,31 @@ anchors:
     tls_config:
       insecure_skip_verify: true
 
+  relabel_strip_scheme: &relabel_strip_scheme
+    source_labels:
+      - __address__
+    target_label: __address__
+    regex: (.*)://(.*)
+    replacement: ${2}
+    action: replace
+  relabel_strip_metrics: &relabel_strip_metrics
+    source_labels:
+      - __address__
+    target_label: __address__
+    regex: (.*?)/(.*)
+    replacement: ${1}
+    action: replace
+  relabel_prevent_mismatch_job: &relabel_prevent_mismatch_job
+    source_labels: ["job"]
+    target_label: __dropped
+    regex: "<job-relabel-placeholder>"
+    action: keep 
+
   relabelings: &relabelings
     relabel_configs:
-      - # Strip the scheme from the discovery generated address.
-        source_labels:
-          - __address__
-        target_label: __address__
-        regex: (.*)://(.*)
-        replacement: ${2}
-        action: replace
-      - # Strip the metrics path from the discovery generated address.
-        source_labels:
-          - __address__
-        target_label: __address__
-        regex: (.*?)/(.*)
-        replacement: ${1}
-        action: replace
-      - # Prevent all scrapes that do not match this job.
-        source_labels: ["job"]
-        target_label: __dropped
-        regex: "<job-relabel-placeholder>"
-        action: keep 
+      - *relabel_strip_scheme
+      - *relabel_strip_metrics
+      - *relabel_prevent_mismatch_job 
 
   http_configs: &http_configs
     http_sd_configs:
@@ -77,3 +81,35 @@ scrape_configs:
 
     <<: *relabelings
 
+  - job_name: node_reward_canister
+    metrics_path: /metrics
+    scheme: https
+
+    <<: *tls
+
+    static_configs:
+      - targets:
+        - uuew5-iiaaa-aaaaa-qbx4q-cai.raw.icp0.io
+        - 4ofd5-6aaaa-aaaaa-qahza-cai.raw.icp0.io
+
+    # Don't need to filter on job
+    relabel_configs:
+      # Strip the address 
+      - source_labels:
+          - __address__
+        target_label: canister_id
+        regex: (.*)\.raw\.icp0\.io
+        replacement: ${1}
+        action: replace 
+      # Assign env="dev" to all
+      - source_labels: ["__address__"]
+        target_label: env
+        regex: .*
+        replacement: dev
+        action: replace
+      # Assign env="prod" to 4ofd5-6aaaa-aaaaa-qahza-cai
+      - source_labels: ["__address__"]
+        target_label: env
+        regex: 4ofd5-6aaaa-aaaaa-qahza-cai 
+        replacement: prod
+        action: replace
