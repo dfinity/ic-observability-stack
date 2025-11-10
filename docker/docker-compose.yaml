@@ -23,6 +23,7 @@ services:
       - /config/config.yaml
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=6m
+    user: "${UID}:${GID}"
     deploy:
       resources:
         limits:
@@ -38,3 +39,4 @@ services:
     volumes:
       - ./config/grafana:/etc/grafana
       - ./volumes/grafana:/var/lib/grafana
+    user: "${UID}:${GID}"

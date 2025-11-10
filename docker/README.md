@@ -91,24 +91,6 @@ After that, edit the new file on path `./config/grafana/provisioning/alerting/co
 and uncomment your prefered contact point and configure it (to _uncomment_ you should
 remove the initial `#` from the contact point definition.
 
-### Volumes
-
-Since prometheus and grafana have their own users which probably differ from yours
-you need to make the volumes readable and writiable by those users. There are number
-of ways how you can do this, but the easiest is to make it readable and writable 
-for all users on the machine:
-```bash
-sudo chmod 777 -R ./volumes/grafana/
-sudo chmod 777 -R ./volumes/prometheus/
-```
-
-*NOTE*: `./volumes/prometheus/` is your database and you should take special care not to
-delete it, because if you do, you will lose all historical data that has been stored.
-*NOTE*: `./volumes/grafana/` is also quite important, but can be recreated. Your first 
-start will generate a lot of things using grafana provisoning, but things that you later
-modify or add using the grafana ui will be lost if you haven't exported them and codified
-them into `provisoning`.
-
 ## Running the stack
 
 To deploy the stack run the following command:
@@ -272,12 +254,9 @@ To make a full clean restart (or partial) you can do the following:
 * Stop the stack: `docker compose -f ./docker-compose.yaml down`
 * Clean the volumes. You don't have to clean everything, pick just
   ones that you wish to restart fully:
-  * prometheus: `sudo rm -rf ./volumes/prometheus/`
-  * grafana: `sudo rm -rf ./volumes/grafana/`
-  * multiservice discovery: `sudo rm -rf ./volumes/msd/`
+  * prometheus: `rm -rf ./volumes/prometheus/`
+  * grafana: `rm -rf ./volumes/grafana/`
+  * multiservice discovery: `rm -rf ./volumes/msd/`
 * Reset the folder structure: `git checkout -- ./volumes/`
-* Change permissions:
-  * prometheus: `sudo chmod 777 -R ./volumes/prometheus/`
-  * grafana: `sudo chmod 777 -R ./volumes/grafana/`
 * Run the stack again: `docker compose -f ./docker-compose.yaml up -d`
 
