@@ -1,3 +1,7 @@
+# [OBSOLETE] 
+Vagrant and ansible deployment are obsolete and won't be maintained. 
+Checkout [docker deployment](./docker/README.md).
+
 # IC observability stack
 
 This collection of software lets you use your own equipment to observe the
