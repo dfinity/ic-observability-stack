@@ -3,4 +3,5 @@ __pycache__
 .mypy_cache
 scrape_configs.yml
 !vars/scrape_configs.yml
+docker/volumes/victoriametrics/
 .venv

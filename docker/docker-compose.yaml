@@ -12,17 +12,15 @@ services:
     volumes:
       - ./volumes/msd:/msd
 
-  prometheus:
-    image: quay.io/prometheus/prometheus:v2.51.1
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.97.1
     network_mode: host
     volumes:
-      - ./config/prometheus:/config
-      - ./volumes/prometheus/:/prometheus
+      - ./volumes/victoriametrics:/victoria-metrics-data
     command:
-      - --config.file
-      - /config/config.yaml
-      - --storage.tsdb.path=/prometheus
-      - --storage.tsdb.retention.time=6m
+      - --storageDataPath=/victoria-metrics-data
+      - --httpListenAddr=:9090
+      - --retentionPeriod=6M
     user: "${UID}:${GID}"
     deploy:
       resources:
@@ -31,34 +29,18 @@ services:
         reservations:
           memory: 12G
 
-  influxdb:
-    image: influxdb:2.7
+  node-rewards-scheduler:
+    image: ubuntu:24.04
     network_mode: host
     environment:
-      DOCKER_INFLUXDB_INIT_MODE: setup
-      DOCKER_INFLUXDB_INIT_USERNAME: admin
-      DOCKER_INFLUXDB_INIT_PASSWORD: adminpassword
-      DOCKER_INFLUXDB_INIT_ORG: ic-org
-      DOCKER_INFLUXDB_INIT_BUCKET: node-rewards
-      DOCKER_INFLUXDB_INIT_RETENTION: 90d
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: my-super-secret-auth-token
+      VICTORIA_METRICS_URL: http://localhost:9090
+      DRE_VERSION: "0.7.0"
     volumes:
-      - ./volumes/influxdb:/var/lib/influxdb2
-
-  # node-rewards-scheduler:
-  #   image: ghcr.io/dfinity/dre/dre:latest
-  #   network_mode: host
-  #   environment:
-  #     INFLUXDB_URL: http://localhost:8086
-  #     INFLUXDB_TOKEN: my-super-secret-auth-token
-  #     INFLUXDB_ORG: ic-org
-  #     INFLUXDB_BUCKET: node-rewards
-  #   volumes:
-  #     - ./volumes/node-rewards-scheduler:/scheduler
-  #     - ./config/node-rewards-scheduler/entrypoint.sh:/entrypoint.sh:ro
-  #   entrypoint: /entrypoint.sh
-  #   depends_on:
-  #     - influxdb
+      - ./volumes/node-rewards-scheduler:/scheduler
+      - ./config/node-rewards-scheduler/entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: /entrypoint.sh
+    depends_on:
+      - victoriametrics
 
   grafana:
     image: grafana/grafana:12.2.1
@@ -70,4 +52,4 @@ services:
       - ./volumes/grafana:/var/lib/grafana
     user: "${UID}:${GID}"
     depends_on:
-      - influxdb
+      - victoriametrics
