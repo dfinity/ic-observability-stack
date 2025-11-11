@@ -5,6 +5,19 @@ operation of the nodes in your datacenter that are part of the Internet Computer
 is a collection of docker containers that, when deployed and configured, will collect
 metrics about the performance of selected nodes and send alerts if something is off.
 
+## 🆕 Node Rewards Dashboard
+
+A new **Node Rewards Dashboard** has been added that displays daily node provider rewards metrics with discrete daily data points. This dashboard uses InfluxDB as the data source and automatically:
+
+- ✅ **Backfills** last 40 days of metrics on first startup
+- ✅ **Updates daily** at 00:05 UTC with yesterday's data
+- ✅ **Shows provider rewards**, efficiency, and performance metrics
+- ✅ **Visualizes trends** over time with clean daily data points
+
+**Quick Start**: See [QUICKSTART_NODE_REWARDS.md](./QUICKSTART_NODE_REWARDS.md) for 5-minute setup guide.
+
+**Full Documentation**: See [NODE_REWARDS_SETUP.md](./NODE_REWARDS_SETUP.md) for complete details.
+
 ## How does this work?
 
 The stack selects IC nodes and collects metrics from each node, saving them

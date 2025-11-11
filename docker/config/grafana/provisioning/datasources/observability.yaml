@@ -8,3 +8,16 @@ datasources:
     url: http://$PROM_HOST:9090
     jsonData:
       httpMethod: POST
+  
+  - name: InfluxDB (Node Rewards)
+    uid: influxdb-node-rewards
+    type: influxdb
+    access: proxy
+    url: http://localhost:8086
+    jsonData:
+      version: Flux
+      organization: ic-org
+      defaultBucket: node-rewards
+      tlsSkipVerify: true
+    secureJsonData:
+      token: my-super-secret-auth-token

@@ -11,3 +11,14 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/samples
       foldersFromFilesStructure: false
+  
+  - name: 'Node Rewards'
+    folder: 'Node Rewards'
+    folderUid: 'node-rewards'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 60
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/node-rewards
+      foldersFromFilesStructure: false
