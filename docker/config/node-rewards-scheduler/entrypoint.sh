@@ -14,38 +14,61 @@ apt-get install -y -qq curl cron ca-certificates > /dev/null 2>&1
 mkdir -p /scheduler
 cd /scheduler
 
-# Download dre binary if not already present
-if [ ! -f "/scheduler/.dre_installed" ]; then
-  echo "Downloading dre v${DRE_VERSION} binary..."
+
+# # Download dre binary if not already present
+# if [ ! -f "/scheduler/.dre_installed" ]; then
+#   echo "Downloading dre v${DRE_VERSION} binary..."
   
-  # Detect architecture
-  ARCH=$(uname -m)
-  if [ "$ARCH" = "x86_64" ]; then
-    DRE_ARCH="x86_64"
-  elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-    DRE_ARCH="aarch64"
-  else
-    echo "Unsupported architecture: $ARCH"
-    exit 1
-  fi
+#   # Detect architecture
+#   ARCH=$(uname -m)
+#   if [ "$ARCH" = "x86_64" ]; then
+#     DRE_BINARY="dre-x86_64-unknown-linux"
+#   elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+#     # Note: v0.7.0 only has x86_64 Linux binary, no ARM64 Linux binary available
+#     echo "⚠️  ARM64 Linux binary not available, using x86_64 (may require emulation)"
+#     DRE_BINARY="dre-x86_64-unknown-linux"
+#   else
+#     echo "❌ Unsupported architecture: $ARCH"
+#     exit 1
+#   fi
   
-  # Download from GitHub releases
-  DRE_URL="https://github.com/dfinity/dre/releases/download/v${DRE_VERSION}/dre-${DRE_ARCH}-unknown-linux-gnu"
-  echo "Downloading from: $DRE_URL"
+#   # Download from GitHub releases
+#   DRE_URL="https://github.com/dfinity/dre/releases/download/v${DRE_VERSION}/${DRE_BINARY}"
+#   echo "Downloading from: $DRE_URL"
   
-  curl -L -o /usr/local/bin/dre "$DRE_URL"
+#   curl -L -o /usr/local/bin/dre "$DRE_URL"
+#   chmod +x /usr/local/bin/dre
+  
+#   # Verify it works
+#   if /usr/local/bin/dre --version; then
+#     echo "✅ dre v${DRE_VERSION} installed successfully"
+#     touch /scheduler/.dre_installed
+#   else
+#     echo "❌ Failed to install dre"
+#     exit 1
+#   fi
+# else
+#   echo "✅ dre already installed"
+# fi
+
+# Use locally built dre binary mounted from host
+echo "Using locally built dre binary from /dre-binary/dre"
+
+if [ -f "/dre-binary/dre" ]; then
+  cp /dre-binary/dre /usr/local/bin/dre
   chmod +x /usr/local/bin/dre
   
   # Verify it works
   if /usr/local/bin/dre --version; then
-    echo "✅ dre v${DRE_VERSION} installed successfully"
-    touch /scheduler/.dre_installed
+    echo "✅ Local dre binary installed successfully"
   else
-    echo "❌ Failed to install dre"
+    echo "❌ Failed to run local dre binary"
     exit 1
   fi
 else
-  echo "✅ dre already installed"
+  echo "❌ Local dre binary not found at /dre-binary/dre"
+  echo "Please build the binary with: cd /Users/pietro.di.marco/dre && cargo build --release --bin dre"
+  exit 1
 fi
 
 # Wait for VictoriaMetrics to be ready

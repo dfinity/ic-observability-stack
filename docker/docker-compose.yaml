@@ -20,8 +20,7 @@ services:
     command:
       - --storageDataPath=/victoria-metrics-data
       - --httpListenAddr=:9090
-      - --retentionPeriod=6M
-    user: "${UID}:${GID}"
+      - --retentionPeriod=1y
     deploy:
       resources:
         limits:
@@ -31,6 +30,7 @@ services:
 
   node-rewards-scheduler:
     image: ubuntu:24.04
+    platform: linux/amd64
     network_mode: host
     environment:
       VICTORIA_METRICS_URL: http://localhost:9090

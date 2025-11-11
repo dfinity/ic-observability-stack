@@ -4,6 +4,6 @@ services:
       context: .
       dockerfile: ./tools/prom-config-builder/prom-config-builder.Dockerfile
     volumes:
-      - ./config/prometheus:/config/prometheus
+      - ./config/victoria-metrics:/config/victoria-metrics
       - ./tools/prom-config-builder/:/tools/prom-config-builder
 

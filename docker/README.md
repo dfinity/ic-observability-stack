@@ -5,24 +5,15 @@ operation of the nodes in your datacenter that are part of the Internet Computer
 is a collection of docker containers that, when deployed and configured, will collect
 metrics about the performance of selected nodes and send alerts if something is off.
 
-## 🆕 Node Rewards Dashboard
-
-A new **Node Rewards Dashboard** has been added that displays daily node provider rewards metrics with discrete daily data points. This dashboard uses InfluxDB as the data source and automatically:
-
-- ✅ **Backfills** last 40 days of metrics on first startup
-- ✅ **Updates daily** at 00:05 UTC with yesterday's data
-- ✅ **Shows provider rewards**, efficiency, and performance metrics
-- ✅ **Visualizes trends** over time with clean daily data points
-
-**Quick Start**: See [QUICKSTART_NODE_REWARDS.md](./QUICKSTART_NODE_REWARDS.md) for 5-minute setup guide.
-
-**Full Documentation**: See [NODE_REWARDS_SETUP.md](./NODE_REWARDS_SETUP.md) for complete details.
-
 ## How does this work?
 
 The stack selects IC nodes and collects metrics from each node, saving them
-in a local Prometheus database every few seconds.  This database is
-queryable through a Grafana deployed side-to-side with Prometheus.
+in a local VictoriaMetrics database every few seconds. This database is
+queryable through a Grafana instance deployed side-by-side with VictoriaMetrics.
+
+Additionally, a node rewards scheduler automatically collects daily node provider
+rewards data from the IC Node Rewards Canister and stores it in VictoriaMetrics,
+providing historical tracking and visualization of rewards metrics.
 
 Nodes of the Internet Computer all make available to the public a series
 of metrics (in [Prometheus text format](https://github.com/Prometheus/docs/blob/777846211d502a287ab2b304cb515dc779de3474/content/docs/instrumenting/exposition_formats.md#text-based-format))
@@ -80,9 +71,9 @@ Example command for node provider Dfinity Stiftung for data center se1:
 docker compose -f ./docker-compose.tools.yaml run --rm prom-config-builder tools/prom-config-builder/prom_config_builder.py --node-provider-id bvcsg-3od6r-jnydw-eysln-aql7w-td5zn-ay5m6-sibd2-jzojt-anwag-mqe --dc-id se1
 ```
 
-Once that executes, you should be able to see a new file at `./config/prometheus/config.yaml`. 
+Once that executes, you should be able to see a new file at `./config/victoria-metrics/config.yaml`. 
 This file contains the definitions for the scraping targets. It will be slightly different 
-for each node provider and each data center. It is not versione controlled and you can 
+for each node provider and each data center. It is not version controlled and you can 
 always recreate it with running the above command if you lose it, or delete it.
 
 ### Contact points
@@ -120,16 +111,32 @@ read *Troubleshooting*
 ## Usage
 
 Once started, you will see the following applications:
-* Prometheus - http://localhost:9090
+* VictoriaMetrics - http://localhost:9090
 * Grafana - http://localhost:3000 - default creds can be see in `./config/grafana/grafana.ini` 
 * Service discovery - http://localhost:8000
 
-After 5-10 minutes you should see targets discovered in prometheus on the [targets page](http://localhost:9090/targets?search=). Initially, they might apear in red and if you keep monitoring they should
-slowly start getting blue, which means that the targets are successfuly scraped.
+After 5-10 minutes you should see targets discovered in VictoriaMetrics. The metrics are being
+collected and stored successfully when you can query them through Grafana dashboards.
 
 You should also see some data incoming in the grafana [sample dashboard for the 
 node exporter](http://localhost:3000/d/1/node-exporter?orgId=1&from=now-3h&to=now&timezone=utc&var-datasource=prometheus&var-instance=$__all&var-diskdevice=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B%7Cmmcblk%5B0-9%5D%2B).
 Here, you can see various information about the performance of nodes and their health.
+
+### Node Rewards Dashboard
+
+The stack includes a comprehensive Node Provider Rewards Dashboard that displays:
+* **Provider Overview** - Total providers, nodes, and rewards calculations
+* **Rewards Trends** - Historical tracking of base vs adjusted rewards
+* **Node-Level Metrics** - Individual node failure rates and performance
+* **Subnet Metrics** - Subnet-level failure rates and node distribution
+* **Analysis & Insights** - Top providers, efficiency rankings, and reward penalties
+
+The node rewards scheduler automatically:
+* Backfills the last 40 days of historical rewards data on first startup
+* Pushes new rewards data daily at 00:05 UTC
+* Downloads the latest `dre` binary from GitHub releases (v0.7.0)
+
+Access the dashboard at: http://localhost:3000/d/node-rewards
 
 [Alerting tab](http://localhost:3000/alerting/list) will show `obs alert evaluations` 
 which will contain a list of preconfigured alerts. Here you can see if any of the 
@@ -153,6 +160,11 @@ To access the stack remotely you can do the following:
 ```bash
 ssh -L 3000:localhost:3000 -L 9090:localhost:9090 -L 8000:localhost:8000 <machine-with-obs-stack>
 ```
+
+This will forward:
+* Port 3000 - Grafana web interface
+* Port 9090 - VictoriaMetrics API
+* Port 8000 - Service discovery
 
 Example command with all parameters:
 ```bash
@@ -215,43 +227,56 @@ curl http://localhost:8000/prom/targets?node_provider_id=<node-provider-id>&dc_i
 *NOTE*: The initial sync of service discovery may take up to 15 minutes! Syncing 
 will be clearly logged in the multiservice discovery.
 
-### Prometheus
+### VictoriaMetrics
 
-#### No targets visible in targets view
+VictoriaMetrics is the time-series database that stores all metrics from IC nodes
+and node rewards data.
 
-If you don't see anything in the [prometheus targets view](http://localhost:9090/targets?search=), 
-that means that prometheus failed to receive targets from the service discovery.
+#### Checking VictoriaMetrics health
 
-To check the logs run:
+To verify VictoriaMetrics is running properly:
+```bash
+curl http://localhost:9090/-/ready
+```
+
+You should see: `VictoriaMetrics is Ready.`
+
+To check the logs:
 ```bash
 # From the same folder of this README
-docker compose logs prometheus
+docker compose logs victoriametrics
 ```
 
-Check if you can see your nodes by running the following command:
+#### Querying metrics
+
+You can query metrics using the VictoriaMetrics API:
 ```bash
-curl http://localhost:8000/prom/targets?node_provider_id=<node-provider-id>&dc_id=<dc-id>
+# Check available metrics
+curl 'http://localhost:9090/api/v1/label/__name__/values'
+
+# Query specific metric
+curl 'http://localhost:9090/api/v1/query?query=latest_nodes_count'
 ```
 
-#### Targets visible but are being shown in read
+### Node Rewards Scheduler
 
-You should now see 4 jobs:
-* `host_node_exporter`
-* `node_exporter`
-* `orchestrator`
-* `replica`
+The node rewards scheduler runs as a separate container and automatically collects
+rewards data from the IC Node Rewards Canister.
 
-If any of them are shown in read it means that some of the targets (or all of them)
-are failing to be scraped. You can see that from the logs as well:
+#### Checking scheduler status
+
+To view scheduler logs:
 ```bash
 # From the same folder of this README
-docker compose logs prometheus
+docker compose logs node-rewards-scheduler
 ```
 
-This means that the prometheus scraper cannot reach the nodes it is trying
-to scrape. It can be because the workstation for this observability stack
-isn't in the same network subnet as the nodes, or due to other network 
-issues.
+On first startup, you should see:
+* Binary download from GitHub releases
+* 40-day backfill process (may take 10-20 minutes)
+* Cron job setup for daily updates at 00:05 UTC
+
+```
 
 ### Stack restart
 
@@ -267,9 +292,14 @@ To make a full clean restart (or partial) you can do the following:
 * Stop the stack: `docker compose -f ./docker-compose.yaml down`
 * Clean the volumes. You don't have to clean everything, pick just
   ones that you wish to restart fully:
-  * prometheus: `rm -rf ./volumes/prometheus/`
-  * grafana: `rm -rf ./volumes/grafana/`
-  * multiservice discovery: `rm -rf ./volumes/msd/`
+  * VictoriaMetrics: `rm -rf ./volumes/victoriametrics/`
+  * Grafana: `rm -rf ./volumes/grafana/`
+  * Multiservice discovery: `rm -rf ./volumes/msd/`
+  * Node rewards scheduler: `rm -rf ./volumes/node-rewards-scheduler/`
 * Reset the folder structure: `git checkout -- ./volumes/`
 * Run the stack again: `docker compose -f ./docker-compose.yaml up -d`
+
+**Note**: Cleaning VictoriaMetrics volumes will delete all historical metrics data,
+including node rewards data. The node rewards scheduler will automatically backfill
+the last 40 days when restarted.
 

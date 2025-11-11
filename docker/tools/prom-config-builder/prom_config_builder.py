@@ -7,21 +7,21 @@ import yaml
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         "prom-config-builder",
-        description="Used to expand the configuration to actual prometheus config",
+        description="Used to expand the configuration to actual victoria-metrics config",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     parser.add_argument(
         "--template-path",
         dest="template_path",
-        default="/config/prometheus/config-template.yaml",
+        default="/config/victoria-metrics/config-template.yaml",
         help="Path to the config template that should be expanded",
     )
 
     parser.add_argument(
         "--output-path",
         dest="output_path",
-        default="/config/prometheus/config.yaml",
+        default="/config/victoria-metrics/config.yaml",
         help="Path to where the output should be written",
     )
 
