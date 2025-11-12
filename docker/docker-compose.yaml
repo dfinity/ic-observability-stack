@@ -12,17 +12,19 @@ services:
     volumes:
       - ./volumes/msd:/msd
 
-  victoria:
-    image: victoriametrics/victoria-metrics:v1.129.1
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.97.1
     network_mode: host
     volumes:
       - ./config/prometheus:/config
       - ./volumes/victoria/:/victoria
     command:
+      - --storageDataPath=/victoria-metrics-data
+      - --httpListenAddr=:9090
+      - --retentionPeriod=1y
       - --promscrape.config=/config/config.yaml
-      - --storageDataPath=/victoria
-      - --retentionPeriod=6
-      - --enableTCP6
+      - --promscrape.configCheckInterval=30s
+      - --enableTCP6=true
     user: "${UID}:${GID}"
     deploy:
       resources:
@@ -40,3 +42,5 @@ services:
       - ./config/grafana:/etc/grafana
       - ./volumes/grafana:/var/lib/grafana
     user: "${UID}:${GID}"
+    depends_on:
+      - victoriametrics
