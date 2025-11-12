@@ -16,11 +16,16 @@ services:
     image: victoriametrics/victoria-metrics:v1.97.1
     network_mode: host
     volumes:
+      - ./config/victoria-metrics:/config
       - ./volumes/victoriametrics:/victoria-metrics-data
     command:
       - --storageDataPath=/victoria-metrics-data
       - --httpListenAddr=:9090
       - --retentionPeriod=1y
+      - --promscrape.config=/config/config.yaml
+      - --promscrape.configCheckInterval=30s
+      - --enableTCP6=true
+    user: "${UID}:${GID}"
     deploy:
       resources:
         limits:
@@ -39,6 +44,7 @@ services:
       - ./volumes/node-rewards-scheduler:/scheduler
       - ./config/node-rewards-scheduler/entrypoint.sh:/entrypoint.sh:ro
     entrypoint: /entrypoint.sh
+    user: "${UID}:${GID}"
     depends_on:
       - victoriametrics
 

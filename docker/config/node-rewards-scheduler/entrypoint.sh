@@ -63,12 +63,10 @@ if [ -f "/dre-binary/dre" ]; then
     echo "✅ Local dre binary installed successfully"
   else
     echo "❌ Failed to run local dre binary"
-    exit 1
   fi
 else
   echo "❌ Local dre binary not found at /dre-binary/dre"
   echo "Please build the binary with: cd /Users/pietro.di.marco/dre && cargo build --release --bin dre"
-  exit 1
 fi
 
 # Wait for VictoriaMetrics to be ready
