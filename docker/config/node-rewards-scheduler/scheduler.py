@@ -231,8 +231,33 @@ class ICCanisterClient:
         from ic.principal import Principal
         
         try:
+            # DateRangeFilter: record { start_timestamp_seconds: opt nat64; end_timestamp_seconds: opt nat64 }
+            date_range_filter_type = Types.Record({
+                'start_timestamp_seconds': Types.Opt(Types.Nat64),
+                'end_timestamp_seconds': Types.Opt(Types.Nat64),
+            })
+            
+            # ListNodeProviderRewardsRequest: record { date_filter: opt DateRangeFilter }
             request_type = Types.Record({
-                'date_filter': Types.Opt(Types.Nat64)
+                'date_filter': Types.Opt(date_range_filter_type)
+            })
+            
+            # MonthlyNodeProviderRewards (simplified - we only need timestamp field)
+            monthly_rewards_type = Types.Record({
+                'timestamp': Types.Nat64,
+                'start_date': Types.Opt(Types.Record({'year': Types.Nat32, 'month': Types.Nat32, 'day': Types.Nat32})),
+                'end_date': Types.Opt(Types.Record({'year': Types.Nat32, 'month': Types.Nat32, 'day': Types.Nat32})),
+                'rewards': Types.Vec(Types.Record({})),  # Simplified, not parsing individual rewards
+                'xdr_conversion_rate': Types.Opt(Types.Record({})),
+                'minimum_xdr_permyriad_per_icp': Types.Opt(Types.Nat64),
+                'maximum_node_provider_rewards_e8s': Types.Opt(Types.Nat64),
+                'registry_version': Types.Opt(Types.Nat64),
+                'node_providers': Types.Vec(Types.Record({})),
+            })
+            
+            # ListNodeProviderRewardsResponse: record { rewards: vec MonthlyNodeProviderRewards }
+            return_type = Types.Record({
+                'rewards': Types.Vec(monthly_rewards_type)
             })
             
             # Build request with no date filter to get all rewards
@@ -244,11 +269,12 @@ class ICCanisterClient:
                 }
             }])
             
-            # Make query
+            # Make query with return type
             response = self.agent.query_raw(
                 self.GOVERNANCE_CANISTER_ID,
                 'list_node_provider_rewards',
                 arg_bytes,
+                return_type
             )
             
             # Extract value from response
@@ -258,7 +284,7 @@ class ICCanisterClient:
             
             result = response[0].get('value', {})
             rewards_list = result.get('rewards', [])
-            
+                        
             # Rewards are in descending order (latest first)
             if rewards_list and len(rewards_list) > 0:
                 first_reward = rewards_list[0]
@@ -330,8 +356,8 @@ class NodeRewardsPusher:
             target_date = datetime.strptime(date_str, '%Y-%m-%d')
             
             # Calculate noon timestamp in milliseconds
-            noon_dt = target_date.replace(hour=12, minute=0, second=0, microsecond=0)
-            noon_timestamp_ms = int(noon_dt.replace(tzinfo=timezone.utc).timestamp() * 1000)
+            target_dt = target_date.replace(hour=23, minute=59, second=59, microsecond=0)
+            timestamp_ms = int(target_dt.replace(tzinfo=timezone.utc).timestamp() * 1000)
             
             # Fetch data from IC canister
             daily_results = await self.ic_client.get_rewards_daily(date_str)
@@ -351,21 +377,21 @@ class NodeRewardsPusher:
                 # nodes_count
                 nodes_count = len(provider_rewards.get('daily_nodes_rewards', []))
                 metrics_lines.append(
-                    f'nodes_count{{provider_id="{provider_id_str}"}} {nodes_count} {noon_timestamp_ms}'
+                    f'nodes_count{{provider_id="{provider_id_str}"}} {nodes_count} {timestamp_ms}'
                 )
                 
                 # base_rewards
                 base_rewards = self._unwrap_optional(provider_rewards.get('total_base_rewards_xdr_permyriad'))
                 if base_rewards is not None:
                     metrics_lines.append(
-                        f'total_base_rewards_xdr_permyriad{{provider_id="{provider_id_str}"}} {base_rewards} {noon_timestamp_ms}'
+                        f'total_base_rewards_xdr_permyriad{{provider_id="{provider_id_str}"}} {base_rewards} {timestamp_ms}'
                     )
                 
                 # adjusted_rewards
                 adjusted_rewards = self._unwrap_optional(provider_rewards.get('total_adjusted_rewards_xdr_permyriad'))
                 if adjusted_rewards is not None:
                     metrics_lines.append(
-                        f'total_adjusted_rewards_xdr_permyriad{{provider_id="{provider_id_str}"}} {adjusted_rewards} {noon_timestamp_ms}'
+                        f'total_adjusted_rewards_xdr_permyriad{{provider_id="{provider_id_str}"}} {adjusted_rewards} {timestamp_ms}'
                     )
                 
                 # Node-level metrics
@@ -388,14 +414,14 @@ class NodeRewardsPusher:
                             original_fr = self._unwrap_optional(node_metrics.get('original_failure_rate'))
                             if original_fr is not None:
                                 metrics_lines.append(
-                                    f'original_failure_rate{{provider_id="{provider_id_str}",node_id="{node_id_str}",subnet_id="{subnet_id_str}"}} {original_fr} {noon_timestamp_ms}'
+                                    f'original_failure_rate{{provider_id="{provider_id_str}",node_id="{node_id_str}",subnet_id="{subnet_id_str}"}} {original_fr} {timestamp_ms}'
                                 )
                             
                             # relative_failure_rate
                             relative_fr = self._unwrap_optional(node_metrics.get('relative_failure_rate'))
                             if relative_fr is not None:
                                 metrics_lines.append(
-                                    f'relative_failure_rate{{provider_id="{provider_id_str}",node_id="{node_id_str}",subnet_id="{subnet_id_str}"}} {relative_fr} {noon_timestamp_ms}'
+                                    f'relative_failure_rate{{provider_id="{provider_id_str}",node_id="{node_id_str}",subnet_id="{subnet_id_str}"}} {relative_fr} {timestamp_ms}'
                                 )
             
             # Subnet-level metrics
@@ -403,14 +429,22 @@ class NodeRewardsPusher:
             for subnet_id, failure_rate in subnets_failure_rate.items():
                 subnet_id_str = str(subnet_id)
                 metrics_lines.append(
-                    f'subnet_failure_rate{{subnet_id="{subnet_id_str}"}} {failure_rate} {noon_timestamp_ms}'
+                    f'subnet_failure_rate{{subnet_id="{subnet_id_str}"}} {failure_rate} {timestamp_ms}'
                 )
             
             # Governance timestamp
             gov_timestamp = await self.ic_client.get_latest_governance_reward_event()
             if gov_timestamp:
                 metrics_lines.append(
-                    f'governance_latest_reward_event_timestamp_seconds {gov_timestamp} {noon_timestamp_ms}'
+                    f'governance_latest_reward_event_timestamp_seconds {gov_timestamp} {timestamp_ms}'
+                )
+                
+                # Calculate days since last governance distribution
+                now_utc = datetime.now(timezone.utc)
+                gov_datetime: datetime = datetime.fromtimestamp(gov_timestamp, tz=timezone.utc)
+                days_since = int((now_utc - gov_datetime).total_seconds() / 86400)  # 86400 seconds in a day
+                metrics_lines.append(
+                    f'days_since_governance_distribution {days_since} {timestamp_ms}'
                 )
             
             # Push to VictoriaMetrics
@@ -471,6 +505,8 @@ class NodeRewardsPusher:
     
     async def run_daily_scheduler(self):
         """Run the daily scheduler loop"""
+        yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime('%Y-%m-%d')
+        logger.info(f"Running scheduled push for {yesterday}")
         
         while True:
             try:

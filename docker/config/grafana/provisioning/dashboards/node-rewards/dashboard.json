@@ -5,7 +5,7 @@
           "builtIn": 1,
           "datasource": {
             "type": "grafana",
-            "uid": "victoriametrics1d"
+            "uid": "prometheus1d"
           },
           "enable": true,
           "hide": true,
@@ -171,7 +171,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "count(latest_nodes_count offset -1d)",
+            "expr": "count(nodes_count offset -1d)",
             "range": true,
             "refId": "A"
           }
@@ -235,7 +235,7 @@
               "type": "prometheus",
               "uid": "${DS_PROMETHEUS}"
             },
-            "expr": "sum(last_over_time(latest_nodes_count[$__range] offset -1d))",
+            "expr": "sum(last_over_time(nodes_count[$__range] offset -1d))",
             "refId": "A"
           }
         ],
@@ -299,7 +299,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "sum(sum_over_time(latest_total_adjusted_rewards_xdr_permyriad[$__range] offset -1d)) / 10000",
+            "expr": "sum(sum_over_time(total_adjusted_rewards_xdr_permyriad[$__range] offset -1d)) / 10000",
             "range": true,
             "refId": "A"
           }
@@ -539,7 +539,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "latest_nodes_count{provider_id=~\"$provider\"} offset -1d",
+            "expr": "nodes_count{provider_id=~\"$provider\"} offset -1d",
             "format": "table",
             "instant": true,
             "refId": "A"
@@ -550,7 +550,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "sum by (provider_id) (sum_over_time(latest_total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) / 10000",
+            "expr": "sum by (provider_id) (sum_over_time(total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) / 10000",
             "format": "table",
             "instant": true,
             "refId": "B"
@@ -561,7 +561,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "sum by (provider_id) (sum_over_time(latest_total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) / 10000",
+            "expr": "sum by (provider_id) (sum_over_time(total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) / 10000",
             "format": "table",
             "instant": true,
             "refId": "C"
@@ -572,7 +572,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "(sum by (provider_id) (sum_over_time(latest_total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) - sum by (provider_id) (sum_over_time(latest_total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range]))) / 10000",
+            "expr": "(sum by (provider_id) (sum_over_time(total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) - sum by (provider_id) (sum_over_time(total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range]))) / 10000",
             "format": "table",
             "instant": true,
             "refId": "D"
@@ -583,7 +583,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "(sum by (provider_id) (sum_over_time(latest_total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) / sum by (provider_id) (sum_over_time(latest_total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range]))) * 100",
+            "expr": "(sum by (provider_id) (sum_over_time(total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) / sum by (provider_id) (sum_over_time(total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range]))) * 100",
             "format": "table",
             "instant": true,
             "refId": "E"
@@ -766,7 +766,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "latest_total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d",
+            "expr": "total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d",
             "legendFormat": "Base - {{provider_id}} ",
             "range": true,
             "refId": "A"
@@ -777,7 +777,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "latest_total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d",
+            "expr": "total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d",
             "hide": false,
             "instant": false,
             "legendFormat": "Adjusted - {{provider_id}}",
@@ -882,7 +882,7 @@
               "type": "prometheus",
               "uid": "${DS_PROMETHEUS}"
             },
-            "expr": "(latest_total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d / latest_total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d) * 100",
+            "expr": "(total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d / total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d) * 100",
             "legendFormat": "{{provider_id}} - Efficiency %",
             "refId": "A"
           }
@@ -979,7 +979,7 @@
               "type": "prometheus",
               "uid": "${DS_PROMETHEUS}"
             },
-            "expr": "latest_nodes_count{provider_id=~\"$provider\"} offset -1d",
+            "expr": "nodes_count{provider_id=~\"$provider\"} offset -1d",
             "legendFormat": "{{provider_id}} - Total Nodes",
             "refId": "A"
           }
@@ -1081,7 +1081,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "(latest_total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d- latest_total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d)",
+            "expr": "(total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d- total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"} offset -1d)",
             "legendFormat": "{{provider_id}} - Penalty",
             "range": true,
             "refId": "A"
@@ -1195,7 +1195,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "label_replace(latest_original_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\"} offset -1d, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
+            "expr": "label_replace(original_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\"} offset -1d, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
             "legendFormat": "{{node_short}}",
             "range": true,
             "refId": "A"
@@ -1300,7 +1300,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "label_replace(latest_relative_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\"} offset -1d, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
+            "expr": "label_replace(relative_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\"} offset -1d, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
             "legendFormat": "{{node_short}}",
             "range": true,
             "refId": "A"
@@ -1382,7 +1382,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "label_replace(latest_original_failure_rate{provider_id=~\"$provider\", node_id=~\"$node\"}, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
+            "expr": "label_replace(original_failure_rate{provider_id=~\"$provider\", node_id=~\"$node\"}, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
             "format": "time_series",
             "legendFormat": "{{node_short}}",
             "range": true,
@@ -1465,7 +1465,7 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "label_replace(latest_relative_failure_rate{provider_id=~\"$provider\", node_id=~\"$node\"}, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
+            "expr": "label_replace(relative_failure_rate{provider_id=~\"$provider\", node_id=~\"$node\"}, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
             "format": "time_series",
             "legendFormat": "{{node_short}}",
             "range": true,
@@ -1670,7 +1670,7 @@
               "type": "prometheus",
               "uid": "${DS_PROMETHEUS}"
             },
-            "expr": "latest_relative_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\"} offset -1d",
+            "expr": "relative_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\"} offset -1d",
             "format": "table",
             "instant": true,
             "refId": "B"
@@ -1862,14 +1862,14 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "definition": "label_values(latest_nodes_count, provider_id)",
+          "definition": "label_values(nodes_count, provider_id)",
           "includeAll": true,
           "label": "Provider",
           "multi": true,
           "name": "provider",
           "options": [],
           "query": {
-            "query": "label_values(latest_nodes_count, provider_id)",
+            "query": "label_values(nodes_count, provider_id)",
             "refId": "StandardVariableQuery"
           },
           "refresh": 2,
@@ -1887,14 +1887,14 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "definition": "label_values(latest_original_failure_rate{provider_id=~\"$provider\"}, node_id)",
+          "definition": "label_values(original_failure_rate{provider_id=~\"$provider\"}, node_id)",
           "includeAll": true,
           "label": "Node",
           "multi": true,
           "name": "node",
           "options": [],
           "query": {
-            "query": "label_values(latest_original_failure_rate{provider_id=~\"$provider\"}, node_id)",
+            "query": "label_values(original_failure_rate{provider_id=~\"$provider\"}, node_id)",
             "refId": "StandardVariableQuery"
           },
           "refresh": 2,
@@ -1933,14 +1933,14 @@
             "text": "1762947155000",
             "value": "1762947155000"
           },
-          "definition": "query_result(last_over_time(governance_latest_reward_event_timestamp_seconds[35d]))",
+          "definition": "query_result(last_over_time(governance_reward_event_timestamp_seconds[35d]))",
           "hide": 2,
           "includeAll": false,
           "name": "last_rewards_seconds",
           "options": [],
           "query": {
             "qryType": 3,
-            "query": "query_result(last_over_time(governance_latest_reward_event_timestamp_seconds[35d]))",
+            "query": "query_result(last_over_time(governance_reward_event_timestamp_seconds[35d]))",
             "refId": "PrometheusVariableQueryEditor-VariableQuery"
           },
           "refresh": 1,
