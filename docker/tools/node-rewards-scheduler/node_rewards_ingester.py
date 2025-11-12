@@ -258,6 +258,10 @@ class NodeRewardsPusher:
             return value[0] if len(value) > 0 else None
         return value
 
+    @staticmethod
+    def _make_line(metric_name: str, value: int, ts: int, **kwargs) -> str:
+        return f"{metric_name}{{ {' '.join([f'{key}="{value}"' for key, value in kwargs.items()])} }} {value} {ts}"
+
     def wait_for_victoria_metrics(self):
         """Wait for VictoriaMetrics to be ready"""
 
@@ -295,33 +299,48 @@ class NodeRewardsPusher:
 
         metrics_lines = []
 
+        # Helper function to not repeat the labels all the
+        # time and to single out the place for changing labels
+        def add_line_helper(metric_name: str, value, **kwargs):
+            metrics_lines.append(
+                self._make_line(
+                    metric_name,
+                    value,
+                    noon_timestamp_ms,
+                    canister_id=self.nrc_clients[0].canister_id,
+                    **kwargs,
+                )
+            )
+
         # Provider-level metrics
         provider_results = daily_results.get("provider_results", {})
         for provider_id, provider_rewards in provider_results.items():
             provider_id_str = str(provider_id)
 
+            def add_line_helper_with_provider(metric_name: str, value: int, **kwargs):
+                add_line_helper(
+                    metric_name, value, provider_id=provider_id_str, **kwargs
+                )
+
             # nodes_count
             nodes_count = len(provider_rewards.get("daily_nodes_rewards", []))
-            metrics_lines.append(
-                f'nodes_count{{provider_id="{provider_id_str}"}} {nodes_count} {noon_timestamp_ms}'
-            )
+            add_line_helper_with_provider("nodes_count", nodes_count)
 
             # base_rewards
             base_rewards = self._unwrap_optional(
                 provider_rewards.get("total_base_rewards_xdr_permyriad")
             )
             if base_rewards is not None:
-                metrics_lines.append(
-                    f'total_base_rewards_xdr_permyriad{{provider_id="{provider_id_str}"}} {base_rewards} {noon_timestamp_ms}'
+                add_line_helper_with_provider(
+                    "total_base_rewards_xdr_permyriad", base_rewards
                 )
 
-            # adjusted_rewards
             adjusted_rewards = self._unwrap_optional(
                 provider_rewards.get("total_adjusted_rewards_xdr_permyriad")
             )
             if adjusted_rewards is not None:
-                metrics_lines.append(
-                    f'total_adjusted_rewards_xdr_permyriad{{provider_id="{provider_id_str}"}} {adjusted_rewards} {noon_timestamp_ms}'
+                add_line_helper_with_provider(
+                    "total_adjusted_rewards_xdr_permyriad", adjusted_rewards
                 )
 
             # Node-level metrics
@@ -343,29 +362,37 @@ class NodeRewardsPusher:
                         subnet_member.get("node_metrics")
                     )
 
-                    if node_metrics:
-                        subnet_id = self._unwrap_optional(
-                            node_metrics.get("subnet_assigned")
-                        )
-                        subnet_id_str = str(subnet_id) if subnet_id else ""
+                    if not node_metrics:
+                        continue
 
-                        # original_failure_rate
-                        original_fr = self._unwrap_optional(
-                            node_metrics.get("original_failure_rate")
-                        )
-                        if original_fr is not None:
-                            metrics_lines.append(
-                                f'original_failure_rate{{provider_id="{provider_id_str}",node_id="{node_id_str}",subnet_id="{subnet_id_str}"}} {original_fr} {noon_timestamp_ms}'
-                            )
+                    subnet_id = self._unwrap_optional(
+                        node_metrics.get("subnet_assigned")
+                    )
+                    subnet_id_str = str(subnet_id) if subnet_id else ""
 
-                        # relative_failure_rate
-                        relative_fr = self._unwrap_optional(
-                            node_metrics.get("relative_failure_rate")
+                    # original_failure_rate
+                    original_fr = self._unwrap_optional(
+                        node_metrics.get("original_failure_rate")
+                    )
+                    if original_fr is not None:
+                        add_line_helper_with_provider(
+                            "original_failure_rate",
+                            original_fr,
+                            node_id=node_id_str,
+                            subnet_id=subnet_id_str,
                         )
-                        if relative_fr is not None:
-                            metrics_lines.append(
-                                f'relative_failure_rate{{provider_id="{provider_id_str}",node_id="{node_id_str}",subnet_id="{subnet_id_str}"}} {relative_fr} {noon_timestamp_ms}'
-                            )
+
+                    # relative_failure_rate
+                    relative_fr = self._unwrap_optional(
+                        node_metrics.get("relative_failure_rate")
+                    )
+                    if relative_fr is not None:
+                        add_line_helper_with_provider(
+                            "relative_failure_rate",
+                            relative_fr,
+                            node_id=node_id_str,
+                            subnet_id=subnet_id_str,
+                        )
 
         # Subnet-level metrics
         subnets_failure_rate = daily_results.get("subnets_failure_rate", {})
@@ -374,12 +401,15 @@ class NodeRewardsPusher:
             metrics_lines.append(
                 f'subnet_failure_rate{{subnet_id="{subnet_id_str}"}} {failure_rate} {noon_timestamp_ms}'
             )
+            add_line_helper(
+                "subnets_failure_rate", failure_rate, subnet_id=subnet_id_str
+            )
 
         # Governance timestamp
         gov_timestamp = self.nrc_clients[0].get_latest_governance_reward_event()
         if gov_timestamp:
-            metrics_lines.append(
-                f"governance_latest_reward_event_timestamp_seconds {gov_timestamp} {noon_timestamp_ms}"
+            add_line_helper(
+                "governance_latest_reward_event_timestamp_seconds", gov_timestamp
             )
 
         if not metrics_lines:
