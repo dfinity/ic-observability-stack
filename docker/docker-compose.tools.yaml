@@ -2,7 +2,7 @@ services:
   prom-config-builder:
     build:
       context: .
-      dockerfile: ./tools/prom-config-builder/prom-config-builder.Dockerfile
+      dockerfile: ./tools/python.Dockerfile
     volumes:
       - ./config/prometheus:/config/prometheus
       - ./tools/prom-config-builder/:/tools/prom-config-builder
