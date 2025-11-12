@@ -111,7 +111,7 @@ Once started, you will see the following applications:
 * Grafana - http://localhost:3000 - default creds can be see in `./config/grafana/grafana.ini` 
 * Service discovery - http://localhost:8000
 
-After 5-10 minutes you should see targets discovered in victoria on the [targets page](http://localhost:8428/targets).
+After 5-10 minutes you should see targets discovered in victoria on the [targets page](http://localhost:9090/targets).
 Initially, they might apear in red and if you keep monitoring they should
 slowly start getting green, which means that the targets are successfuly scraped.
 
@@ -207,7 +207,7 @@ will be clearly logged in the multiservice discovery.
 
 #### No targets visible in targets view
 
-If you don't see anything in the [prometheus targets view](http://localhost:8428/targets?search=), 
+If you don't see anything in the [prometheus targets view](http://localhost:9090/targets?search=), 
 that means that prometheus failed to receive targets from the service discovery.
 
 To check the logs run:
