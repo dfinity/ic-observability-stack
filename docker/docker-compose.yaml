@@ -34,6 +34,18 @@ services:
         reservations:
           memory: 12G
 
+  node-rewards-scheduler:
+    image: python:3.11-slim
+    network_mode: host
+    environment:
+      VICTORIA_METRICS_URL: http://localhost:9090
+    volumes:
+      - ./config/node-rewards-scheduler/scheduler.py:/app/scheduler.py:ro
+    command: python3 /app/scheduler.py
+    user: "${UID}:${GID}"
+    depends_on:
+      - victoriametrics
+
   grafana:
     image: grafana/grafana:12.2.1
     network_mode: host
