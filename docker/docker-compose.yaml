@@ -19,7 +19,7 @@ services:
       - ./config/prometheus:/config
       - ./volumes/victoria/:/victoria
     command:
-      - --storageDataPath=/victoria-metrics-data
+      - --storageDataPath=/victoria
       - --httpListenAddr=:9090
       - --retentionPeriod=1y
       - --promscrape.config=/config/config.yaml
