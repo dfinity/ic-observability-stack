@@ -6,4 +6,5 @@ services:
     volumes:
       - ./config/prometheus:/config/prometheus
       - ./tools/prom-config-builder/:/tools/prom-config-builder
+    user: "${UID}:${GID}"
 
