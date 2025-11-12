@@ -14,7 +14,7 @@ services:
     user: "${UID}:${GID}"
 
   victoriametrics:
-    image: victoriametrics/victoria-metrics:v1.97.1
+    image: victoriametrics/victoria-metrics:v1.129.1
     network_mode: host
     volumes:
       - ./config/prometheus:/config
@@ -34,14 +34,16 @@ services:
         reservations:
           memory: 12G
 
-  node-rewards-scheduler:
-    image: python:3.11-slim
+  node-rewards-ingester:
+    build:
+      context: .
+      dockerfile: ./tools/python.Dockerfile
     network_mode: host
     environment:
       VICTORIA_METRICS_URL: http://localhost:9090
     volumes:
-      - ./config/node-rewards-scheduler/scheduler.py:/app/scheduler.py:ro
-    command: python3 /app/scheduler.py
+      - ./tools/node-rewards-scheduler/node_rewards_ingester.py:/app/node_rewards_ingester.py
+    command: /app/node_rewards_ingester.py
     user: "${UID}:${GID}"
     depends_on:
       - victoriametrics
