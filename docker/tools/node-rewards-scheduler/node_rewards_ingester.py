@@ -43,7 +43,7 @@ DATE_UTC_TYPE = Types.Record(
     }
 )
 
-REQUEST_TYPE = Types.Record({"day": DATE_UTC_TYPE})
+GET_REWARDS_DAILY_REQUEST_TYPE = Types.Record({"day": DATE_UTC_TYPE})
 
 NODE_METRICS_DAILY_TYPE = Types.Record(
     {
@@ -130,6 +130,10 @@ RETURN_TYPE = Types.Variant(
     }
 )
 
+LIST_NODE_PROVIDER_REWARDS_REQUEST_TYPE = Types.Record(
+    {"date_filter": Types.Opt(Types.Nat64)}
+)
+
 
 class NodeRewardsClient:
     """Client for interacting with the node rewards canister"""
@@ -151,7 +155,9 @@ class NodeRewardsClient:
                 "day": parsed_date.day,
             }
         }
-        arg_bytes = encode([{"type": REQUEST_TYPE, "value": arg_value}])
+        arg_bytes = encode(
+            [{"type": GET_REWARDS_DAILY_REQUEST_TYPE, "value": arg_value}]
+        )
 
         response = self.agent.query_raw(
             self.canister_id,
@@ -202,47 +208,36 @@ class NodeRewardsClient:
     def get_latest_governance_reward_event(self) -> Optional[float]:
         """Fetch latest governance reward event timestamp from governance canister"""
 
-        try:
-            request_type = Types.Record({"date_filter": Types.Opt(Types.Nat64)})
+        arg_bytes = encode(
+            [
+                {
+                    "type": LIST_NODE_PROVIDER_REWARDS_REQUEST_TYPE,
+                    "value": {
+                        "date_filter": []  # Empty list = None for optional types
+                    },
+                }
+            ]
+        )
 
-            # Build request with no date filter to get all rewards
-            # In ic-py, optional None is represented as an empty list []
-            arg_bytes = encode(
-                [
-                    {
-                        "type": request_type,
-                        "value": {
-                            "date_filter": []  # Empty list = None for optional types
-                        },
-                    }
-                ]
-            )
+        response = self.agent.query_raw(
+            GOVERNANCE_CANISTER_ID,
+            "list_node_provider_rewards",
+            arg_bytes,
+        )
 
-            # Make query
-            response = self.agent.query_raw(
-                GOVERNANCE_CANISTER_ID,
-                "list_node_provider_rewards",
-                arg_bytes,
-            )
+        if not response or len(response) == 0:
+            logger.warning("Empty response from governance canister")
+            return None
 
-            # Extract value from response
-            if not response or len(response) == 0:
-                logger.warning("Empty response from governance canister")
-                return None
+        result = response[0].get("value", {})
+        rewards_list = result.get("rewards", [])
 
-            result = response[0].get("value", {})
-            rewards_list = result.get("rewards", [])
-
-            # Rewards are in descending order (latest first)
-            if rewards_list and len(rewards_list) > 0:
-                first_reward = rewards_list[0]
-                timestamp = first_reward.get("timestamp")
-                if timestamp:
-                    logger.info(f"Latest governance reward timestamp: {timestamp}")
-                    return float(timestamp)
-
-        except Exception as e:
-            logger.warning(f"Failed to fetch governance rewards: {e}", exc_info=True)
+        if rewards_list and len(rewards_list) > 0:
+            first_reward = rewards_list[0]
+            timestamp = first_reward.get("timestamp")
+            if timestamp:
+                logger.info(f"Latest governance reward timestamp: {timestamp}")
+                return float(timestamp)
 
         return None
 
@@ -280,152 +275,138 @@ class NodeRewardsPusher:
             logger.info(f"  Waiting for VictoriaMetrics at {self.victoria_url}...")
             time.sleep(2)
 
-    def push_metrics_for_date(self, date_str: str) -> bool:
+    def push_metrics_for_date(self, date: str):
         """
         Fetch node rewards data from IC canisters and push to VictoriaMetrics for a specific date
         Returns True if successful, False otherwise
         """
 
-        try:
-            logger.info(f"Pushing node rewards data for {date_str}")
+        logger.info(f"Pushing node rewards data for {date}")
+        target_date = datetime.strptime(date, "%Y-%m-%d")
 
-            # Parse target date
-            target_date = datetime.strptime(date_str, "%Y-%m-%d")
+        noon = target_date.replace(hour=12, minute=0, second=0, microsecond=0)
+        noon_timestamp_ms = int(noon.replace(tzinfo=timezone.utc).timestamp() * 1000)
 
-            # Calculate noon timestamp in milliseconds
-            noon_dt = target_date.replace(hour=12, minute=0, second=0, microsecond=0)
-            noon_timestamp_ms = int(
-                noon_dt.replace(tzinfo=timezone.utc).timestamp() * 1000
+        # Fetch data from IC canister
+        daily_results = self.nrc_clients[0].get_rewards_daily(date)
+
+        if not daily_results:
+            raise ValueError(f"⚠️  No data available for {date}")
+
+        metrics_lines = []
+
+        # Provider-level metrics
+        provider_results = daily_results.get("provider_results", {})
+        for provider_id, provider_rewards in provider_results.items():
+            provider_id_str = str(provider_id)
+
+            # nodes_count
+            nodes_count = len(provider_rewards.get("daily_nodes_rewards", []))
+            metrics_lines.append(
+                f'nodes_count{{provider_id="{provider_id_str}"}} {nodes_count} {noon_timestamp_ms}'
             )
 
-            # Fetch data from IC canister
-            daily_results = self.nrc_clients[0].get_rewards_daily(date_str)
-
-            if not daily_results:
-                logger.warning(f"⚠️  No data available for {date_str}")
-                return False
-
-            # Build Prometheus metrics
-            metrics_lines = []
-
-            # Provider-level metrics
-            provider_results = daily_results.get("provider_results", {})
-            for provider_id, provider_rewards in provider_results.items():
-                provider_id_str = str(provider_id)
-
-                # nodes_count
-                nodes_count = len(provider_rewards.get("daily_nodes_rewards", []))
+            # base_rewards
+            base_rewards = self._unwrap_optional(
+                provider_rewards.get("total_base_rewards_xdr_permyriad")
+            )
+            if base_rewards is not None:
                 metrics_lines.append(
-                    f'nodes_count{{provider_id="{provider_id_str}"}} {nodes_count} {noon_timestamp_ms}'
+                    f'total_base_rewards_xdr_permyriad{{provider_id="{provider_id_str}"}} {base_rewards} {noon_timestamp_ms}'
                 )
 
-                # base_rewards
-                base_rewards = self._unwrap_optional(
-                    provider_rewards.get("total_base_rewards_xdr_permyriad")
+            # adjusted_rewards
+            adjusted_rewards = self._unwrap_optional(
+                provider_rewards.get("total_adjusted_rewards_xdr_permyriad")
+            )
+            if adjusted_rewards is not None:
+                metrics_lines.append(
+                    f'total_adjusted_rewards_xdr_permyriad{{provider_id="{provider_id_str}"}} {adjusted_rewards} {noon_timestamp_ms}'
                 )
-                if base_rewards is not None:
-                    metrics_lines.append(
-                        f'total_base_rewards_xdr_permyriad{{provider_id="{provider_id_str}"}} {base_rewards} {noon_timestamp_ms}'
-                    )
 
-                # adjusted_rewards
-                adjusted_rewards = self._unwrap_optional(
-                    provider_rewards.get("total_adjusted_rewards_xdr_permyriad")
+            # Node-level metrics
+            for node_result in provider_rewards.get("daily_nodes_rewards", []):
+                node_id = self._unwrap_optional(node_result.get("node_id"))
+                node_id_str = str(node_id) if node_id else ""
+
+                # daily_node_failure_rate is optional and contains a variant
+                failure_rate_data = self._unwrap_optional(
+                    node_result.get("daily_node_failure_rate")
                 )
-                if adjusted_rewards is not None:
-                    metrics_lines.append(
-                        f'total_adjusted_rewards_xdr_permyriad{{provider_id="{provider_id_str}"}} {adjusted_rewards} {noon_timestamp_ms}'
+                if (
+                    isinstance(failure_rate_data, dict)
+                    and "SubnetMember" in failure_rate_data
+                ):
+                    # Extract node_metrics from SubnetMember variant
+                    subnet_member = failure_rate_data["SubnetMember"]
+                    node_metrics = self._unwrap_optional(
+                        subnet_member.get("node_metrics")
                     )
 
-                # Node-level metrics
-                for node_result in provider_rewards.get("daily_nodes_rewards", []):
-                    node_id = self._unwrap_optional(node_result.get("node_id"))
-                    node_id_str = str(node_id) if node_id else ""
-
-                    # daily_node_failure_rate is optional and contains a variant
-                    failure_rate_data = self._unwrap_optional(
-                        node_result.get("daily_node_failure_rate")
-                    )
-                    if (
-                        isinstance(failure_rate_data, dict)
-                        and "SubnetMember" in failure_rate_data
-                    ):
-                        # Extract node_metrics from SubnetMember variant
-                        subnet_member = failure_rate_data["SubnetMember"]
-                        node_metrics = self._unwrap_optional(
-                            subnet_member.get("node_metrics")
+                    if node_metrics:
+                        subnet_id = self._unwrap_optional(
+                            node_metrics.get("subnet_assigned")
                         )
+                        subnet_id_str = str(subnet_id) if subnet_id else ""
 
-                        if node_metrics:
-                            subnet_id = self._unwrap_optional(
-                                node_metrics.get("subnet_assigned")
+                        # original_failure_rate
+                        original_fr = self._unwrap_optional(
+                            node_metrics.get("original_failure_rate")
+                        )
+                        if original_fr is not None:
+                            metrics_lines.append(
+                                f'original_failure_rate{{provider_id="{provider_id_str}",node_id="{node_id_str}",subnet_id="{subnet_id_str}"}} {original_fr} {noon_timestamp_ms}'
                             )
-                            subnet_id_str = str(subnet_id) if subnet_id else ""
 
-                            # original_failure_rate
-                            original_fr = self._unwrap_optional(
-                                node_metrics.get("original_failure_rate")
+                        # relative_failure_rate
+                        relative_fr = self._unwrap_optional(
+                            node_metrics.get("relative_failure_rate")
+                        )
+                        if relative_fr is not None:
+                            metrics_lines.append(
+                                f'relative_failure_rate{{provider_id="{provider_id_str}",node_id="{node_id_str}",subnet_id="{subnet_id_str}"}} {relative_fr} {noon_timestamp_ms}'
                             )
-                            if original_fr is not None:
-                                metrics_lines.append(
-                                    f'original_failure_rate{{provider_id="{provider_id_str}",node_id="{node_id_str}",subnet_id="{subnet_id_str}"}} {original_fr} {noon_timestamp_ms}'
-                                )
 
-                            # relative_failure_rate
-                            relative_fr = self._unwrap_optional(
-                                node_metrics.get("relative_failure_rate")
-                            )
-                            if relative_fr is not None:
-                                metrics_lines.append(
-                                    f'relative_failure_rate{{provider_id="{provider_id_str}",node_id="{node_id_str}",subnet_id="{subnet_id_str}"}} {relative_fr} {noon_timestamp_ms}'
-                                )
+        # Subnet-level metrics
+        subnets_failure_rate = daily_results.get("subnets_failure_rate", {})
+        for subnet_id, failure_rate in subnets_failure_rate.items():
+            subnet_id_str = str(subnet_id)
+            metrics_lines.append(
+                f'subnet_failure_rate{{subnet_id="{subnet_id_str}"}} {failure_rate} {noon_timestamp_ms}'
+            )
 
-            # Subnet-level metrics
-            subnets_failure_rate = daily_results.get("subnets_failure_rate", {})
-            for subnet_id, failure_rate in subnets_failure_rate.items():
-                subnet_id_str = str(subnet_id)
-                metrics_lines.append(
-                    f'subnet_failure_rate{{subnet_id="{subnet_id_str}"}} {failure_rate} {noon_timestamp_ms}'
-                )
+        # Governance timestamp
+        gov_timestamp = self.nrc_clients[0].get_latest_governance_reward_event()
+        if gov_timestamp:
+            metrics_lines.append(
+                f"governance_latest_reward_event_timestamp_seconds {gov_timestamp} {noon_timestamp_ms}"
+            )
 
-            # Governance timestamp
-            gov_timestamp = self.nrc_clients[0].get_latest_governance_reward_event()
-            if gov_timestamp:
-                metrics_lines.append(
-                    f"governance_latest_reward_event_timestamp_seconds {gov_timestamp} {noon_timestamp_ms}"
-                )
+        if not metrics_lines:
+            raise ValueError("After evaluation there were no metrics to upload")
 
-            # Push to VictoriaMetrics
-            if metrics_lines:
-                metrics_payload = "\n".join(metrics_lines) + "\n"
-                import_url = urljoin(
-                    self.victoria_url.rstrip("/") + "/", "api/v1/import/prometheus"
-                )
+        metrics_payload = "\n".join(metrics_lines) + "\n"
+        import_url = urljoin(
+            self.victoria_url.rstrip("/") + "/", "api/v1/import/prometheus"
+        )
 
-                response = requests.post(
-                    import_url,
-                    data=metrics_payload.encode("utf-8"),
-                    headers={"Content-Type": "text/plain"},
-                    timeout=30,
-                )
+        response = requests.post(
+            import_url,
+            data=metrics_payload.encode("utf-8"),
+            headers={"Content-Type": "text/plain"},
+            timeout=30,
+        )
+        try:
+            response.raise_for_status()
+        except Exception:
+            logger.error(
+                f"❌ Failed to push to VictoriaMetrics: {response.status_code} - {response.text}"
+            )
+            raise
 
-                if response.status_code in (200, 204):
-                    logger.info(
-                        f"✅ Successfully pushed data for {date_str} ({len(metrics_lines)} metrics)"
-                    )
-                    return True
-                else:
-                    logger.error(
-                        f"❌ Failed to push to VictoriaMetrics: {response.status_code} - {response.text}"
-                    )
-                    return False
-            else:
-                logger.warning(f"No metrics to push for {date_str}")
-                return False
-
-        except Exception as e:
-            logger.error(f"❌ Error processing {date_str}: {e}", exc_info=True)
-            return False
+        logger.info(
+            f"✅ Successfully pushed data for {date} ({len(metrics_lines)} metrics)"
+        )
 
     def backfill(self, days: int = 40):
         """Backfill historical data"""
@@ -433,13 +414,14 @@ class NodeRewardsPusher:
         logger.info(f"Starting backfill of last {days} days...")
 
         for i in range(days, 0, -1):
-            date_obj = datetime.now(timezone.utc) - timedelta(days=i)
-            date_str = date_obj.strftime("%Y-%m-%d")
+            date = datetime.now(timezone.utc) - timedelta(days=i)
+            date = date.strftime("%Y-%m-%d")
 
-            logger.info(
-                f"[{days - i + 1:2d}/{days}] Backfilling data for {date_str}..."
-            )
-            self.push_metrics_for_date(date_str)
+            logger.info(f"[{days - i + 1:2d}/{days}] Backfilling data for {date}...")
+            try:
+                self.push_metrics_for_date(date)
+            except Exception as e:
+                logger.error(f"Failed to backfill data due to: {e}")
 
         logger.info("✅ Backfill complete!")
 
@@ -468,7 +450,6 @@ class NodeRewardsPusher:
 
         while True:
             try:
-                # Wait until 00:05 UTC
                 self.wait_until_next_run()
 
                 # Push yesterday's data
