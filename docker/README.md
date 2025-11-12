@@ -111,8 +111,9 @@ Once started, you will see the following applications:
 * Grafana - http://localhost:3000 - default creds can be see in `./config/grafana/grafana.ini` 
 * Service discovery - http://localhost:8000
 
-After 5-10 minutes you should see targets discovered in prometheus on the [targets page](http://localhost:9090/targets?search=). Initially, they might apear in red and if you keep monitoring they should
-slowly start getting blue, which means that the targets are successfuly scraped.
+After 5-10 minutes you should see targets discovered in victoria on the [targets page](http://localhost:8428/targets).
+Initially, they might apear in red and if you keep monitoring they should
+slowly start getting green, which means that the targets are successfuly scraped.
 
 You should also see some data incoming in the grafana [sample dashboard for the 
 node exporter](http://localhost:3000/d/1/node-exporter?orgId=1&from=now-3h&to=now&timezone=utc&var-datasource=prometheus&var-instance=$__all&var-diskdevice=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B%7Cmmcblk%5B0-9%5D%2B).
@@ -138,12 +139,12 @@ the other ones that contain `severity: warning` with `severity: critical`.
 
 To access the stack remotely you can do the following:
 ```bash
-ssh -L 3000:localhost:3000 -L 9090:localhost:9090 -L 8000:localhost:8000 <machine-with-obs-stack>
+ssh -L 3000:localhost:3000 -L 8428:localhost:8428 -L 8000:localhost:8000 <machine-with-obs-stack>
 ```
 
 Example command with all parameters:
 ```bash
-ssh -L 3000:localhost:3000 -L 9090:localhost:9090 -i ~/.ssh/priv_key.pem myuser@192.168.15.15
+ssh -L 3000:localhost:3000 -L 8428:localhost:8428 -i ~/.ssh/priv_key.pem myuser@192.168.15.15
 ```
 
 ## Extending
@@ -202,11 +203,11 @@ curl http://localhost:8000/prom/targets?node_provider_id=<node-provider-id>&dc_i
 *NOTE*: The initial sync of service discovery may take up to 15 minutes! Syncing 
 will be clearly logged in the multiservice discovery.
 
-### Prometheus
+### Victoria
 
 #### No targets visible in targets view
 
-If you don't see anything in the [prometheus targets view](http://localhost:9090/targets?search=), 
+If you don't see anything in the [prometheus targets view](http://localhost:8428/targets?search=), 
 that means that prometheus failed to receive targets from the service discovery.
 
 To check the logs run:

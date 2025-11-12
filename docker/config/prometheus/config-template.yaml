@@ -28,7 +28,6 @@ anchors:
   http_configs: &http_configs
     http_sd_configs:
       - url: http://multiservice-discovery:8000/prom/targets
-        refresh_interval: 15s
 
 global:
   # Change this to control how frequently prometheus

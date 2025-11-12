@@ -22,6 +22,7 @@ services:
       - --promscrape.config=/config/config.yaml
       - --storageDataPath=/victoria
       - --retentionPeriod=6
+      - --enableTCP6
     user: "${UID}:${GID}"
     deploy:
       resources:
