@@ -13,17 +13,19 @@ services:
       - ./volumes/msd:/msd
     user: "${UID}:${GID}"
 
-  prometheus:
-    image: quay.io/prometheus/prometheus:v2.51.1
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.97.1
     network_mode: host
     volumes:
       - ./config/prometheus:/config
-      - ./volumes/prometheus/:/prometheus
+      - ./volumes/victoria/:/victoria
     command:
-      - --config.file
-      - /config/config.yaml
-      - --storage.tsdb.path=/prometheus
-      - --storage.tsdb.retention.time=6m
+      - --storageDataPath=/victoria
+      - --httpListenAddr=:9090
+      - --retentionPeriod=1y
+      - --promscrape.config=/config/config.yaml
+      - --promscrape.configCheckInterval=30s
+      - --enableTCP6=true
     user: "${UID}:${GID}"
     deploy:
       resources:
@@ -41,3 +43,5 @@ services:
       - ./config/grafana:/etc/grafana
       - ./volumes/grafana:/var/lib/grafana
     user: "${UID}:${GID}"
+    depends_on:
+      - victoriametrics
