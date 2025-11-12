@@ -25,208 +25,179 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class ICCanisterClient:
-    """Client for interacting with Internet Computer canisters"""
+IC_URL = "https://ic0.app"
 
-    # IC mainnet URL
-    IC_URL = "https://ic0.app"
+# These have to be tuples
+NODE_REWARDS_CANISTER_IDS = [
+    ("uuew5-iiaaa-aaaaa-qbx4q-cai"),  # Dev
+    ("sgymv-uiaaa-aaaaa-aaaia-cai"),  # Prod
+]
+GOVERNANCE_CANISTER_ID = "rrkah-fqaaa-aaaaa-aaaaq-cai"  # NNS Governance canister
 
-    # Canister IDs
-    NODE_REWARDS_CANISTER_ID = (
-        "uuew5-iiaaa-aaaaa-qbx4q-cai"  # Node rewards canister (DEV)
-    )
-    GOVERNANCE_CANISTER_ID = "rrkah-fqaaa-aaaaa-aaaaq-cai"  # NNS Governance canister
+###################### TYPE DEFINITIONS ###########################
+DATE_UTC_TYPE = Types.Record(
+    {
+        "year": Types.Nat32,
+        "month": Types.Nat32,
+        "day": Types.Nat32,
+    }
+)
 
-    def __init__(self):
+REQUEST_TYPE = Types.Record({"day": DATE_UTC_TYPE})
+
+NODE_METRICS_DAILY_TYPE = Types.Record(
+    {
+        "subnet_assigned": Types.Opt(Types.Principal),
+        "subnet_assigned_failure_rate": Types.Opt(Types.Float64),
+        "num_blocks_proposed": Types.Opt(Types.Nat64),
+        "num_blocks_failed": Types.Opt(Types.Nat64),
+        "original_failure_rate": Types.Opt(Types.Float64),
+        "relative_failure_rate": Types.Opt(Types.Float64),
+    }
+)
+
+DAILY_NODE_FAILURE_RATE_TYPE = Types.Variant(
+    {
+        "SubnetMember": Types.Record(
+            {
+                "node_metrics": Types.Opt(NODE_METRICS_DAILY_TYPE),
+            }
+        ),
+        "NonSubnetMember": Types.Record(
+            {
+                "extrapolated_failure_rate": Types.Opt(Types.Float64),
+            }
+        ),
+    }
+)
+
+DAILY_NODE_REWARDS_TYPE = Types.Record(
+    {
+        "node_id": Types.Opt(Types.Principal),
+        "node_reward_type": Types.Opt(Types.Text),
+        "region": Types.Opt(Types.Text),
+        "dc_id": Types.Opt(Types.Text),
+        "daily_node_failure_rate": Types.Opt(DAILY_NODE_FAILURE_RATE_TYPE),
+        "performance_multiplier": Types.Opt(Types.Float64),
+        "rewards_reduction": Types.Opt(Types.Float64),
+        "base_rewards_xdr_permyriad": Types.Opt(Types.Float64),
+        "adjusted_rewards_xdr_permyriad": Types.Opt(Types.Float64),
+    }
+)
+
+NODE_TYPE_REGION_BASE_REWARDS_TYPE = Types.Record(
+    {
+        "monthly_xdr_permyriad": Types.Opt(Types.Float64),
+        "daily_xdr_permyriad": Types.Opt(Types.Float64),
+        "node_reward_type": Types.Opt(Types.Text),
+        "region": Types.Opt(Types.Text),
+    }
+)
+
+TYPE3_REGION_BASE_REWARDS_TYPE = Types.Record(
+    {
+        "region": Types.Opt(Types.Text),
+        "nodes_count": Types.Opt(Types.Nat64),
+        "avg_rewards_xdr_permyriad": Types.Opt(Types.Float64),
+        "avg_coefficient": Types.Opt(Types.Float64),
+        "daily_xdr_permyriad": Types.Opt(Types.Float64),
+    }
+)
+
+DAILY_NODE_PROVIDER_REWARDS_TYPE = Types.Record(
+    {
+        "total_base_rewards_xdr_permyriad": Types.Opt(Types.Nat64),
+        "total_adjusted_rewards_xdr_permyriad": Types.Opt(Types.Nat64),
+        "base_rewards": Types.Vec(NODE_TYPE_REGION_BASE_REWARDS_TYPE),
+        "base_rewards_type3": Types.Vec(TYPE3_REGION_BASE_REWARDS_TYPE),
+        "daily_nodes_rewards": Types.Vec(DAILY_NODE_REWARDS_TYPE),
+    }
+)
+
+DAILY_RESULTS_TYPE = Types.Record(
+    {
+        "subnets_failure_rate": Types.Vec(Types.Tuple(Types.Principal, Types.Float64)),
+        "provider_results": Types.Vec(
+            Types.Tuple(Types.Principal, DAILY_NODE_PROVIDER_REWARDS_TYPE)
+        ),
+    }
+)
+
+RETURN_TYPE = Types.Variant(
+    {
+        "Ok": DAILY_RESULTS_TYPE,
+        "Err": Types.Text,
+    }
+)
+
+
+class NodeRewardsClient:
+    """Client for interacting with the node rewards canister"""
+
+    def __init__(self, ic_url: str, canister_id: str):
         # Create anonymous identity
         self.identity = Identity()
-        self.client = Client(url=self.IC_URL)
+        self.client = Client(url=ic_url)
         self.agent = Agent(self.identity, self.client)
+        self.canister_id = canister_id
 
-    def get_rewards_daily(self, date_str: str) -> Dict[str, Any]:
+    def get_rewards_daily(self, date: str) -> Dict[str, Any]:
         """Fetch daily rewards data from node rewards canister"""
-
-        try:
-            # Parse date
-            date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-
-            # Define Candid types for the argument
-            # DateUtc: record { year: nat16; month: nat8; day: nat8 }
-            date_utc_type = Types.Record(
-                {
-                    "year": Types.Nat32,
-                    "month": Types.Nat32,
-                    "day": Types.Nat32,
-                }
-            )
-
-            # GetNodeProvidersRewardsCalculationRequest: record { day: DateUtc }
-            request_type = Types.Record({"day": date_utc_type})
-
-            # Define return type structure
-            # NodeMetricsDaily
-            node_metrics_daily_type = Types.Record(
-                {
-                    "subnet_assigned": Types.Opt(Types.Principal),
-                    "subnet_assigned_failure_rate": Types.Opt(Types.Float64),
-                    "num_blocks_proposed": Types.Opt(Types.Nat64),
-                    "num_blocks_failed": Types.Opt(Types.Nat64),
-                    "original_failure_rate": Types.Opt(Types.Float64),
-                    "relative_failure_rate": Types.Opt(Types.Float64),
-                }
-            )
-
-            # DailyNodeFailureRate (variant)
-            daily_node_failure_rate_type = Types.Variant(
-                {
-                    "SubnetMember": Types.Record(
-                        {
-                            "node_metrics": Types.Opt(node_metrics_daily_type),
-                        }
-                    ),
-                    "NonSubnetMember": Types.Record(
-                        {
-                            "extrapolated_failure_rate": Types.Opt(Types.Float64),
-                        }
-                    ),
-                }
-            )
-
-            # DailyNodeRewards
-            daily_node_rewards_type = Types.Record(
-                {
-                    "node_id": Types.Opt(Types.Principal),
-                    "node_reward_type": Types.Opt(Types.Text),
-                    "region": Types.Opt(Types.Text),
-                    "dc_id": Types.Opt(Types.Text),
-                    "daily_node_failure_rate": Types.Opt(daily_node_failure_rate_type),
-                    "performance_multiplier": Types.Opt(Types.Float64),
-                    "rewards_reduction": Types.Opt(Types.Float64),
-                    "base_rewards_xdr_permyriad": Types.Opt(Types.Float64),
-                    "adjusted_rewards_xdr_permyriad": Types.Opt(Types.Float64),
-                }
-            )
-
-            # NodeTypeRegionBaseRewards
-            node_type_region_base_rewards_type = Types.Record(
-                {
-                    "monthly_xdr_permyriad": Types.Opt(Types.Float64),
-                    "daily_xdr_permyriad": Types.Opt(Types.Float64),
-                    "node_reward_type": Types.Opt(Types.Text),
-                    "region": Types.Opt(Types.Text),
-                }
-            )
-
-            # Type3RegionBaseRewards
-            type3_region_base_rewards_type = Types.Record(
-                {
-                    "region": Types.Opt(Types.Text),
-                    "nodes_count": Types.Opt(Types.Nat64),
-                    "avg_rewards_xdr_permyriad": Types.Opt(Types.Float64),
-                    "avg_coefficient": Types.Opt(Types.Float64),
-                    "daily_xdr_permyriad": Types.Opt(Types.Float64),
-                }
-            )
-
-            # DailyNodeProviderRewards
-            daily_node_provider_rewards_type = Types.Record(
-                {
-                    "total_base_rewards_xdr_permyriad": Types.Opt(Types.Nat64),
-                    "total_adjusted_rewards_xdr_permyriad": Types.Opt(Types.Nat64),
-                    "base_rewards": Types.Vec(node_type_region_base_rewards_type),
-                    "base_rewards_type3": Types.Vec(type3_region_base_rewards_type),
-                    "daily_nodes_rewards": Types.Vec(daily_node_rewards_type),
-                }
-            )
-
-            # DailyResults
-            daily_results_type = Types.Record(
-                {
-                    "subnets_failure_rate": Types.Vec(
-                        Types.Tuple(Types.Principal, Types.Float64)
-                    ),
-                    "provider_results": Types.Vec(
-                        Types.Tuple(Types.Principal, daily_node_provider_rewards_type)
-                    ),
-                }
-            )
-
-            # GetNodeProvidersRewardsCalculationResponse: Result<DailyResults, String>
-            return_type = Types.Variant(
-                {
-                    "Ok": daily_results_type,
-                    "Err": Types.Text,
-                }
-            )
-
-            # Build the argument value
-            arg_value = {
-                "day": {
-                    "year": date_obj.year,
-                    "month": date_obj.month,
-                    "day": date_obj.day,
-                }
+        parsed_date = datetime.strptime(date, "%Y-%m-%d")
+        arg_value = {
+            "day": {
+                "year": parsed_date.year,
+                "month": parsed_date.month,
+                "day": parsed_date.day,
             }
+        }
+        arg_bytes = encode([{"type": REQUEST_TYPE, "value": arg_value}])
 
-            # Encode with explicit type information
-            arg_bytes = encode([{"type": request_type, "value": arg_value}])
+        response = self.agent.query_raw(
+            self.canister_id,
+            "get_node_providers_rewards_calculation",
+            arg_bytes,
+            RETURN_TYPE,
+        )
 
-            method_name = "get_node_providers_rewards_calculation"
-
-            # Make the query with return type
-            response = self.agent.query_raw(
-                self.NODE_REWARDS_CANISTER_ID, method_name, arg_bytes, return_type
-            )
-
-            # Response is a list with dict containing 'type' and 'value'
-            if not response or len(response) == 0:
-                logger.warning(f"Empty response for {date_str}")
-                return {}
-
-            result = response[0].get("value", {})
-
-            # Handle Result variant (Ok/Err)
-            if "Ok" in result:
-                daily_results = result["Ok"]
-
-                # Convert lists of tuples to dictionaries for easier processing
-                # provider_results: [[Principal, {...}], ...] -> {Principal: {...}}
-                provider_results_dict = {}
-                for principal, provider_data in daily_results.get(
-                    "provider_results", []
-                ):
-                    provider_results_dict[str(principal)] = provider_data
-
-                # subnets_failure_rate: [[Principal, float], ...] -> {Principal: float}
-                subnets_failure_rate_dict = {}
-                for principal, failure_rate in daily_results.get(
-                    "subnets_failure_rate", []
-                ):
-                    subnets_failure_rate_dict[str(principal)] = failure_rate
-
-                result_dict = {
-                    "provider_results": provider_results_dict,
-                    "subnets_failure_rate": subnets_failure_rate_dict,
-                }
-
-                logger.info(
-                    f"Successfully fetched rewards for {date_str} ({len(provider_results_dict)} providers)"
-                )
-                return result_dict
-
-            elif "Err" in result:
-                error_msg = result["Err"]
-                logger.warning(f"Canister returned error for {date_str}: {error_msg}")
-                return {}
-            else:
-                logger.warning(f"Unexpected response format for {date_str}: {result}")
-                return {}
-
-        except Exception as e:
-            logger.warning(
-                f"Failed to fetch rewards for {date_str}: {e}", exc_info=True
-            )
+        if not response or len(response) == 0:
+            logger.error(f"Empty response for {date}")
             return {}
+
+        result = response[0].get("value", {})
+
+        if "Err" in result:
+            error_msg = result["Err"]
+            logger.error(f"Canister returned error for {date}: {error_msg}")
+            return {}
+
+        if "Ok" not in result:
+            raise ValueError(
+                f"Unexpected result, contains neither `Err` nur `Ok`: {result}"
+            )
+
+        daily_results = result["Ok"]
+
+        # Convert lists of tuples to dictionaries for easier processing
+        # provider_results: [[Principal, {...}], ...] -> {Principal: {...}}
+        provider_results_dict = {}
+        for principal, provider_data in daily_results.get("provider_results", []):
+            provider_results_dict[str(principal)] = provider_data
+
+        # subnets_failure_rate: [[Principal, float], ...] -> {Principal: float}
+        subnets_failure_rate_dict = {}
+        for principal, failure_rate in daily_results.get("subnets_failure_rate", []):
+            subnets_failure_rate_dict[str(principal)] = failure_rate
+
+        result_dict = {
+            "provider_results": provider_results_dict,
+            "subnets_failure_rate": subnets_failure_rate_dict,
+        }
+
+        logger.info(
+            f"Successfully fetched rewards for {date} ({len(provider_results_dict)} providers)"
+        )
+        return result_dict
 
     def get_latest_governance_reward_event(self) -> Optional[float]:
         """Fetch latest governance reward event timestamp from governance canister"""
@@ -249,7 +220,7 @@ class ICCanisterClient:
 
             # Make query
             response = self.agent.query_raw(
-                self.GOVERNANCE_CANISTER_ID,
+                GOVERNANCE_CANISTER_ID,
                 "list_node_provider_rewards",
                 arg_bytes,
             )
@@ -281,7 +252,9 @@ class NodeRewardsPusher:
 
     def __init__(self, victoria_url: str):
         self.victoria_url = victoria_url
-        self.ic_client = ICCanisterClient()
+        self.nrc_clients = [
+            NodeRewardsClient(IC_URL, c) for c in NODE_REWARDS_CANISTER_IDS
+        ]
 
     @staticmethod
     def _unwrap_optional(value):
@@ -326,7 +299,7 @@ class NodeRewardsPusher:
             )
 
             # Fetch data from IC canister
-            daily_results = self.ic_client.get_rewards_daily(date_str)
+            daily_results = self.nrc_clients[0].get_rewards_daily(date_str)
 
             if not daily_results:
                 logger.warning(f"⚠️  No data available for {date_str}")
@@ -416,7 +389,7 @@ class NodeRewardsPusher:
                 )
 
             # Governance timestamp
-            gov_timestamp = self.ic_client.get_latest_governance_reward_event()
+            gov_timestamp = self.nrc_clients[0].get_latest_governance_reward_event()
             if gov_timestamp:
                 metrics_lines.append(
                     f"governance_latest_reward_event_timestamp_seconds {gov_timestamp} {noon_timestamp_ms}"
