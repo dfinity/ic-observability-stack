@@ -139,12 +139,12 @@ the other ones that contain `severity: warning` with `severity: critical`.
 
 To access the stack remotely you can do the following:
 ```bash
-ssh -L 3000:localhost:3000 -L 8428:localhost:8428 -L 8000:localhost:8000 <machine-with-obs-stack>
+ssh -L 3000:localhost:3000 -L 9090:localhost:9090 -L 8000:localhost:8000 <machine-with-obs-stack>
 ```
 
 Example command with all parameters:
 ```bash
-ssh -L 3000:localhost:3000 -L 8428:localhost:8428 -i ~/.ssh/priv_key.pem myuser@192.168.15.15
+ssh -L 3000:localhost:3000 -L 9090:localhost:9090 -i ~/.ssh/priv_key.pem myuser@192.168.15.15
 ```
 
 ## Extending

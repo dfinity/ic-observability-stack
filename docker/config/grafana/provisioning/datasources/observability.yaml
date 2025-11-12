@@ -5,6 +5,6 @@ datasources:
     uid: prometheus 
     type: prometheus
     access: proxy
-    url: http://$PROM_HOST:8428
+    url: http://$PROM_HOST:9090
     jsonData:
       httpMethod: POST
