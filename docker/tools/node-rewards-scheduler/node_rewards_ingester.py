@@ -30,7 +30,8 @@ IC_URL = "https://ic0.app"
 # These have to be tuples
 NODE_REWARDS_CANISTER_IDS = [
     ("uuew5-iiaaa-aaaaa-qbx4q-cai"),  # Dev
-    ("sgymv-uiaaa-aaaaa-aaaia-cai"),  # Prod
+    # TODO: uncomment to enable prod
+    # ("sgymv-uiaaa-aaaaa-aaaia-cai"),  # Prod
 ]
 GOVERNANCE_CANISTER_ID = "rrkah-fqaaa-aaaaa-aaaaq-cai"  # NNS Governance canister
 
@@ -291,126 +292,127 @@ class NodeRewardsPusher:
         noon = target_date.replace(hour=12, minute=0, second=0, microsecond=0)
         noon_timestamp_ms = int(noon.replace(tzinfo=timezone.utc).timestamp() * 1000)
 
-        # Fetch data from IC canister
-        daily_results = self.nrc_clients[0].get_rewards_daily(date)
-
-        if not daily_results:
-            raise ValueError(f"⚠️  No data available for {date}")
-
         metrics_lines = []
+        for client in self.nrc_clients:
+            daily_results = client.get_rewards_daily(date)
 
-        # Helper function to not repeat the labels all the
-        # time and to single out the place for changing labels
-        def add_line_helper(metric_name: str, value, **kwargs):
-            metrics_lines.append(
-                self._make_line(
-                    metric_name,
-                    value,
-                    noon_timestamp_ms,
-                    canister_id=self.nrc_clients[0].canister_id,
-                    **kwargs,
-                )
-            )
+            if not daily_results:
+                raise ValueError(f"⚠️  No data available for {date}")
 
-        # Provider-level metrics
-        provider_results = daily_results.get("provider_results", {})
-        for provider_id, provider_rewards in provider_results.items():
-            provider_id_str = str(provider_id)
-
-            def add_line_helper_with_provider(metric_name: str, value: int, **kwargs):
-                add_line_helper(
-                    metric_name, value, provider_id=provider_id_str, **kwargs
+            # Helper function to not repeat the labels all the
+            # time and to single out the place for changing labels
+            def add_line_helper(metric_name: str, value, **kwargs):
+                metrics_lines.append(
+                    self._make_line(
+                        metric_name,
+                        value,
+                        noon_timestamp_ms,
+                        canister_id=client.canister_id,
+                        **kwargs,
+                    )
                 )
 
-            # nodes_count
-            nodes_count = len(provider_rewards.get("daily_nodes_rewards", []))
-            add_line_helper_with_provider("nodes_count", nodes_count)
+            # Provider-level metrics
+            provider_results = daily_results.get("provider_results", {})
+            for provider_id, provider_rewards in provider_results.items():
+                provider_id_str = str(provider_id)
 
-            # base_rewards
-            base_rewards = self._unwrap_optional(
-                provider_rewards.get("total_base_rewards_xdr_permyriad")
-            )
-            if base_rewards is not None:
-                add_line_helper_with_provider(
-                    "total_base_rewards_xdr_permyriad", base_rewards
-                )
-
-            adjusted_rewards = self._unwrap_optional(
-                provider_rewards.get("total_adjusted_rewards_xdr_permyriad")
-            )
-            if adjusted_rewards is not None:
-                add_line_helper_with_provider(
-                    "total_adjusted_rewards_xdr_permyriad", adjusted_rewards
-                )
-
-            # Node-level metrics
-            for node_result in provider_rewards.get("daily_nodes_rewards", []):
-                node_id = self._unwrap_optional(node_result.get("node_id"))
-                node_id_str = str(node_id) if node_id else ""
-
-                # daily_node_failure_rate is optional and contains a variant
-                failure_rate_data = self._unwrap_optional(
-                    node_result.get("daily_node_failure_rate")
-                )
-                if (
-                    isinstance(failure_rate_data, dict)
-                    and "SubnetMember" in failure_rate_data
+                def add_line_helper_with_provider(
+                    metric_name: str, value: int, **kwargs
                 ):
-                    # Extract node_metrics from SubnetMember variant
-                    subnet_member = failure_rate_data["SubnetMember"]
-                    node_metrics = self._unwrap_optional(
-                        subnet_member.get("node_metrics")
+                    add_line_helper(
+                        metric_name, value, provider_id=provider_id_str, **kwargs
                     )
 
-                    if not node_metrics:
-                        continue
+                # nodes_count
+                nodes_count = len(provider_rewards.get("daily_nodes_rewards", []))
+                add_line_helper_with_provider("nodes_count", nodes_count)
 
-                    subnet_id = self._unwrap_optional(
-                        node_metrics.get("subnet_assigned")
+                # base_rewards
+                base_rewards = self._unwrap_optional(
+                    provider_rewards.get("total_base_rewards_xdr_permyriad")
+                )
+                if base_rewards is not None:
+                    add_line_helper_with_provider(
+                        "total_base_rewards_xdr_permyriad", base_rewards
                     )
-                    subnet_id_str = str(subnet_id) if subnet_id else ""
 
-                    # original_failure_rate
-                    original_fr = self._unwrap_optional(
-                        node_metrics.get("original_failure_rate")
+                adjusted_rewards = self._unwrap_optional(
+                    provider_rewards.get("total_adjusted_rewards_xdr_permyriad")
+                )
+                if adjusted_rewards is not None:
+                    add_line_helper_with_provider(
+                        "total_adjusted_rewards_xdr_permyriad", adjusted_rewards
                     )
-                    if original_fr is not None:
-                        add_line_helper_with_provider(
-                            "original_failure_rate",
-                            original_fr,
-                            node_id=node_id_str,
-                            subnet_id=subnet_id_str,
+
+                # Node-level metrics
+                for node_result in provider_rewards.get("daily_nodes_rewards", []):
+                    node_id = self._unwrap_optional(node_result.get("node_id"))
+                    node_id_str = str(node_id) if node_id else ""
+
+                    # daily_node_failure_rate is optional and contains a variant
+                    failure_rate_data = self._unwrap_optional(
+                        node_result.get("daily_node_failure_rate")
+                    )
+                    if (
+                        isinstance(failure_rate_data, dict)
+                        and "SubnetMember" in failure_rate_data
+                    ):
+                        # Extract node_metrics from SubnetMember variant
+                        subnet_member = failure_rate_data["SubnetMember"]
+                        node_metrics = self._unwrap_optional(
+                            subnet_member.get("node_metrics")
                         )
 
-                    # relative_failure_rate
-                    relative_fr = self._unwrap_optional(
-                        node_metrics.get("relative_failure_rate")
-                    )
-                    if relative_fr is not None:
-                        add_line_helper_with_provider(
-                            "relative_failure_rate",
-                            relative_fr,
-                            node_id=node_id_str,
-                            subnet_id=subnet_id_str,
+                        if not node_metrics:
+                            continue
+
+                        subnet_id = self._unwrap_optional(
+                            node_metrics.get("subnet_assigned")
                         )
+                        subnet_id_str = str(subnet_id) if subnet_id else ""
 
-        # Subnet-level metrics
-        subnets_failure_rate = daily_results.get("subnets_failure_rate", {})
-        for subnet_id, failure_rate in subnets_failure_rate.items():
-            subnet_id_str = str(subnet_id)
-            metrics_lines.append(
-                f'subnet_failure_rate{{subnet_id="{subnet_id_str}"}} {failure_rate} {noon_timestamp_ms}'
-            )
-            add_line_helper(
-                "subnets_failure_rate", failure_rate, subnet_id=subnet_id_str
-            )
+                        # original_failure_rate
+                        original_fr = self._unwrap_optional(
+                            node_metrics.get("original_failure_rate")
+                        )
+                        if original_fr is not None:
+                            add_line_helper_with_provider(
+                                "original_failure_rate",
+                                original_fr,
+                                node_id=node_id_str,
+                                subnet_id=subnet_id_str,
+                            )
 
-        # Governance timestamp
-        gov_timestamp = self.nrc_clients[0].get_latest_governance_reward_event()
-        if gov_timestamp:
-            add_line_helper(
-                "governance_latest_reward_event_timestamp_seconds", gov_timestamp
-            )
+                        # relative_failure_rate
+                        relative_fr = self._unwrap_optional(
+                            node_metrics.get("relative_failure_rate")
+                        )
+                        if relative_fr is not None:
+                            add_line_helper_with_provider(
+                                "relative_failure_rate",
+                                relative_fr,
+                                node_id=node_id_str,
+                                subnet_id=subnet_id_str,
+                            )
+
+            # Subnet-level metrics
+            subnets_failure_rate = daily_results.get("subnets_failure_rate", {})
+            for subnet_id, failure_rate in subnets_failure_rate.items():
+                subnet_id_str = str(subnet_id)
+                metrics_lines.append(
+                    f'subnet_failure_rate{{subnet_id="{subnet_id_str}"}} {failure_rate} {noon_timestamp_ms}'
+                )
+                add_line_helper(
+                    "subnets_failure_rate", failure_rate, subnet_id=subnet_id_str
+                )
+
+            # Governance timestamp
+            gov_timestamp = self.nrc_clients[0].get_latest_governance_reward_event()
+            if gov_timestamp:
+                add_line_helper(
+                    "governance_latest_reward_event_timestamp_seconds", gov_timestamp
+                )
 
         if not metrics_lines:
             raise ValueError("After evaluation there were no metrics to upload")
