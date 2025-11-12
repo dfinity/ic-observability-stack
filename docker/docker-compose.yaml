@@ -11,6 +11,7 @@ services:
       - /msd/definitions.json
     volumes:
       - ./volumes/msd:/msd
+    user: "${UID}:${GID}"
 
   prometheus:
     image: quay.io/prometheus/prometheus:v2.51.1

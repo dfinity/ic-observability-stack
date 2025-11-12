@@ -4,3 +4,4 @@ __pycache__
 scrape_configs.yml
 !vars/scrape_configs.yml
 .venv
+.env

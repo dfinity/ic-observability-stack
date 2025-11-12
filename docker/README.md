@@ -49,6 +49,15 @@ Once you can run docker commands and have `docker compose` you can proceed to th
 
 Now that you have `docker` you can proceed to configure the stack. 
 
+### Ensuring proper user and group
+
+To properly configure the user and group which will be used for all docker workloads
+run the following setup script:
+```bash
+# NOTE: you have to be within the same directory as this README!
+./setup.sh
+```
+
 ### Scraping targets
 
 First thing that you have to configure is your scraping targets. To do that, find your 
