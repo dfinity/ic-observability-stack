@@ -1,7 +1,8 @@
-import json
 import logging
+import os
 import subprocess
 import time
+from urllib.parse import urljoin
 
 import requests
 
@@ -12,6 +13,25 @@ logging.basicConfig(
 )
 
 REMOTE_URL = "https://github.com/dfinity/ic-observability-stack.git"
+VICTORIA_METRICS_URL = os.getenv("VICTORIA_METRICS_URL", "http://localhost:9090")
+
+
+def wait_for_victoria_metrics(victoria_url):
+    """Wait for VictoriaMetrics to be ready"""
+
+    logging.info("Waiting for VictoriaMetrics to be ready...")
+
+    while True:
+        try:
+            response = requests.get(f"{victoria_url}/-/ready", timeout=5)
+            if response.status_code == 200:
+                logging.info("✅ VictoriaMetrics is ready")
+                return
+        except requests.exceptions.RequestException:
+            continue
+
+        logging.info(f"  Waiting for VictoriaMetrics at {victoria_url}...")
+        time.sleep(2)
 
 
 def _run_git_command(args):
@@ -82,13 +102,13 @@ def get_commits_difference(local_commit, remote_commit):
             remote_commit,
             local_origin_commit,
         )
-        return {"ahead": "Unknown", "behind": "Unknown"}
+        return {"ahead": "NaN", "behind": "NaN"}
 
     ahead_count = _run_git_command(
         ["rev-list", "--count", f"{local_origin_commit}..{local_commit}"]
     )
 
-    api_url = f"https://api.github.com/repos/dfinity/ic-observability-stack/compare/{local_origin_commit}...{remote_commit}"
+    api_url = f"https://api.github.com/repos/dfinity/ic-observability-stack/compare/{remote_commit}...{local_origin_commit}"
     response = requests.get(
         api_url,
         headers={
@@ -100,15 +120,66 @@ def get_commits_difference(local_commit, remote_commit):
         response.raise_for_status()
     except Exception:
         logging.error("Failed to fetch diff from remote: %s", response.text)
-        return {"ahead": ahead_count, "behind": "Unknown"}
-
-    logging.debug(
-        "Complete response from github:\n%s", json.dumps(response.json(), indent=4)
-    )
+        return {"ahead": ahead_count, "behind": "NaN"}
 
     behind_count = response.json()["behind_by"]
 
     return {"ahead": ahead_count, "behind": behind_count}
+
+
+def make_line(metric_name, value, ts, **kwargs):
+    """
+    Make a prometheus metric line
+    """
+
+    return f"{metric_name}{{ {', '.join([f'{key}="{value}"' for key, value in kwargs.items()])}  }} {value} {ts}"
+
+
+def send_to_victoria(metrics, victoria_url):
+    import_url = urljoin(victoria_url.rstrip("/") + "/", "api/v1/import/prometheus")
+
+    response = requests.post(
+        import_url,
+        data=metrics.encode("utf-8"),
+        headers={"Content-Type": "text/plain"},
+        timeout=30,
+    )
+
+    try:
+        response.raise_for_status()
+    except Exception:
+        logging.error("Failed to send metrics. Response: %s", response.text)
+        return
+
+    logging.info("Successfully sent metrics to victoria")
+
+
+def ingest_metrics(installed_commit, victoria_url):
+    timestamp_ms = int(time.time() * 1000)
+    state = get_local_state()
+
+    remote_commit = get_remote_commit_hash()
+
+    difference = get_commits_difference(installed_commit, remote_commit)
+
+    metrics = (
+        "\n".join(
+            [
+                make_line(
+                    "git_installed_commit", 1, timestamp_ms, commit=installed_commit
+                ),
+                make_line("git_local_state", 1, timestamp_ms, state=state),
+                make_line("git_remote_commit", 1, timestamp_ms, commit=remote_commit),
+                make_line("git_commits_ahead", difference["ahead"], timestamp_ms),
+                make_line("git_commits_behind", difference["behind"], timestamp_ms),
+            ]
+        )
+        + "\n"
+    )
+
+    send_to_victoria(metrics, victoria_url)
+
+    logging.info("Sleeping for 30 minutes")
 
 
 def main():
@@ -118,16 +189,14 @@ def main():
     installed_commit = get_installed_commit()
 
     while True:
-        state = get_local_state()
+        try:
+            ingest_metrics(installed_commit, VICTORIA_METRICS_URL)
+        except Exception as e:
+            logging.error("Something went wrong during last execution: %s", e)
 
-        remote_commit = get_remote_commit_hash()
+        logging.info("Sleeping for 15 minutes")
 
-        difference = get_commits_difference(installed_commit, remote_commit)
-
-        logging.info("Current difference:\n%s", json.dumps(difference, indent=4))
-        logging.info("Sleeping for 30 minutes")
-
-        time.sleep(30 * 60)
+        time.sleep(15 * 60)
 
 
 if __name__ == "__main__":
