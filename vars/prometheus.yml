@@ -1,5 +1,0 @@
-# Prometheus configuration for storage and ram.
-# To learn more about the notation, read: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-units-in-kubernetes
-prometheus:
-  ram_request: 8Gi
-  storage_request: 80Gi

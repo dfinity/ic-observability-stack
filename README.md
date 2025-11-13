@@ -1,18 +1,9 @@
-# [OBSOLETE] 
-Vagrant and ansible deployment are obsolete and won't be maintained. 
-Checkout [docker deployment](./docker/README.md).
-
 # IC observability stack
 
-This collection of software lets you use your own equipment to observe the
-health and operation of the Internet Computer, or parts thereof.  It is
-a code-first, fully automated, DevOps-oriented stack that lets you create
-and manage your own personal view into the workings of the Internet Computer.
-
-This stack can run either locally in a VirtualBox virtual machine, or in
-a remote machine designated by you.
-
-For usage instructions, see below under heading *Usage*.
+This collection of software lets you use your own equipment to observe the health and 
+operation of the nodes in your datacenter that are part of the Internet Computer. It
+is a collection of docker containers that, when deployed and configured, will collect
+metrics about the performance of selected nodes and send alerts if something is off.
 
 ## How does this work?
 
@@ -24,369 +15,258 @@ Nodes of the Internet Computer all make available to the public a series
 of metrics (in [Prometheus text format](https://github.com/Prometheus/docs/blob/777846211d502a287ab2b304cb515dc779de3474/content/docs/instrumenting/exposition_formats.md#text-based-format))
 that can be collected and analyzed by software such as this.
 
-Publicly-available metrics are published on the node’s public IPv6 address
-through HTTPS port 42372, on paths `/metrics/hostos_node_exporter` and
-`/metrics/guestos_replica` .  Not coincidentally, the first path produces
-[Prometheus node exporter](https://github.com/prometheus/node_exporter)
-metrics, which means IC hardware status can be observed and diagnosed.
-
-The architecture of how the metrics flow from
-nodes to observability stack -- under the standard *proxied mode*
--- is designed as follows:
-
-![Architecture of IC metrics](doc/architecture.png)
-
-This stack also supports *direct mode* (not visualized in the diagram
-above), in case the firewall of your IC nodes permits direct access
-to your instance of the stack.
+The stack has to be deployed within the same *network subnet* as the nodes so that 
+the scraping of the nodes can take place. This practically means that the nodes and the 
+machine that is running this stack have to be within the same data center and connected
+to the same router.
 
 ## Prerequisites
 
 * IPv6 connectivity.
-  * If you plan to run the stack as a local VirtualBox VM, your local
-    network and machine must have working IPv6 networking.
-  * If you plan to run the stack in a remote machine (which will be
-    configured via SSH), the remote machine must have working IPv6
-    networking.
-  * In both cases, tests for IPv6 connectivity will be conducted at
-    the end of the provisioning step.
-* Root-equivalent access on your workstation, to deploy the software
-  this stack needs to be set up.
+* Root-equivalent access on your workstation, to deploy the software this stack 
+  needs to be set up.
 * Hardware.
-  * If you plan to run this stack in a local virtual machine, you
-    cannot currently use an Apple Silicon Mac machine for that purpose.
-    At this time, VirtualBox does not reliably emulate x86_64 instructions
-    on Apple Silicon.  Note that you can still deploy and use the stack on
-    a remote machine.
-  * If you plan to run this stack in a remote machine, the user account
-    you log onto this machine with must have root-equivalent access via
-    `sudoers`, and should be running an Ubuntu LTS machine or a recent
-    Fedora release.
-  * The recommended spec for the machine require 16GB of RAM and around
-    100GB of storage.
+  * It is recommended to run this stack on a machine with at least 16GB ram and 
+    80-100GB storage.
+* SSH access to the machine.
+  * This is needed to later remotely connect to the services and inspect issues.
+  * Setting up ssh server [guide](https://documentation.ubuntu.com/server/how-to/security/openssh-server/).
 
 ## Preparation
 
-Clone this repository on your workstation.  You can fork this repository
-too, but if you do, make it private at once, to protect key credentials
-stored in this repository.  You are encouraged to keep a backup copy
-of the repository somewhere, in order to be able to restore your settings
-in case your workstation fails.
+To start preparing your workstation for scraping and observing your nodes you have to 
+`ssh` into the machine (or be physically next to it in order to run commands on the
+machine).
 
-> ℹ️ To check in secrets securely, consider using a credentials management
-> application compatible with Ansible to store any credentials in your
-> fork of this repository.
+Install [Docker](https://docs.docker.com/engine/install/) for your machine. There
+shouldn't be visible differences across different operating systems. This setup has
+been tested on Mac OS and Manjaro OS (Linux flavour) but hasn't been tested on 
+Windows machines.
 
-Once you have a local clone of this, using a terminal application, change
-into its folder.
+Once you can run docker commands and have `docker compose` you can proceed to the next step.
 
-Run `./bootstrap.sh`.  The program will require your administrative password
-(usually your local user's password) to set up the software necessary to
-manage your observability stack.  **Follow the onscreen instructions as
-the playbook executes.**
+## Configuration
 
-## Setup
+Now that you have `docker` you can proceed to configure the stack. 
 
-Once your system is prepared, configure where the playbooks will operate.
-The following command will run wizard will let you decide whether you'll
-use a preexisting machine you can SSH into, or create a locally-provisoned
-virtual machine using Vagrant and VirtualBox (the default).  Run:
+### Ensuring proper user and group
 
-```sh
-python3 configure.py
+To properly configure the user and group which will be used for all docker workloads
+run the following setup script:
+```bash
+# NOTE: you have to be within the same directory as this README!
+./setup.sh
 ```
 
-Once the provisioning configuration step is done, create your scrape
-configuration variable `scrape_configs`.  This configuration will be used
-to let the observability stack know which targets to obtain telemetry from.
-See the documentation [on scrape configuration](doc/scrape-configs.md) for
-more information on how to describe these targets.
+### Scraping targets
 
-After that, ensure to setup the correct path for persisting the data. By
-default, the configuration will create a directory `$HOME/k3s/volumes` and will
-store volumes there. To change this, modify variable `persistence_volume_path` 
-found in `./vars/k3s.yml`.
+First thing that you have to configure is your scraping targets. To do that, find your 
+[principal id](https://support.dfinity.org/hc/en-us/articles/7365913875988-What-is-a-principal) 
+that correclates to your node provider id. You can find that from the [public dashboard](https://dashboard.internetcomputer.org/network/providers). After that you should find the id of the data center to which
+you are deploying this stack. You can find that information also on the [public dashboard](https://dashboard.internetcomputer.org/network/providers).
 
-If you would want to (at your own risk) run a setup that is weaker than
-recommended you can modify `./vars/prometheus.yml` and set your prefered
-ram and storage requests.
-
-With the scrape configuration in place, set up the stack by running:
-
-```sh
-command -v ansible-playbook || {
-  >&2 echo Please set up and export your PATH environment variable so the
-  >&2 echo installed ansible-playbook can be found by your shell.  The
-  >&2 echo command might have been deployed to "$HOME/.local/bin" or
-  >&2 echo to "$PWD"/.venv/bin or to /usr/local/bin.
-  >&2 echo The next command will fail until PATH is set up properly.
-  >&2
-  >&2 echo PATH is typically set by running a command like:
-  >&2 echo '  export PATH="$PWD/.venv.bin:$PATH"'
-}
-ansible-playbook -v playbooks/prepare-node.yml
+With that you can run the following command:
+```bash
+# NOTE: you have to be within the same directory as this README!
+docker compose -f ./docker-compose.tools.yaml run --rm prom-config-builder tools/prom-config-builder/prom_config_builder.py --node-provider-id <node-provider-id> --dc-id <dc-id>
 ```
 
-> This command can be run multiple times, with only necessary changes
-> being re-applied each time.  Whenever you change settings of your
-> stack within this repository, you should re-run the command to
-> ensure the settings are applied and take effect.
+Example command for node provider Dfinity Stiftung for data center se1:
+```bash
+docker compose -f ./docker-compose.tools.yaml run --rm prom-config-builder tools/prom-config-builder/prom_config_builder.py --node-provider-id bvcsg-3od6r-jnydw-eysln-aql7w-td5zn-ay5m6-sibd2-jzojt-anwag-mqe --dc-id se1
+```
 
-* If you selected Vagrant provisioning in the previous step:
-  * This will provision a 4 GB RAM, 50 GB storage virtual Ubuntu instance
-    on your machine, where the observability stack will be set up.
-  * The machine will be rebooted after updates.
-  * K3s will be provisioned.
-* In any other case:
-  * The remote machine will update and reboot.
-  * K3s will be deployed on the remote machine after that.
+Once that executes, you should be able to see a new file at `./config/prometheus/config.yaml`. 
+This file contains the definitions for the scraping targets. It will be slightly different 
+for each node provider and each data center. It is not versione controlled and you can 
+always recreate it with running the above command if you lose it, or delete it.
 
-Once K3s is deployed, an instance of Prometheus will be deployed onto
-the observability stack node, and all the telemetry targets will be
-configured.
+### Contact points
 
-Roughly **4 minutes** after this process is done, Prometheus should be
-successfully obtaining telemetry data from the targets.
+This stack uses [Grafana](https://grafana.com/) to present the dashboards and to send
+alerts. Sending alerts is done using the [contact points](https://grafana.com/docs/grafana/latest/alerting/fundamentals/notifications/contact-points/) which need to be configured. Grafana supports
+various contact points, some of them can be used for free, some of them are paid. 
+This stack was tested with the following contact points:
+* Discord [free]
+* Slack
+* Google chat
+
+To setup your prefered contact point copy over the template with the following command:
+```bash
+cp ./config/grafana/templates/template_contact_points.yaml ./config/grafana/provisioning/alerting/contact_points.yaml
+```
+
+After that, edit the new file on path `./config/grafana/provisioning/alerting/contact_points.yaml`
+and uncomment your prefered contact point and configure it (to _uncomment_ you should
+remove the initial `#` from the contact point definition.
+
+## Running the stack
+
+To deploy the stack run the following command:
+```bash
+# This will spawn the containers 
+docker compose -f ./docker-compose.yaml up -d 
+```
+
+It will take some time for the services to start and to sync between one another. 
+You can monitor if containers are failing by running `docker ps` and see if 
+there are some restarts happening in the containers. To see more about Troubleshooting
+read *Troubleshooting*
 
 ## Usage
 
-### Access to services of the stack
+Once started, you will see the following applications:
+* Prometheus - http://localhost:9090
+* Grafana - http://localhost:3000 - default creds can be see in `./config/grafana/grafana.ini` 
+* Service discovery - http://localhost:8000
 
-Once the stack is set up, you will be able to access Prometheus on HTTP
-port 32090 of the target machine, and Grafana on HTTP port 32091:
+After 5-10 minutes you should see targets discovered in victoria on the [targets page](http://localhost:9090/targets).
+Initially, they might apear in red and if you keep monitoring they should
+slowly start getting green, which means that the targets are successfuly scraped.
 
-* If deploying via VirtualBox, the host name will be localhost, as the
-  service TCP ports will be locally forwarded.
-* If deploying on a remote machine via SSH, you will have to access the
-  services via SSH port forwarding.
-  * Note that the service ports will be running unsecured by TLS and,
-    generally, firewall rules will not permit access to these ports
-    remotely.
-  * If you want to access the services without port forwarding, you
-    should deploy a proxy service with support for an HTTPS provider
-    such as Let's Encrypt, then use the proxy service to reverse-proxy
-    the ports listed below onto the standard HTTPS 443 port exposed by
-    the reverse proxy to the public.  Make sure to also instruct the
-    proxy service to add some form of authentication since Prometheus
-    does not support authentication.
-  * Port forwarding is usually accomplished by a command line similar to
-    `ssh -L 32090:localhost:32090 -L 32091:localhost:32091 <user@ip address>`.
-    When port forwarding, all software running on your client machine can
-    access the ports remotely forwarded by SSH.
-  * In the future, we plan to offer automated, authenticated SSL
-    support for stacks deployed in this way, ensuring no SSH port
-    forwarding is necessary.
+You should also see some data incoming in the grafana [sample dashboard for the 
+node exporter](http://localhost:3000/d/1/node-exporter?orgId=1&from=now-3h&to=now&timezone=utc&var-datasource=prometheus&var-instance=$__all&var-diskdevice=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B%7Cmmcblk%5B0-9%5D%2B).
+Here, you can see various information about the performance of nodes and their health.
 
-Assuming a local VirtualBox VM or SSH port forwarding is active, the
-URLs to access the various services are:
+[Alerting tab](http://localhost:3000/alerting/list) will show `obs alert evaluations` 
+which will contain a list of preconfigured alerts. Here you can see if any of the 
+alerts are in in a problematic state. Most of the time they should be in `Normal` 
+state, this means that everything is fine. Some of them may occasionally go into a 
+`Pending` state, which means that they crossed the threshold for an alert but still
+isn't happening for long enough to consider this a problem. When a `Pending` alert
+is happening for long enough it will go into `Error` mode and you should receive an
+alert on your preconfigured contact point. 
 
-* Prometheus: `http://localhost:32090/`.  No authentication is required.
-* Grafana: `http://localhost:32091/`.  To log in, use the user name and
-  password described below in section *Accessing Grafana dashboards*.
+*NOTE*: Not all alerts are configured to send notifications if they fire, usually
+because they are just warnings and cannot be acted upon. To see which are and 
+which aren't you can see `./config/grafana/provisioning/alerting/alerts.yaml` and
+see which have the lavel `severity: critical` attached to them because only they
+will send alerts to your contact point. If you wish to send all of them, just replace
+the other ones that contain `severity: warning` with `severity: critical`.
 
-### Querying data in Prometheus
+### Access to the services of the stack
 
-The stack can be queried using the standard URL `http://localhost:32090/graph`
-— a screen that lets you enter
-[PromQL queries](https://prometheus.io/docs/prometheus/latest/querying/basics/)
-at will.
-
-Try these sample queries:
-
-* `up`
-* `power_average_watts`
-
-### Updating the scrape configuration
-
-Whenever you want to update the scrape configuration, you can change
-the appropriate `scrape_configs.yml` file and then run this command:
-
-```sh
-ansible-playbook -v playbooks/prepare-node.yml -t scrape_configs
+To access the stack remotely you can do the following:
+```bash
+ssh -L 3000:localhost:3000 -L 9090:localhost:9090 -L 8000:localhost:8000 <machine-with-obs-stack>
 ```
 
-This will run only the parts of the playbook that configure the
-scraping on Prometheus, and nothing more.  It will certainly be much
-faster, and it will skip rebooting the target machine when updates
-are applied.
-
-Be patient and remember to wait a couple of minutes for Prometheus
-to reload its scrape configuration from disk.
-
-More information about scrape configs can be found in
-[the scrape configs documentation](doc/scrape-configs.md).
-
-### Accessing Grafana and controlling authentication
-
-Grafana has in-built authentication.  The default credentials to access
-the Grafana service are defined in file [vars/grafana.yml](vars/grafana.yml);
-you should change them and apply the stack settings again, before exposing
-Grafana beyond the target host or your workstation.  To re-apply Grafana
-configuration only, run:
-
-```sh
-ansible-playbook -v playbooks/prepare-node.yml -t grafana
+Example command with all parameters:
+```bash
+ssh -L 3000:localhost:3000 -L 9090:localhost:9090 -i ~/.ssh/priv_key.pem myuser@192.168.15.15
 ```
 
-### Accessing Grafana dashboards
+## Extending
 
-This repository ships several default common-sense dashboards under the
-Grafana dashboards folder named *Samples*.  Feel free to peruse them
-through the Grafana dashboard listing, after logging in to Grafana.
+Extending this stack usually means adding new alerts or dashboards. Those might
+be your own modifications or the ones that come from someone else.
 
-### Provisioning your own dashboards
+### Dashboards
 
-> This requires familiarity with managing Grafana dashboards,
-> and the concepts related to these tasks.
+Building grafana dashboards is usually done via [grafana ui](http://localhost:3000/dashboard/new?orgId=1&from=now-6h&to=now&timezone=browser). You can follow
+[this tutorial](https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/create-dashboard/) from grafana to make your custom dashboards.
 
-To provision and persist your own dashboard:
+After creating the dashboard it is suggested to export it and save it
+`./config/grafana/provisioning/dashboards/`. This will make sure that
+if you later need to restore the dashboard or do a fresh deployment 
+of grafana it will be persisted.
 
-1. Obtain the JSON model of the dashboard you want to provision
-   (Instructions below).
-1. Optionally, create a folder under `definitions/grafana-dashboards`
-   for your dashboard.
-2. In any subfolder under `definitions/grafana-dashboards` of your
-   choice, save the JSON content under a file name that ends in
-   `.json`.
+*NOTE*: Storing a dashboard and restarting can make lead to errors 
+due to overlapping dashboard `uids`. If you export the dashboard and 
+save it you should, be sure to do a clean deployment of grafana.
 
-Then run this command to create the newly-deployed dashboard:
+### Alerts
 
-```sh
-ansible-playbook -v playbooks/prepare-node.yml -t dashboards
-```
+Adding grafana alerts can also be done via [grafana ui](https://grafana.com/docs/grafana/latest/alerting/alerting-rules/create-grafana-managed-rule/).
 
-You can then check in your new dashboard into your clone of the
-IC observability stack repository if you so choose.
-
-To obtain the JSON source of a dashboard you have manually created,
-navigate to your dashboard's settings (cog icon at the top right)
-then click on *JSON model* to obtain and copy the JSON source.
-
-The stack manages each dashboard's Grafana UID so you don't have
-to worry about dashboard names colliding with each other.  To that
-effect, the UID you set up in your dashboard files will be overridden
-by the stack.  The folder under which the dashboard will appear in
-Grafana is dictated by the folder name it is stored in, under
-`definitions/grafana-dashboards`.
-
-The Grafana operator does not like it when existing dashboards
-provisioned via JSON are modified, and will constantly attempt to
-redeploy modified dashboards to match their original source.  If
-you want to modify an existing dashboard (for later use), duplicate
-the existing dashboard, change its UID (via the JSON model), then
-make all the changes you want.  To persist your changes in the copy,
-use the process described above; once done, the persisted dashboard
-will appear with the same name, but under the folder you chose to save
-it into.  Note that the persisted dashboard will have a different UID
-than the manually-edited dashboard, so you may want to delete the
-manually-edited dashboard after you are done persisting it.
+Similarly to dashboards, it is suggested to export alerts and save them 
+in `./config/grafana/provisioning/alerting/` which will make sure that
+they persist after full grafana redeployments.
 
 ## Troubleshooting
 
-### VirtualBox won't install on Ubuntu 24.04 during bootstrapping
+### Service discovery failing
 
-This is a known issue.  It stems from the kernel version shipping in
-Ubuntu as of October 2025.  There is a ticket tracking it:
-
-https://bugs.launchpad.net/ubuntu/+source/virtualbox/+bug/2089861
-
-The workaround to use VirtualBox again is to downgrade your kernel to
-6.12 or older, delete the more up to date kernels from your system,
-and reboot.
-
-Example of how to downgrade to the generic, older image:
-
-```sh
-apt-get install linux-image-generic=6.8.0-86.87 \
-  linux-headers-generic=6.8.0-86.87 \
-  linux-tools-generic=6.8.0-86.87 \
-  linux-tools-common=6.8.0-86.87
-# The command above might finish with an error.
-
-# The following command deletes kernel 6.16.3, which
-# may be causing you issue.  Discover kernels versions on
-# your system by running dpkg -l | grep linux-image | grep ^ii
-# then discover all packages to remove (that match the kernel)
-# with dpkg -l | grep linux | grep ^ii | grep <version>
-apt-get purge linux-headers-6.16.3-76061603-generic \
-  linux-image-6.16.3-76061603-generic \
-  linux-modules-6.16.3-76061603-generic \
-  linux-tools-6.16.3-76061603-generic
+It is possible that usually due to networking issues, service discovery component
+may fail. To debug why you can run the following command to inspect the logs:
+```bash
+# From the same folder of this README
+docker compose logs multiservice-discovery
 ```
 
-After removing the offending packages, APT will properly configure
-the DKMS modules for VirtualBox, and your system will be ready to
-continue the bootstrap.  Do note that you will have to use some
-mechanism in Ubuntu (like APT pinning) to prevent the
-`linux-image-generic`, `linux-headers-generic`,
-`linux-tools-common` and `linux-tools-generic` from being upgraded
-in the future, which would break VirtualBox and APT again.
-
-### Debugging Vagrant-provisioned VMs
-
-You can SSH into the Vagrant-provisioned VM by running the following
-commands in the repository folder:
-
-```sh
-cd vagrant
-vagrant ssh observability
+You may see something along the lines of:
+```bash
+multiservice-discovery-1  | Nov 10 13:25:07.044 WARN Failed to sync registry for mercury @ interval Instant { tv_sec: 9050, tv_nsec: 707832535 }: SyncWithNnsFailed { failures: [("targets", RegistryTransportError { source: UnknownError("Failed to query get_certified_changes_since on canister rwlgt-iiaaa-aaaaa-aaaaa-cai: Request failed for http://[2606:fb40:201:1001:6801:2fff:fef5:b129]:8080/api/v2/canister/rwlgt-iiaaa-aaaaa-aaaaa-cai/query: hyper_util::client::legacy::Error(Connect, ConnectError(\"tcp connect error\", [2606:fb40:201:1001:6801:2fff:fef5:b129]:8080, Os { code: 101, kind: NetworkUnreachable, message: \"Network is unreachable\" }))") })] }
 ```
 
-This should get you logged into the virtual machine.  You can `sudo`
-without a password within the VM.
-
-If you get an error noting:
-
-```
-The provider 'virtualbox' that was requested to back the machine
-'observability' is reporting that it isn't usable on this system.
-```
-
-you most likely need to re-bootstrap, so follow the instructions
-under the *Preparation* heading.
-
-If, conversely, you get an error noting:
-
-```
-A Vagrant environment or target machine is required to run this
-command. Run `vagrant init` to create a new Vagrant environment.
+This is usually a transient error and may happen from time to time. What this 
+means is that the discovery cannot sync with the registry canister and may be 
+serving stale targets. Usually this is acceptable but if that happens when 
+deploying and the initial sync fails you may be unable to see any of your 
+nodes. As long as you can see your nodes on the following link you can safely
+ignore the transient failures.
+```bash
+curl http://localhost:8000/prom/targets?node_provider_id=<node-provider-id>&dc_id=<dc-id>
 ```
 
-then follow the *Setup* instructions above (ensuring that you
-have selected Vagrant as the provisioning mechanism).
+*NOTE*: The initial sync of service discovery may take up to 15 minutes! Syncing 
+will be clearly logged in the multiservice discovery.
 
-To start over, you can ask Vagrant to clean up the VM:
+### Victoria
 
-```sh
-cd vagrant
-vagrant destroy
-# Confirm your desire in the prompt that appears.
+#### No targets visible in targets view
+
+If you don't see anything in the [prometheus targets view](http://localhost:9090/targets?search=), 
+that means that prometheus failed to receive targets from the service discovery.
+
+To check the logs run:
+```bash
+# From the same folder of this README
+docker compose logs prometheus
 ```
 
-### Telemetry targets and Prometheus configuration
+Check if you can see your nodes by running the following command:
+```bash
+curl http://localhost:8000/prom/targets?node_provider_id=<node-provider-id>&dc_id=<dc-id>
+```
 
-Inspect which telemetry targets have been set up by browsing to the
-Prometheus instance (example address: `http://localhost:32090/`), then
-click on *Status* on the top bar, then click on *Targets*.  A list
-should appear onscreen with the list of targets being monitored by
-your observability stack, with their up/down status.
+#### Targets visible but are being shown in read
 
-Just like the active targets appear under URL path `/targets`, the
-active prometheus configuration should be accessible at URL path
-`/config` of the same URL.
+You should now see 4 jobs:
+* `host_node_exporter`
+* `node_exporter`
+* `orchestrator`
+* `replica`
 
-## License
+If any of them are shown in read it means that some of the targets (or all of them)
+are failing to be scraped. You can see that from the logs as well:
+```bash
+# From the same folder of this README
+docker compose logs prometheus
+```
 
-This software is distributed under the provisions of the
-[Apache 2.0 license](./LICENSE).
+This means that the prometheus scraper cannot reach the nodes it is trying
+to scrape. It can be because the workstation for this observability stack
+isn't in the same network subnet as the nodes, or due to other network 
+issues.
 
-## Contributions
+### Stack restart
 
-We appreciate anyone who wants to contribute to this project.  The DFINITY
-Foundation makes the code of this metrics-proxy available to the public
-under the Apache 2.0 license.
+To make a full clean restart (or partial) you can do the following:
+* Ensure that everything you created through grafana ui is exported
+  * Dashboards (save them into `./config/grafana/provisioning/dashboards/`)
+  * Alerts (save them into `./config/grafana/provisioning/alerting/`)
+  * Contact points (save them into `./config/grafana/provisioning/alerting/`)
+  * Message templates (save them into `./config/grafana/provisioning/alerting/`)
+  * Notification policies (save them into `./config/grafana/provisioning/alerting/`)
+* If you haven't created the resources, or don't mind losing them 
+  you can proceed.
+* Stop the stack: `docker compose -f ./docker-compose.yaml down`
+* Clean the volumes. You don't have to clean everything, pick just
+  ones that you wish to restart fully:
+  * prometheus: `rm -rf ./volumes/prometheus/`
+  * grafana: `rm -rf ./volumes/grafana/`
+  * multiservice discovery: `rm -rf ./volumes/msd/`
+* Reset the folder structure: `git checkout -- ./volumes/`
+* Run the stack again: `docker compose -f ./docker-compose.yaml up -d`
 
-Contributions can be made under the standard Github pull request model,
-with one caveat: first-time contributors will need to undergo our
-[CLA](https://github.com/dfinity/cla) process to ensure that the legal
-rights of other developers under the license are protected.
