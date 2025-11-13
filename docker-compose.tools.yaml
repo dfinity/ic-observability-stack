@@ -8,3 +8,13 @@ services:
       - ./tools/prom-config-builder/:/tools/prom-config-builder
     user: "${UID}:${GID}"
 
+  obs-stack-github-ingester:
+    build:
+      context: .
+      dockerfile: ./tools/python.Dockerfile
+    volumes:
+      - ./:/work_dir
+    working_dir: /work_dir
+    command: ./tools/obs-stack-github-ingester/obs_stack_github_ingester.py
+    user: "${UID}:${GID}"
+

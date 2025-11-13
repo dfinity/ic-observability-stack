@@ -5,4 +5,7 @@ RUN pip install --no-cache-dir \
     requests \
     ic-py
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git
+
 ENTRYPOINT ["python3"]
