@@ -261,7 +261,7 @@ class NodeRewardsPusher:
 
     @staticmethod
     def _make_line(metric_name: str, value: int, ts: int, **kwargs) -> str:
-        return f"{metric_name}{{ {' '.join([f'{key}="{value}"' for key, value in kwargs.items()])} }} {value} {ts}"
+        return f"{metric_name}{{ {', '.join([f'{key}="{value}"' for key, value in kwargs.items()])} }} {value} {ts}"
 
     def wait_for_victoria_metrics(self):
         """Wait for VictoriaMetrics to be ready"""
