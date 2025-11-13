@@ -48,7 +48,7 @@ def _run_git_command(args):
         return None
 
 
-def get_installed_commit():
+def get_current_commit():
     """
     Get the current commit hash.
     """
@@ -162,7 +162,10 @@ def ingest_metrics(installed_commit, victoria_url):
 
     remote_commit = get_remote_commit_hash()
 
-    difference = get_commits_difference(installed_commit, remote_commit)
+    # Update the difference from the current commit
+    # because state can change during running of the
+    # stack.
+    difference = get_commits_difference(get_current_commit(), remote_commit)
 
     metrics = (
         "\n".join(
@@ -186,7 +189,7 @@ def main():
     logging.info("Running obs stack github ingester")
 
     # Only fetch installed commit on startup
-    installed_commit = get_installed_commit()
+    installed_commit = get_current_commit()
 
     while True:
         try:
