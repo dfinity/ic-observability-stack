@@ -93,7 +93,9 @@ def get_commits_difference(local_commit, remote_commit):
     a commit which isn't present on remote which should
     be accounted for.
     """
-    local_origin_commit = _run_git_command(["rev-parse", "refs/remotes/origin/master"])
+    local_origin_commit = _run_git_command(
+        ["merge-base", "HEAD", "refs/remotes/origin/master"]
+    )
 
     if not all([local_commit, local_origin_commit, remote_commit]):
         logging.warning(
@@ -179,8 +181,6 @@ def ingest_metrics(installed_commit, victoria_url):
 
     send_to_victoria(metrics, victoria_url)
 
-    logging.info("Sleeping for 30 minutes")
-
 
 def main():
     logging.info("Running obs stack github ingester")
@@ -194,9 +194,9 @@ def main():
         except Exception as e:
             logging.error("Something went wrong during last execution: %s", e)
 
-        logging.info("Sleeping for 15 minutes")
+        logging.info("Sleeping for 5 minutes")
 
-        time.sleep(15 * 60)
+        time.sleep(5 * 60)
 
 
 if __name__ == "__main__":

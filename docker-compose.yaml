@@ -71,5 +71,6 @@ services:
       - ./:/work_dir
     working_dir: /work_dir
     user: "${UID}:${GID}"
+    command: ./tools/obs-stack-github-ingester/obs_stack_github_ingester.py
     depends_on:
       - victoriametrics
