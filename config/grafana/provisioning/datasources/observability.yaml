@@ -8,3 +8,11 @@ datasources:
     url: http://$PROM_HOST:9090
     jsonData:
       httpMethod: POST
+  - name: prometheus1d
+    uid: prometheus1d 
+    type: prometheus
+    access: proxy
+    url: http://$PROM_HOST:9090
+    jsonData:
+      httpMethod: POST
+      timeInterval: "1d"
