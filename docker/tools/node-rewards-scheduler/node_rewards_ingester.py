@@ -124,7 +124,7 @@ DAILY_RESULTS_TYPE = Types.Record(
     }
 )
 
-RETURN_TYPE = Types.Variant(
+GET_NODE_PROVIDERS_CALCULATION_RESPONSE_TYPE = Types.Variant(
     {
         "Ok": DAILY_RESULTS_TYPE,
         "Err": Types.Text,
@@ -134,6 +134,27 @@ RETURN_TYPE = Types.Variant(
 LIST_NODE_PROVIDER_REWARDS_REQUEST_TYPE = Types.Record(
     {"date_filter": Types.Opt(Types.Nat64)}
 )
+
+DATE_RANGE_FILTER_TYPE = Types.Record({
+    "start_timestamp_seconds": Types.Opt(Types.Nat64),
+    "end_timestamp_seconds": Types.Opt(Types.Nat64),
+})
+
+MONTHLY_NODE_PROVIDER_REWARDS_TYPE = Types.Record({
+    'timestamp': Types.Nat64,
+    "start_date": Types.Opt(Types.Record({"year": Types.Nat32, "month": Types.Nat32, "day": Types.Nat32})),
+    "end_date": Types.Opt(Types.Record({"year": Types.Nat32, "month": Types.Nat32, "day": Types.Nat32})),
+    "rewards": Types.Vec(Types.Record({})),  # Simplified, not parsing individual rewards
+    "xdr_conversion_rate": Types.Opt(Types.Record({})),
+    "minimum_xdr_permyriad_per_icp": Types.Opt(Types.Nat64),
+    "maximum_node_provider_rewards_e8s": Types.Opt(Types.Nat64),
+    "registry_version": Types.Opt(Types.Nat64),
+    "node_providers": Types.Vec(Types.Record({})),
+})
+
+LIST_NODE_PROVIDER_REWARDS_RESPONSE_TYPE = Types.Record({
+    "rewards": Types.Vec(MONTHLY_NODE_PROVIDER_REWARDS_TYPE),
+})
 
 
 class NodeRewardsClient:
@@ -164,7 +185,7 @@ class NodeRewardsClient:
             self.canister_id,
             "get_node_providers_rewards_calculation",
             arg_bytes,
-            RETURN_TYPE,
+            GET_NODE_PROVIDERS_CALCULATION_RESPONSE_TYPE,
         )
 
         if not response or len(response) == 0:
@@ -224,6 +245,7 @@ class NodeRewardsClient:
             GOVERNANCE_CANISTER_ID,
             "list_node_provider_rewards",
             arg_bytes,
+            LIST_NODE_PROVIDER_REWARDS_RESPONSE_TYPE,
         )
 
         if not response or len(response) == 0:
@@ -261,7 +283,7 @@ class NodeRewardsPusher:
 
     @staticmethod
     def _make_line(metric_name: str, value: int, ts: int, **kwargs) -> str:
-        return f"{metric_name}{{ {' '.join([f'{key}="{value}"' for key, value in kwargs.items()])} }} {value} {ts}"
+        return f"{metric_name}{{{','.join([f'{key}="{value}"' for key, value in kwargs.items()])}}} {value} {ts}"
 
     def wait_for_victoria_metrics(self):
         """Wait for VictoriaMetrics to be ready"""
@@ -289,8 +311,8 @@ class NodeRewardsPusher:
         logger.info(f"Pushing node rewards data for {date}")
         target_date = datetime.strptime(date, "%Y-%m-%d")
 
-        noon = target_date.replace(hour=12, minute=0, second=0, microsecond=0)
-        noon_timestamp_ms = int(noon.replace(tzinfo=timezone.utc).timestamp() * 1000)
+        target_dt = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        timestamp_ms = int(target_dt.replace(tzinfo=timezone.utc).timestamp() * 1000)
 
         metrics_lines = []
         for client in self.nrc_clients:
@@ -306,7 +328,7 @@ class NodeRewardsPusher:
                     self._make_line(
                         metric_name,
                         value,
-                        noon_timestamp_ms,
+                        timestamp_ms,
                         canister_id=client.canister_id,
                         **kwargs,
                     )
@@ -401,7 +423,7 @@ class NodeRewardsPusher:
             for subnet_id, failure_rate in subnets_failure_rate.items():
                 subnet_id_str = str(subnet_id)
                 metrics_lines.append(
-                    f'subnet_failure_rate{{subnet_id="{subnet_id_str}"}} {failure_rate} {noon_timestamp_ms}'
+                    f'subnet_failure_rate{{subnet_id="{subnet_id_str}"}} {failure_rate} {timestamp_ms}'
                 )
                 add_line_helper(
                     "subnets_failure_rate", failure_rate, subnet_id=subnet_id_str
@@ -412,6 +434,17 @@ class NodeRewardsPusher:
             if gov_timestamp:
                 add_line_helper(
                     "governance_latest_reward_event_timestamp_seconds", gov_timestamp
+                )
+                
+                # Calculate days since last governance distribution
+                now_utc = datetime.now(timezone.utc)
+                gov_datetime: datetime = datetime.fromtimestamp(gov_timestamp, tz=timezone.utc)
+                days_since = int((now_utc - gov_datetime).total_seconds() / 86400)  # 86400 seconds in a day
+                metrics_lines.append(
+                    f'days_since_governance_distribution {days_since} {timestamp_ms}'
+                )
+                add_line_helper(
+                    "days_since_governance_distribution", days_since
                 )
 
         if not metrics_lines:
@@ -458,13 +491,11 @@ class NodeRewardsPusher:
         logger.info("✅ Backfill complete!")
 
     def wait_until_next_run(self):
-        """Wait until 00:05 UTC tomorrow"""
+        """Wait until 00:10 UTC tomorrow"""
         now = datetime.now(timezone.utc)
 
-        # Calculate next 00:05 UTC
-        next_run = now.replace(hour=0, minute=5, second=0, microsecond=0)
+        next_run = now.replace(hour=0, minute=10, second=0, microsecond=0)
         if now >= next_run:
-            # Already past 00:05 today, schedule for tomorrow
             next_run += timedelta(days=1)
 
         wait_seconds = (next_run - now).total_seconds()
