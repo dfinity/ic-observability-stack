@@ -1,7 +1,0 @@
-- name: View facts
-  hosts: localhost
-  connection: local
-  tasks:
-    - name: View facts
-      ansible.builtin.debug:
-        var: ansible_facts

@@ -1,8 +1,0 @@
-- name: Deploy K3s onto the node
-  hosts: observability
-  become: true
-  vars_files:
-    - ../../vars/k3s.yml
-  tasks:
-    - import_tasks: ../../tasks/setup-k3s-reqs.yml
-    - import_tasks: ../../tasks/deploy-k3s-cluster.yml
