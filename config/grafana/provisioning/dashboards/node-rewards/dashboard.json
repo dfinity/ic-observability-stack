@@ -18,7 +18,7 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 1,
-    "id": 0,
+    "id": 7,
     "links": [],
     "panels": [
       {
@@ -1956,7 +1956,7 @@
       ]
     },
     "time": {
-      "from": "now-24h",
+      "from": "2025-11-13T00:00:00.000Z",
       "to": "now"
     },
     "timepicker": {
@@ -1974,6 +1974,6 @@
     },
     "timezone": "utc",
     "title": "Node Provider Rewards Dashboard",
-    "uid": "node-rewards-12",
-    "version": 5
+    "uid": "node-rewards",
+    "version": 1
   }
