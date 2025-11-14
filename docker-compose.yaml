@@ -59,3 +59,18 @@ services:
     user: "${UID}:${GID}"
     depends_on:
       - victoriametrics
+
+  obs-github-ingester:
+    build:
+      context: . 
+      dockerfile: ./tools/python.Dockerfile
+    network_mode: host
+    environment:
+      VICTORIA_METRICS_URL: http://localhost:9090
+    volumes:
+      - ./:/work_dir
+    working_dir: /work_dir
+    user: "${UID}:${GID}"
+    command: ./tools/obs-stack-github-ingester/obs_stack_github_ingester.py
+    depends_on:
+      - victoriametrics
