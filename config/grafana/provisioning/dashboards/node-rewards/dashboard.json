@@ -18,151 +18,66 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 1,
-    "id": 6,
+    "id": 0,
     "links": [],
     "panels": [
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "description": "Total nodes across all providers",
+        "description": "",
         "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": 0
-                }
-              ]
-            },
-            "unit": "short"
-          },
+          "defaults": {},
           "overrides": []
         },
         "gridPos": {
-          "h": 3,
+          "h": 11,
           "w": 12,
           "x": 0,
           "y": 0
         },
-        "id": 103,
+        "hideTimeOverride": true,
+        "id": 408,
         "options": {
-          "colorMode": "value",
-          "graphMode": "area",
-          "justifyMode": "center",
-          "orientation": "auto",
-          "percentChangeColorMode": "standard",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "",
-            "values": false
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
           },
-          "showPercentChange": false,
-          "textMode": "auto",
-          "wideLayout": true
+          "content": "## Node Rewards Dashboard Investigation Guide\n\nWhen investigating a reward period, use the **Grafana Date Picker** to select the precise date range that *fully covers* the reward window.\n\n### Why This Is Important  \nReward metrics are stored at **00:00:00 UTC**, meaning:\n\n- Using relative ranges like `Last X days` may **exclude the first day** of the period.\n- Always double-check your selected range when reviewing a current or past reward period.\n\n### Exporting Reward Data  \n- To export data in CSV format, you can use the **DRE tool**, available here:  \n  https://github.com/dfinity/dre/latest\n- Instructions on how to use the tool:  \n  https://dfinity.github.io/dre/node-rewards.html?h=node+rewa\n",
+          "mode": "markdown"
         },
         "pluginVersion": "12.2.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "editorMode": "code",
-            "expr": "sum(nodes_count)",
-            "range": true,
-            "refId": "A"
-          }
-        ],
-        "title": "Total Nodes",
-        "type": "stat"
+        "timeShift": "1d",
+        "title": "",
+        "transparent": true,
+        "type": "text"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "description": "Total number of providers tracked",
+        "description": "",
         "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "blue",
-                  "value": 0
-                }
-              ]
-            },
-            "unit": "short"
-          },
+          "defaults": {},
           "overrides": []
         },
         "gridPos": {
-          "h": 3,
+          "h": 11,
           "w": 12,
           "x": 12,
           "y": 0
         },
-        "id": 102,
+        "hideTimeOverride": true,
+        "id": 409,
         "options": {
-          "colorMode": "value",
-          "graphMode": "area",
-          "justifyMode": "center",
-          "orientation": "auto",
-          "percentChangeColorMode": "standard",
-          "reduceOptions": {
-            "calcs": [
-              "max"
-            ],
-            "fields": "",
-            "values": false
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
           },
-          "showPercentChange": false,
-          "textMode": "auto",
-          "wideLayout": true
+          "content": "### What this dashboard shows\n- How rewards are affected over a selected date range.\n- Which node/nodes concurred to possible rewards reductions over the date range.\n\n### How to investigate\n\n#### Example: 2025‑11 distribution\n1. Open the date picker and set From = 2025‑10‑14, To = 2025‑11‑12.\n2. Pick the Node Provider of interest.\n3. For an Node Provider:\n   - Check `Base vs Adjusted rewards over time` and `Provider rewards penalty` to see when the gap opens.\n   - Open `Performance multiplier` to see which nodes drove the drop.\n   - Correlate with `Original failure rate` and `Relative failure rate`.\n     - If relative ≈ original, it’s node‑specific issue.\n     - If relative ≈ 0 while original is high, the subnet likely had issues. Rewards won't be impacted.\n   - Validate with `Subnet failure rates over time`.\n\n#### Example:“Current distribution\n1. In the date picker, set:\n   - **From** = the date shown in `Current Reward Period Start`.\n   - **To** = today.\n2. Repeat the analysis steps above to identify current drivers.\n",
+          "mode": "markdown"
         },
         "pluginVersion": "12.2.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "editorMode": "code",
-            "expr": "count(nodes_count)",
-            "range": true,
-            "refId": "A"
-          }
-        ],
-        "title": "Total Providers",
-        "type": "stat"
-      },
-      {
-        "collapsed": false,
-        "gridPos": {
-          "h": 1,
-          "w": 24,
-          "x": 0,
-          "y": 3
-        },
-        "id": 100,
-        "panels": [],
-        "title": "Current Reward Period",
-        "type": "row"
+        "timeShift": "1d",
+        "title": "",
+        "transparent": true,
+        "type": "text"
       },
       {
         "datasource": {
@@ -194,7 +109,7 @@
           "h": 3,
           "w": 6,
           "x": 0,
-          "y": 4
+          "y": 11
         },
         "hideTimeOverride": true,
         "id": 407,
@@ -223,13 +138,25 @@
               "uid": "prometheus"
             },
             "editorMode": "code",
+            "exemplar": false,
             "expr": "governance_latest_reward_event_timestamp_seconds * 1000",
+            "format": "time_series",
+            "instant": false,
             "range": true,
             "refId": "A"
           }
         ],
         "timeShift": "1d",
-        "title": "Last Rewards Distribution",
+        "title": "Current Reward Period Start",
+        "transformations": [
+          {
+            "id": "convertFieldType",
+            "options": {
+              "conversions": [],
+              "fields": {}
+            }
+          }
+        ],
         "type": "stat"
       },
       {
@@ -262,9 +189,8 @@
           "h": 3,
           "w": 6,
           "x": 6,
-          "y": 4
+          "y": 11
         },
-        "hideTimeOverride": true,
         "id": 405,
         "options": {
           "colorMode": "value",
@@ -296,7 +222,6 @@
             "refId": "A"
           }
         ],
-        "timeShift": "1d",
         "title": "Total Reward Reduction",
         "type": "stat"
       },
@@ -305,7 +230,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "description": "Total adjusted rewards across all providers ",
+        "description": "",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -329,13 +254,12 @@
           "h": 3,
           "w": 6,
           "x": 12,
-          "y": 4
+          "y": 11
         },
-        "hideTimeOverride": true,
         "id": 402,
         "options": {
           "colorMode": "value",
-          "graphMode": "area",
+          "graphMode": "none",
           "justifyMode": "center",
           "orientation": "auto",
           "percentChangeColorMode": "standard",
@@ -363,7 +287,6 @@
             "refId": "A"
           }
         ],
-        "timeShift": "1d",
         "title": "Total Adjusted Rewards",
         "type": "stat"
       },
@@ -372,7 +295,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "description": "Total base rewards ",
+        "description": "",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -396,13 +319,12 @@
           "h": 3,
           "w": 6,
           "x": 18,
-          "y": 4
+          "y": 11
         },
-        "hideTimeOverride": true,
         "id": 104,
         "options": {
           "colorMode": "value",
-          "graphMode": "area",
+          "graphMode": "none",
           "justifyMode": "center",
           "orientation": "auto",
           "percentChangeColorMode": "standard",
@@ -430,7 +352,6 @@
             "refId": "A"
           }
         ],
-        "timeShift": "1d",
         "title": "Total Base Rewards",
         "type": "stat"
       },
@@ -439,7 +360,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "description": "Comprehensive provider metrics overview",
+        "description": "",
         "fieldConfig": {
           "defaults": {
             "custom": {
@@ -571,7 +492,7 @@
               "properties": [
                 {
                   "id": "displayName",
-                  "value": "Efficiency %"
+                  "value": "% Rewards Obtained"
                 },
                 {
                   "id": "unit",
@@ -653,12 +574,11 @@
           ]
         },
         "gridPos": {
-          "h": 10,
+          "h": 8,
           "w": 24,
           "x": 0,
-          "y": 7
+          "y": 14
         },
-        "hideTimeOverride": true,
         "id": 105,
         "options": {
           "cellHeight": "sm",
@@ -667,7 +587,7 @@
           "sortBy": [
             {
               "desc": false,
-              "displayName": "Efficiency %"
+              "displayName": "% Rewards Obtained"
             }
           ]
         },
@@ -681,7 +601,8 @@
             "editorMode": "code",
             "expr": "sum by (provider_id) (sum_over_time(total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) / ${scale_xdrp_to_xdr}",
             "format": "table",
-            "instant": true,
+            "instant": false,
+            "range": true,
             "refId": "B"
           },
           {
@@ -692,8 +613,9 @@
             "editorMode": "code",
             "expr": "sum by (provider_id) (sum_over_time(total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) / ${scale_xdrp_to_xdr}",
             "format": "table",
-            "instant": true,
+            "instant": false,
             "legendFormat": "",
+            "range": true,
             "refId": "C"
           },
           {
@@ -704,7 +626,8 @@
             "editorMode": "code",
             "expr": "(sum by (provider_id) (sum_over_time(total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) - sum by (provider_id) (sum_over_time(total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range]))) / ${scale_xdrp_to_xdr}",
             "format": "table",
-            "instant": true,
+            "instant": false,
+            "range": true,
             "refId": "D"
           },
           {
@@ -716,12 +639,12 @@
             "expr": "(sum by (provider_id) (sum_over_time(total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range])) / sum by (provider_id) (sum_over_time(total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"}[$__range]))) * 100",
             "format": "table",
             "hide": false,
-            "instant": true,
+            "instant": false,
             "legendFormat": "__auto",
+            "range": true,
             "refId": "A"
           }
         ],
-        "timeShift": "1d",
         "title": "Rewards Per Provider",
         "transformations": [
           {
@@ -776,7 +699,7 @@
           "h": 1,
           "w": 24,
           "x": 0,
-          "y": 17
+          "y": 22
         },
         "id": 200,
         "panels": [],
@@ -788,7 +711,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "description": "Base vs Adjusted rewards over time for selected provider(s)",
+        "description": "",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -877,8 +800,9 @@
           "h": 9,
           "w": 12,
           "x": 0,
-          "y": 18
+          "y": 23
         },
+        "hideTimeOverride": true,
         "id": 201,
         "options": {
           "legend": {
@@ -923,208 +847,8 @@
             "refId": "B"
           }
         ],
-        "title": "Base vs Adjusted Rewards Over Time",
-        "type": "timeseries"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "description": "Rewards efficiency percentage (Adjusted/Base * 100)",
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "palette-classic"
-            },
-            "custom": {
-              "axisBorderShow": false,
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "Efficiency %",
-              "axisPlacement": "auto",
-              "barAlignment": 0,
-              "barWidthFactor": 0.6,
-              "drawStyle": "line",
-              "fillOpacity": 10,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "insertNulls": false,
-              "lineInterpolation": "linear",
-              "lineWidth": 2,
-              "pointSize": 5,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "showPoints": "auto",
-              "showValues": false,
-              "spanNulls": false,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "line"
-              }
-            },
-            "mappings": [],
-            "max": 100,
-            "min": 0,
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": 0
-                }
-              ]
-            },
-            "unit": "percent"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 9,
-          "w": 12,
-          "x": 12,
-          "y": 18
-        },
-        "id": 202,
-        "options": {
-          "legend": {
-            "calcs": [
-              "last",
-              "mean",
-              "min"
-            ],
-            "displayMode": "table",
-            "placement": "bottom",
-            "showLegend": true,
-            "sortBy": "Last",
-            "sortDesc": false
-          },
-          "tooltip": {
-            "hideZeros": false,
-            "mode": "multi",
-            "sort": "desc"
-          }
-        },
-        "pluginVersion": "12.2.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "editorMode": "code",
-            "expr": "(total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"} / total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"}) * 100",
-            "legendFormat": "{{provider_id}} - Efficiency %",
-            "range": true,
-            "refId": "A"
-          }
-        ],
-        "title": "Provider Rewards Efficiency Over Time",
-        "type": "timeseries"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "description": "Node counts over time",
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "palette-classic"
-            },
-            "custom": {
-              "axisBorderShow": false,
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "Nodes",
-              "axisPlacement": "auto",
-              "barAlignment": 0,
-              "barWidthFactor": 0.6,
-              "drawStyle": "line",
-              "fillOpacity": 10,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "insertNulls": false,
-              "lineInterpolation": "smooth",
-              "lineWidth": 2,
-              "pointSize": 5,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "showPoints": "auto",
-              "showValues": false,
-              "spanNulls": false,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "off"
-              }
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": 0
-                }
-              ]
-            },
-            "unit": "short"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 9,
-          "w": 12,
-          "x": 0,
-          "y": 27
-        },
-        "id": 203,
-        "options": {
-          "legend": {
-            "calcs": [
-              "last",
-              "mean"
-            ],
-            "displayMode": "table",
-            "placement": "bottom",
-            "showLegend": true
-          },
-          "tooltip": {
-            "hideZeros": false,
-            "mode": "multi",
-            "sort": "desc"
-          }
-        },
-        "pluginVersion": "12.2.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "expr": "nodes_count{provider_id=~\"$provider\"} offset -1d",
-            "legendFormat": "{{provider_id}} - Total Nodes",
-            "refId": "A"
-          }
-        ],
-        "title": "Node Counts Over Time",
+        "timeShift": "23h",
+        "title": "Base vs Adjusted Rewards ",
         "type": "timeseries"
       },
       {
@@ -1193,8 +917,9 @@
           "h": 9,
           "w": 12,
           "x": 12,
-          "y": 27
+          "y": 23
         },
+        "hideTimeOverride": true,
         "id": 204,
         "options": {
           "legend": {
@@ -1202,6 +927,110 @@
               "last",
               "mean",
               "max"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "multi",
+            "sort": "asc"
+          }
+        },
+        "pluginVersion": "12.2.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_PROMETHEUS}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "(total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"} - total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"} ) / ${scale_xdrp_to_xdr}",
+            "instant": false,
+            "interval": "",
+            "legendFormat": "Penalty - {{provider_id}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "timeShift": "23h",
+        "title": "Provider Rewards Penalty (Base - Adjusted)",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "Node counts over time",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "Nodes",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "showValues": false,
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                }
+              ]
+            },
+            "unit": "short"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 32
+        },
+        "hideTimeOverride": true,
+        "id": 203,
+        "options": {
+          "legend": {
+            "calcs": [
+              "last",
+              "mean"
             ],
             "displayMode": "table",
             "placement": "bottom",
@@ -1221,13 +1050,157 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "(total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"} - total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"} ) / ${scale_xdrp_to_xdr}",
-            "legendFormat": "{{provider_id}} - Penalty",
+            "expr": "nodes_count{provider_id=~\"$provider\"}",
+            "legendFormat": "Total",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_PROMETHEUS}"
+            },
+            "editorMode": "code",
+            "expr": "count(original_failure_rate{provider_id=~\"$provider\"})",
+            "hide": false,
+            "instant": false,
+            "legendFormat": "Assigned",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "timeShift": "23h",
+        "title": "Node Counts Over Time",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-YlRd"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "showValues": false,
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "fieldMinMax": false,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                }
+              ]
+            },
+            "unit": "percentunit"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byRegexp",
+                "options": ".*Base.*"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "blue",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byRegexp",
+                "options": ".*Adjusted.*"
+              },
+              "properties": [
+                {
+                  "id": "color",
+                  "value": {
+                    "fixedColor": "green",
+                    "mode": "fixed"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 32
+        },
+        "hideTimeOverride": true,
+        "id": 410,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "12.2.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_PROMETHEUS}"
+            },
+            "editorMode": "code",
+            "expr": "total_adjusted_rewards_xdr_permyriad{provider_id=~\"$provider\"} / total_base_rewards_xdr_permyriad{provider_id=~\"$provider\"}",
+            "legendFormat": "{{provider_id}}",
             "range": true,
             "refId": "A"
           }
         ],
-        "title": "Provider Rewards Penalty (Base - Adjusted)",
+        "timeShift": "23h",
+        "title": "Rewards %",
         "type": "timeseries"
       },
       {
@@ -1236,12 +1209,123 @@
           "h": 1,
           "w": 24,
           "x": 0,
-          "y": 36
+          "y": 41
         },
         "id": 300,
         "panels": [],
-        "title": "Node-Level Metrics (Assigned)",
+        "title": "Node-Level Metrics",
         "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "showValues": false,
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "line"
+              }
+            },
+            "links": [
+              {
+                "title": "Filter dashboard by node",
+                "url": "/d/${__dashboard.uid}?var-node=${__field.labels.node_id}&${__url_time_range}"
+              }
+            ],
+            "mappings": [],
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                }
+              ]
+            },
+            "unit": "percentunit"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 11,
+          "w": 24,
+          "x": 0,
+          "y": 42
+        },
+        "hideTimeOverride": true,
+        "id": 404,
+        "options": {
+          "legend": {
+            "calcs": [
+              "last",
+              "mean",
+              "max"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true,
+            "sortBy": "Last",
+            "sortDesc": false
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "multi",
+            "sort": "asc"
+          }
+        },
+        "pluginVersion": "12.2.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_PROMETHEUS}"
+            },
+            "editorMode": "code",
+            "expr": "label_replace(performance_multiplier{provider_id=~\"$provider\",node_id=~\"$node\"}, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
+            "legendFormat": "{{node_short}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "timeShift": "23h",
+        "title": "Performance Multiplier - All Nodes",
+        "type": "timeseries"
       },
       {
         "datasource": {
@@ -1288,6 +1372,12 @@
                 "mode": "line"
               }
             },
+            "links": [
+              {
+                "title": "Filter dashboard by node",
+                "url": "/d/${__dashboard.uid}?var-node=${__field.labels.node_id}&${__url_time_range}"
+              }
+            ],
             "mappings": [],
             "min": 0,
             "thresholds": {
@@ -1307,8 +1397,9 @@
           "h": 9,
           "w": 12,
           "x": 0,
-          "y": 37
+          "y": 53
         },
+        "hideTimeOverride": true,
         "id": 301,
         "options": {
           "legend": {
@@ -1335,13 +1426,16 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "label_replace(original_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\"} offset -1d, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
+            "exemplar": false,
+            "expr": "label_replace(original_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\"}, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
+            "instant": false,
             "legendFormat": "{{node_short}}",
             "range": true,
             "refId": "A"
           }
         ],
-        "title": "Node Original Failure Rate",
+        "timeShift": "23h",
+        "title": "Node Original Failure Rate - Assigned",
         "type": "timeseries"
       },
       {
@@ -1389,6 +1483,12 @@
                 "mode": "line"
               }
             },
+            "links": [
+              {
+                "title": "Filter dashboard by node",
+                "url": "/d/${__dashboard.uid}?var-node=${__field.labels.node_id}&${__url_time_range}"
+              }
+            ],
             "mappings": [],
             "min": 0,
             "thresholds": {
@@ -1412,8 +1512,9 @@
           "h": 9,
           "w": 12,
           "x": 12,
-          "y": 37
+          "y": 53
         },
+        "hideTimeOverride": true,
         "id": 302,
         "options": {
           "legend": {
@@ -1429,7 +1530,7 @@
           "tooltip": {
             "hideZeros": false,
             "mode": "multi",
-            "sort": "desc"
+            "sort": "asc"
           }
         },
         "pluginVersion": "12.2.1",
@@ -1440,13 +1541,14 @@
               "uid": "${DS_PROMETHEUS}"
             },
             "editorMode": "code",
-            "expr": "label_replace(relative_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\"} offset -1d, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
+            "expr": "label_replace(relative_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\"}, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
             "legendFormat": "{{node_short}}",
             "range": true,
             "refId": "A"
           }
         ],
-        "title": "Node Relative Failure Rate",
+        "timeShift": "23h",
+        "title": "Node Relative Failure Rate - Assigned",
         "type": "timeseries"
       },
       {
@@ -1466,7 +1568,13 @@
               "scaleDistribution": {
                 "type": "linear"
               }
-            }
+            },
+            "links": [
+              {
+                "title": "Filter dashboard by node",
+                "url": "/d/${__dashboard.uid}?var-node=${__field.labels.node_id}&${__url_time_range}"
+              }
+            ]
           },
           "overrides": []
         },
@@ -1474,8 +1582,9 @@
           "h": 9,
           "w": 12,
           "x": 0,
-          "y": 46
+          "y": 62
         },
+        "hideTimeOverride": true,
         "id": 303,
         "options": {
           "calculate": false,
@@ -1529,6 +1638,7 @@
             "refId": "A"
           }
         ],
+        "timeShift": "23h",
         "title": "Original Failure Rate Heatmap",
         "type": "heatmap"
       },
@@ -1549,7 +1659,13 @@
               "scaleDistribution": {
                 "type": "linear"
               }
-            }
+            },
+            "links": [
+              {
+                "title": "Filter dashboard by node",
+                "url": "/d/${__dashboard.uid}?var-node=${__field.labels.node_id}&${__url_time_range}"
+              }
+            ]
           },
           "overrides": []
         },
@@ -1557,8 +1673,9 @@
           "h": 9,
           "w": 12,
           "x": 12,
-          "y": 46
+          "y": 62
         },
+        "hideTimeOverride": true,
         "id": 304,
         "options": {
           "calculate": false,
@@ -1612,111 +1729,9 @@
             "refId": "A"
           }
         ],
+        "timeShift": "23h",
         "title": "Relative Failure Rate Heatmap",
         "type": "heatmap"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "description": "",
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "palette-classic"
-            },
-            "custom": {
-              "axisBorderShow": false,
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "",
-              "axisPlacement": "auto",
-              "barAlignment": 0,
-              "barWidthFactor": 0.6,
-              "drawStyle": "line",
-              "fillOpacity": 0,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "insertNulls": false,
-              "lineInterpolation": "linear",
-              "lineWidth": 1,
-              "pointSize": 5,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "showPoints": "never",
-              "showValues": false,
-              "spanNulls": false,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "line"
-              }
-            },
-            "mappings": [],
-            "min": 0,
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": 0
-                }
-              ]
-            },
-            "unit": "percentunit"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 14,
-          "w": 24,
-          "x": 0,
-          "y": 55
-        },
-        "id": 404,
-        "options": {
-          "legend": {
-            "calcs": [
-              "last",
-              "mean",
-              "max"
-            ],
-            "displayMode": "table",
-            "placement": "bottom",
-            "showLegend": true,
-            "sortBy": "Last",
-            "sortDesc": false
-          },
-          "tooltip": {
-            "hideZeros": false,
-            "mode": "multi",
-            "sort": "desc"
-          }
-        },
-        "pluginVersion": "12.2.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "editorMode": "code",
-            "expr": "label_replace(performance_multiplier{provider_id=~\"$provider\",node_id=~\"$node\"} offset -1d, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
-            "legendFormat": "{{node_short}}",
-            "range": true,
-            "refId": "A"
-          }
-        ],
-        "title": "Performance Multiplier",
-        "type": "timeseries"
       },
       {
         "collapsed": false,
@@ -1724,7 +1739,7 @@
           "h": 1,
           "w": 24,
           "x": 0,
-          "y": 69
+          "y": 71
         },
         "id": 400,
         "panels": [],
@@ -1795,8 +1810,9 @@
           "h": 10,
           "w": 24,
           "x": 0,
-          "y": 70
+          "y": 72
         },
+        "hideTimeOverride": true,
         "id": 401,
         "interval": "1d",
         "options": {
@@ -1824,12 +1840,13 @@
               "uid": "prometheus"
             },
             "editorMode": "code",
-            "expr": "subnets_failure_rate{subnet_id=~\"$subnet\"}",
+            "expr": "subnets_failure_rate",
             "legendFormat": "{{subnet_id}}",
             "range": true,
             "refId": "A"
           }
         ],
+        "timeShift": "23h",
         "title": "Subnet Failure Rates Over Time",
         "type": "timeseries"
       }
@@ -1863,9 +1880,7 @@
           "allValue": ".*",
           "current": {
             "text": "All",
-            "value": [
-              "$__all"
-            ]
+            "value": "$__all"
           },
           "datasource": {
             "type": "prometheus",
@@ -1912,31 +1927,6 @@
           "type": "query"
         },
         {
-          "allValue": ".*",
-          "current": {
-            "text": "All",
-            "value": "$__all"
-          },
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "definition": "label_values(subnet_failure_rate, subnet_id)",
-          "includeAll": true,
-          "label": "Subnet",
-          "multi": true,
-          "name": "subnet",
-          "options": [],
-          "query": {
-            "query": "label_values(subnet_failure_rate, subnet_id)",
-            "refId": "StandardVariableQuery"
-          },
-          "refresh": 2,
-          "regex": "",
-          "sort": 1,
-          "type": "query"
-        },
-        {
           "baseFilters": [],
           "datasource": {
             "type": "prometheus",
@@ -1966,7 +1956,7 @@
       ]
     },
     "time": {
-      "from": "now-30d",
+      "from": "now-24h",
       "to": "now"
     },
     "timepicker": {
@@ -1984,6 +1974,6 @@
     },
     "timezone": "utc",
     "title": "Node Provider Rewards Dashboard",
-    "uid": "node-rewards-comprehensive",
-    "version": 2
+    "uid": "node-rewards-12",
+    "version": 5
   }

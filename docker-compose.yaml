@@ -23,6 +23,7 @@ services:
       - --storageDataPath=/victoria
       - --httpListenAddr=:9090
       - --retentionPeriod=1y
+      - --dedup.minScrapeInterval=30s
       - --promscrape.config=/config/config.yaml
       - --promscrape.configCheckInterval=30s
       - --enableTCP6=true
