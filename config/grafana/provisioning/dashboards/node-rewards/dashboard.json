@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 0,
+  "id": 7,
   "links": [],
   "panels": [
     {
@@ -28,7 +28,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 23,
+        "h": 11,
         "w": 12,
         "x": 0,
         "y": 0
@@ -41,7 +41,36 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "## Node Rewards Dashboard Investigation Guide\n\nWhen investigating a reward period, use the **Grafana Date Picker** to select the precise date range that *fully covers* the reward window.\n\n### Why This Is Important  \nReward metrics are stored at **00:00:00 UTC**, meaning:\n\n- Using relative ranges like `Last X days` may **exclude the first day** of the period.\n- Always double-check your selected range when reviewing a current or past reward period.\n\n### Exporting Reward Data  \n- To export data in CSV format, you can use the **DRE tool**, available here:  \n  https://github.com/dfinity/dre/latest\n- Instructions on how to use the tool:  \n  https://dfinity.github.io/dre/node-rewards.html?h=node+rewa\n\n### What this dashboard shows\n- How rewards are affected over a selected date range.\n- Which node/nodes concurred to possible rewards reductions over the date range.\n\n### How to investigate\n\n#### Example: 2025‑11 distribution\n1. Open the date picker and set From = 2025‑10‑14, To = 2025‑11‑12.\n2. Pick the Node Provider of interest.\n3. For an Node Provider:\n   - Check `Base vs Adjusted rewards over time` and `Provider rewards penalty` to see when the gap opens.\n   - Open `Performance multiplier` to see which nodes drove the drop.\n   - Correlate with `Original failure rate` and `Relative failure rate`.\n     - If relative ≈ original, it’s node‑specific issue.\n     - If relative ≈ 0 while original is high, the subnet likely had issues. Rewards won't be impacted.\n   - Validate with `Subnet failure rates over time`.\n\n#### Example:“Current distribution\n1. In the date picker, set:\n   - **From** = the date shown in `Current Reward Period Start`.\n   - **To** = today.\n2. Repeat the analysis steps above to identify current drivers.\n",
+        "content": "## Node Rewards Dashboard Investigation Guide\n\nWhen investigating a reward period, use the **Grafana Date Picker** to select the precise date range that *fully covers* the reward window.\n\n### Why This Is Important  \nReward metrics are stored at **00:00:00 UTC**, meaning:\n\n- Using relative ranges like `Last X days` may **exclude the first day** of the period.\n- Always double-check your selected range when reviewing a current or past reward period.\n\n### Exporting Reward Data  \n- To export data in CSV format, you can use the **DRE tool**, available here:  \n  https://github.com/dfinity/dre/latest\n- Instructions on how to use the tool:  \n  https://dfinity.github.io/dre/node-rewards.html?h=node+rewa\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.2.1",
+      "timeShift": "1d",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "hideTimeOverride": true,
+      "id": 409,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "### What this dashboard shows\n- How rewards are affected over a selected date range.\n- Which node/nodes concurred to possible rewards reductions over the date range.\n\n### How to investigate\n\n#### Example: 2025‑11 distribution\n1. Open the date picker and set From = 2025‑10‑14, To = 2025‑11‑12.\n2. Pick the Node Provider of interest.\n3. For an Node Provider:\n   - Check `Base vs Adjusted rewards over time` and `Provider rewards penalty` to see when the gap opens.\n   - Open `Performance multiplier` to see which nodes drove the drop.\n   - Correlate with `Original failure rate` and `Relative failure rate`.\n     - If relative ≈ original, it’s node‑specific issue.\n     - If relative ≈ 0 while original is high, the subnet likely had issues. Rewards won't be impacted.\n   - Validate with `Subnet failure rates over time`.\n\n#### Example:“Current distribution\n1. In the date picker, set:\n   - **From** = the date shown in `Current Reward Period Start`.\n   - **To** = today.\n2. Repeat the analysis steps above to identify current drivers.\n",
         "mode": "markdown"
       },
       "pluginVersion": "12.2.1",
@@ -78,9 +107,9 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 3,
-        "x": 12,
-        "y": 0
+        "w": 6,
+        "x": 0,
+        "y": 11
       },
       "hideTimeOverride": true,
       "id": 407,
@@ -128,7 +157,72 @@
           }
         }
       ],
-      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "(1 - Total Adjusted Rewards / Total Base Rewards) * 100",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "orange",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 6,
+        "y": 11
+      },
+      "id": 405,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "(1 - sum(sum_over_time(total_adjusted_rewards_xdr_permyriad[$__range])) / sum(sum_over_time(total_base_rewards_xdr_permyriad[$__range]))) * 100",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Reward Reduction",
       "type": "stat"
     },
     {
@@ -157,10 +251,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 3,
-        "x": 15,
-        "y": 0
+        "h": 3,
+        "w": 6,
+        "x": 12,
+        "y": 11
       },
       "id": 402,
       "options": {
@@ -222,10 +316,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 3,
+        "h": 3,
+        "w": 6,
         "x": 18,
-        "y": 0
+        "y": 11
       },
       "id": 104,
       "options": {
@@ -259,72 +353,6 @@
         }
       ],
       "title": "Total Base Rewards",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "(1 - Total Adjusted Rewards / Total Base Rewards) * 100",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "orange",
-            "mode": "fixed"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "purple",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 3,
-        "x": 21,
-        "y": 0
-      },
-      "id": 405,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.2.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "(1 - sum(sum_over_time(total_adjusted_rewards_xdr_permyriad[$__range])) / sum(sum_over_time(total_base_rewards_xdr_permyriad[$__range]))) * 100",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Total Reward Reduction",
       "type": "stat"
     },
     {
@@ -546,10 +574,10 @@
         ]
       },
       "gridPos": {
-        "h": 18,
-        "w": 12,
-        "x": 12,
-        "y": 5
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 14
       },
       "id": 105,
       "options": {
@@ -671,7 +699,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 22
       },
       "id": 200,
       "panels": [],
@@ -714,7 +742,7 @@
             },
             "showPoints": "auto",
             "showValues": false,
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -772,7 +800,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 23
       },
       "hideTimeOverride": true,
       "id": 201,
@@ -860,7 +888,7 @@
             },
             "showPoints": "auto",
             "showValues": false,
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -889,7 +917,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 24
+        "y": 23
       },
       "hideTimeOverride": true,
       "id": 204,
@@ -967,7 +995,7 @@
             },
             "showPoints": "auto",
             "showValues": false,
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -994,7 +1022,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 33
+        "y": 32
       },
       "hideTimeOverride": true,
       "id": 203,
@@ -1033,7 +1061,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count(original_failure_rate{provider_id=~\"$provider\",subnet_id=~\"$subnet\"})",
+          "expr": "count(original_failure_rate{provider_id=~\"$provider\"})",
           "hide": false,
           "instant": false,
           "legendFormat": "Assigned",
@@ -1081,7 +1109,7 @@
             },
             "showPoints": "auto",
             "showValues": false,
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -1140,7 +1168,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 33
+        "y": 32
       },
       "hideTimeOverride": true,
       "id": 410,
@@ -1211,7 +1239,7 @@
             },
             "showPoints": "never",
             "showValues": false,
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -1245,7 +1273,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 41
       },
       "hideTimeOverride": true,
       "id": 404,
@@ -1292,7 +1320,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 53
+        "y": 52
       },
       "id": 300,
       "panels": [],
@@ -1335,7 +1363,7 @@
             },
             "showPoints": "never",
             "showValues": false,
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -1369,7 +1397,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 54
+        "y": 53
       },
       "hideTimeOverride": true,
       "id": 301,
@@ -1399,7 +1427,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "label_replace(original_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\",subnet_id=~\"$subnet\"}, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
+          "expr": "label_replace(original_failure_rate{provider_id=~\"$provider\",node_id=~\"$node\", subnet_id=~\"$subnet\"}, \"node_short\", \"$1\", \"node_id\", \"([^-]+)-([^-]+)-([^-]+).*\")",
           "instant": false,
           "legendFormat": "{{node_short}}",
           "range": true,
@@ -1446,7 +1474,7 @@
             },
             "showPoints": "never",
             "showValues": false,
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -1484,7 +1512,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 54
+        "y": 53
       },
       "hideTimeOverride": true,
       "id": 302,
@@ -1554,7 +1582,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 63
+        "y": 62
       },
       "hideTimeOverride": true,
       "id": 303,
@@ -1580,7 +1608,7 @@
           "le": 1e-9
         },
         "legend": {
-          "show": true
+          "show": false
         },
         "rowsFrame": {
           "layout": "auto"
@@ -1645,13 +1673,13 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 63
+        "y": 62
       },
       "hideTimeOverride": true,
       "id": 304,
       "options": {
         "calculate": false,
-        "cellGap": 2,
+        "cellGap": 1,
         "cellValues": {
           "unit": "short"
         },
@@ -1668,13 +1696,13 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 0.1
         },
         "legend": {
-          "show": true
+          "show": false
         },
         "rowsFrame": {
-          "layout": "auto"
+          "layout": "unknown"
         },
         "tooltip": {
           "mode": "single",
@@ -1702,7 +1730,7 @@
         }
       ],
       "timeShift": "23h",
-      "title": "Relative Failure Rate Heatmap",
+      "title": "Relative Failure Rate > 10%",
       "type": "heatmap"
     },
     {
@@ -1711,7 +1739,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 72
+        "y": 71
       },
       "id": 400,
       "panels": [],
@@ -1754,7 +1782,7 @@
             },
             "showPoints": "never",
             "showValues": false,
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -1782,7 +1810,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 73
+        "y": 72
       },
       "hideTimeOverride": true,
       "id": 401,
@@ -1851,11 +1879,9 @@
       {
         "allValue": ".*",
         "current": {
-          "text": [
-            "ihbuj-erwnc-tkjux-tqtnv-zkoar-uniy2-sk2go-xfpkc-znbb4-seukm-wqe"
-          ],
+          "text": "All",
           "value": [
-            "ihbuj-erwnc-tkjux-tqtnv-zkoar-uniy2-sk2go-xfpkc-znbb4-seukm-wqe"
+            "$__all"
           ]
         },
         "datasource": {
@@ -1881,7 +1907,9 @@
         "allValue": ".*",
         "current": {
           "text": "All",
-          "value": "$__all"
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": {
           "type": "prometheus",
@@ -1914,15 +1942,16 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(original_failure_rate{provider_id=~\"$provider\"}, subnet_id)",
+        "definition": "label_values(original_failure_rate{provider_id=~\"$provider\"},subnet_id)",
         "includeAll": true,
         "label": "Subnet",
         "multi": true,
         "name": "subnet",
         "options": [],
         "query": {
-          "query": "label_values(original_failure_rate{provider_id=~\"$provider\"}, subnet_id)",
-          "refId": "StandardVariableQuery"
+          "qryType": 1,
+          "query": "label_values(original_failure_rate{provider_id=~\"$provider\"},subnet_id)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 2,
         "regex": "",
@@ -1959,7 +1988,7 @@
     ]
   },
   "time": {
-    "from": "now-7d",
+    "from": "2025-11-13T00:00:00.000Z",
     "to": "now"
   },
   "timepicker": {
@@ -1977,6 +2006,6 @@
   },
   "timezone": "utc",
   "title": "Node Provider Rewards Dashboard",
-  "uid": "node-rewards",
-  "version": 3
+  "uid": "node-rewards-dashboard",
+  "version": 1
 }
