@@ -856,7 +856,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Rewards penalty/loss per provider (Base - Adjusted)",
+      "description": "Rewards penalty/loss per provider (Adjusted - Base)",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -956,7 +956,7 @@
         }
       ],
       "timeShift": "23h",
-      "title": "Provider Rewards Penalty (Base - Adjusted)",
+      "title": "Provider Rewards Penalty (Adjusted - Base)",
       "type": "timeseries"
     },
     {
